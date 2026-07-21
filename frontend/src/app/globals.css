@@ -115,6 +115,35 @@ button {
   justify-content: space-between;
 }
 
+/* nav-left: wraps nav-links (desktop) and mobile icons */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Hidden by default — shown only on mobile */
+.nav-icon-mobile {
+  display: none;
+}
+
+/* Shown by default — hidden on mobile */
+.nav-icon-desktop {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-icon-mobile {
+    display: flex;
+  }
+  .nav-icon-desktop {
+    display: none !important;
+  }
+}
+
 .nav-links {
   display: flex;
   align-items: center;

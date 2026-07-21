@@ -66,21 +66,34 @@ export default function Home() {
       <nav className="navbar" id="navbar" role="navigation" aria-label="Main navigation">
         <div className="container">
           <div className="navbar-inner">
-            <ul className="nav-links" role="list">
-              <li><a href="#home">Home</a></li>
-              <li><a href="#shop">Shop</a></li>
-              <li><a href="#premium">Premium Quality</a></li>
-            </ul>
 
+            {/* Left: nav-links on desktop | search+profile on mobile */}
+            <div className="nav-left">
+              <ul className="nav-links" role="list">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#premium">Premium Quality</a></li>
+              </ul>
+              {/* Mobile-only left icons */}
+              <button className="nav-icon-btn nav-icon-mobile" aria-label="Search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </button>
+              <button className="nav-icon-btn nav-icon-mobile" aria-label="User Account">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </button>
+            </div>
+
+            {/* Center: Logo */}
             <a href="#" className="nav-logo" aria-label="90Drip Home">
               <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" />
             </a>
 
+            {/* Right: all 4 icons on desktop | wishlist+cart only on mobile */}
             <div className="nav-actions">
-              <button className="nav-icon-btn" aria-label="Search">
+              <button className="nav-icon-btn nav-icon-desktop" aria-label="Search">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               </button>
-              <button className="nav-icon-btn" aria-label="User Account">
+              <button className="nav-icon-btn nav-icon-desktop" aria-label="User Account">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               </button>
               <button className="nav-icon-btn" aria-label="Wishlist">
@@ -91,6 +104,7 @@ export default function Home() {
                 <span className="cart-badge">{cartCount}</span>
               </button>
             </div>
+
           </div>
         </div>
       </nav>
