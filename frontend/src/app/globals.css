@@ -193,6 +193,22 @@ button {
   position: relative;
 }
 
+/* Desktop hero banner */
+.hero-banner {
+  background-image: url('/images/herobanner1.JPEG');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* Mobile hero banner — portrait image */
+@media (max-width: 768px) {
+  .hero-banner {
+    background-image: url('/images/herobanner2.JPEG');
+    background-position: center center;
+  }
+}
+
 .hero-title {
   font-size: clamp(80px, 15vw, 250px);
   font-weight: 900;

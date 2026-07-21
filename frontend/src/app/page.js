@@ -82,15 +82,9 @@ export default function Home() {
       </nav>
 
       <section 
-        className="hero" 
+        className="hero hero-banner" 
         id="home" 
         aria-label="Hero banner"
-        style={{
-          backgroundImage: "url('/images/herobanner1.JPEG')",
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-          backgroundRepeat: "no-repeat"
-        }}
       >
         <h1 className="hero-title" style={{ display: 'none' }}>
           90DRIP
