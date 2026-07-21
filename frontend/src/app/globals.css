@@ -99,7 +99,7 @@ button {
   padding: 20px 0;
   transition: all var(--transition-smooth);
   background: transparent;
-  color: var(--text-inverse);
+  color: var(--text-primary);
 }
 
 .navbar.scrolled {
@@ -178,10 +178,7 @@ button {
   justify-content: center;
 }
 
-.navbar:not(.scrolled) .cart-badge {
-  background: var(--text-inverse);
-  color: var(--text-primary);
-}
+
 
 /* ==========================================
    HERO SECTION

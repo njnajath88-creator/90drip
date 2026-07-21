@@ -81,9 +81,19 @@ export default function Home() {
         </div>
       </nav>
 
-      <section className="hero" id="home" aria-label="Hero banner">
-        <h1 className="hero-title">
-          2025<br />DRIP
+      <section 
+        className="hero" 
+        id="home" 
+        aria-label="Hero banner"
+        style={{
+          backgroundImage: "url('/images/herobanner1.JPEG')",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
+        <h1 className="hero-title" style={{ display: 'none' }}>
+          90DRIP
         </h1>
       </section>
 
