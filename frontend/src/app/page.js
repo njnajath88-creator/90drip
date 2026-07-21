@@ -15,6 +15,20 @@ export default function Home() {
       .catch((err) => console.error("Failed to fetch products:", err));
   }, []);
 
+  // Navbar scroll behaviour
+  useEffect(() => {
+    const navbar = document.getElementById('navbar');
+    const onScroll = () => {
+      if (window.scrollY > 50) {
+        navbar?.classList.add('scrolled');
+      } else {
+        navbar?.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const filteredProducts = filter === "all" 
     ? products 
     : products.filter(p => p.sport === filter || p.badges.includes(filter));
@@ -59,7 +73,7 @@ export default function Home() {
             </ul>
 
             <a href="#" className="nav-logo" aria-label="90Drip Home">
-              90drip
+              <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" />
             </a>
 
             <div className="nav-actions">
