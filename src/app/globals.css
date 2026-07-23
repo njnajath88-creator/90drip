@@ -716,14 +716,14 @@ button {
   .cart-sidebar { width: 100%; }
   .brands-slider { padding: 24px 0; }
   .brands-track { gap: 40px; padding: 0 20px; }
-  .brand-logo { height: 40px; }
+  .brand-logo { height: 52px; }
 }
 
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .hero-title { font-size: 80px; }
-  .brands-slider { padding: 18px 0; }
-  .brands-track { gap: 30px; }
-  .brand-logo { height: 32px; }
+  .brands-slider { padding: 20px 0; }
+  .brands-track { gap: 36px; }
+  .brand-logo { height: 48px; }
 }
