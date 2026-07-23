@@ -1,11 +1,5 @@
-const express = require('express');
-const cors = require('cors');
+import { NextResponse } from "next/server";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Temporary static data until DB is populated
 const products = [
   {
     id: 1,
@@ -49,11 +43,6 @@ const products = [
   },
 ];
 
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
+export async function GET() {
+  return NextResponse.json(products);
+}
