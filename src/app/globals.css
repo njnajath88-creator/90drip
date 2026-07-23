@@ -712,7 +712,7 @@ button {
 
 @media (max-width: 768px) {
   .nav-links { display: none; }
-  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .cart-sidebar { width: 100%; }
   .brands-slider { padding: 24px 0; }
   .brands-track { gap: 40px; padding: 0 20px; }
@@ -720,7 +720,10 @@ button {
 }
 
 @media (max-width: 480px) {
-  .products-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 12px; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .product-name { font-size: 12px; }
+  .product-info .btn-primary { padding: 10px 8px; font-size: 12px; width: 100%; }
   .footer-grid { grid-template-columns: 1fr; }
   .hero-title { font-size: 80px; }
   .brands-slider { padding: 20px 0; }
