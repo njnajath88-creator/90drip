@@ -1,68 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 
-function ProductCard({ product, addToCart }) {
-  const [photoIndex, setPhotoIndex] = useState(0);
-
-  const photos = [
-    product.image,
-    product.backImage,
-    product.closeupImage,
-    product.fitImage
-  ].filter(Boolean);
-
-  const labels = ["FRONT", "REAR", "CLOSE-UP", "FIT SHOT"];
-
-  useEffect(() => {
-    if (photos.length <= 1) return;
-    const timer = setInterval(() => {
-      setPhotoIndex((prev) => (prev + 1) % photos.length);
-    }, 3000);
-
-    return () => clearInterval(timer);
-  }, [photos.length]);
-
-  const activePhoto = photos[photoIndex] || product.image || "/images/jersey_product1.png";
-
-  return (
-    <div className="product-card">
-      <Link href={`/product/${product.id}`} className="product-image-wrap" style={{ textDecoration: 'none', display: 'block' }}>
-        <img 
-          src={activePhoto} 
-          alt={product.name} 
-          className="product-image transition-image" 
-        />
-        {photos.length > 1 && (
-          <span className="view-indicator-pill">
-            {labels[photoIndex] || `PHOTO ${photoIndex + 1}`} ({photoIndex + 1}/{photos.length})
-          </span>
-        )}
-        {(product.badges || []).map(badge => (
-          <span key={badge} className={`product-badge badge-${badge.toLowerCase()}`}>{badge}</span>
-        ))}
-      </Link>
-      <div className="product-info">
-        <span className="product-category">{product.category || product.sport}</span>
-        <h3 className="product-name">
-          <Link href={`/product/${product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-            {product.name}
-          </Link>
-        </h3>
-        <div className="product-price">
-          <span>₹{product.price}</span>
-          {product.originalPrice && <span className="original-price">₹{product.originalPrice}</span>}
-        </div>
-        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-          <Link href={`/product/${product.id}`} className="btn-secondary-sm" style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '8px 4px', fontSize: '12px' }}>
-            View Details
-          </Link>
-          <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add</button>
-        </div>
-      </div>
-    </div>
-  );
-}
+import Navbar from "@/components/Navbar";
+import HeroBanner from "@/components/HeroBanner";
+import BrandsSlider from "@/components/BrandsSlider";
+import CategoriesSection from "@/components/CategoriesSection";
+import ProductsSection from "@/components/ProductsSection";
+import PromoSection from "@/components/PromoSection";
+import Footer from "@/components/Footer";
+import CartSidebar from "@/components/CartSidebar";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -79,30 +25,14 @@ export default function Home() {
       .catch((err) => console.error("Failed to fetch products:", err));
   }, []);
 
-  // Navbar scroll behaviour
-  useEffect(() => {
-    const navbar = document.getElementById('navbar');
-    const onScroll = () => {
-      if (window.scrollY > 50) {
-        navbar?.classList.add('scrolled');
-      } else {
-        navbar?.classList.remove('scrolled');
-      }
-    };
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const filteredProducts = filter === "all" 
-    ? products 
-    : products.filter(p => p.category === filter || p.sport === filter || (p.badges && p.badges.includes(filter)));
-
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existing = prevCart.find((item) => item.id === product.id);
       if (existing) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
         );
       }
       return [...prevCart, { ...product, quantity: 1 }];
@@ -122,330 +52,35 @@ export default function Home() {
     );
   };
 
-  const cartTotal = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (
     <>
-      <nav className="navbar" id="navbar" role="navigation" aria-label="Main navigation">
-        <div className="container">
-          <div className="navbar-inner">
-
-            {/* Left: nav-links on desktop | search+profile on mobile */}
-            <div className="nav-left">
-              <ul className="nav-links" role="list">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#categories">Categories</a></li>
-                <li><a href="#shop">Shop</a></li>
-                <li><a href="/admin" style={{ color: '#3b82f6', fontWeight: 600 }}>Admin</a></li>
-              </ul>
-              {/* Mobile-only left icons */}
-              <button className="nav-icon-btn nav-icon-mobile" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </button>
-              <button className="nav-icon-btn nav-icon-mobile" aria-label="User Account" onClick={() => setIsProfileOpen(!isProfileOpen)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              </button>
-            </div>
-
-            {/* Center: Logo */}
-            <a href="#" className="nav-logo" aria-label="90Drip Home">
-              <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" />
-            </a>
-
-            {/* Right: all 4 icons on desktop | wishlist+cart only on mobile */}
-            <div className="nav-actions" style={{ position: 'relative' }}>
-              <button className="nav-icon-btn nav-icon-desktop" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              </button>
-              <button 
-                className={`nav-icon-btn nav-icon-desktop ${isProfileOpen ? "active" : ""}`} 
-                aria-label="User Account" 
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              </button>
-              <button className="nav-icon-btn" aria-label="Wishlist">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-              </button>
-              <button className="nav-icon-btn" id="cart-btn" aria-label="Shopping cart" onClick={() => setIsCartOpen(true)}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span className="cart-badge">{cartCount}</span>
-              </button>
-
-              {/* Profile Dropdown Menu */}
-              {isProfileOpen && (
-                <>
-                  <div className="profile-dropdown-overlay" onClick={() => setIsProfileOpen(false)}></div>
-                  <div className="profile-dropdown-menu">
-                    <div className="profile-dropdown-header">
-                      <div className="profile-avatar">AD</div>
-                      <div className="profile-user-info">
-                        <div className="profile-name">Store Admin</div>
-                        <div className="profile-email">admin@90drip.com</div>
-                      </div>
-                    </div>
-                    <div className="profile-divider"></div>
-                    <ul className="profile-menu-list">
-                      <li>
-                        <a href="/admin" className="profile-menu-item admin-link">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-                          <span>Admin Dashboard</span>
-                          <span className="badge-admin-pill">ADMIN</span>
-                        </a>
-                      </li>
-                      <li>
-                        <button className="profile-menu-item" onClick={() => { setIsProfileOpen(false); alert("Account Profile: Store Admin (admin@90drip.com)"); }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                          <span>My Profile</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button className="profile-menu-item" onClick={() => { setIsProfileOpen(false); setIsCartOpen(true); }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path></svg>
-                          <span>My Cart & Orders</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button className="profile-menu-item" onClick={() => { setIsProfileOpen(false); alert("Logged out successfully"); }}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                          <span>Sign Out</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </>
-              )}
-            </div>
-
-          </div>
-        </div>
-      </nav>
-
-      <section 
-        className="hero hero-banner" 
-        id="home" 
-        aria-label="Hero banner"
-      >
-        <h1 className="hero-title" style={{ display: 'none' }}>
-          90DRIP
-        </h1>
-      </section>
-
-      <div className="brands-slider">
-        <div className="brands-track">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} style={{ display: 'contents' }}>
-              <img src="https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" alt="Real Madrid" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg" alt="Barcelona" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg" alt="Manchester United" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg" alt="Bayern Munich" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Juventus_FC_-_logo_black_(Italy%2C_2020).svg" alt="Juventus" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg" alt="PSG" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg" alt="Arsenal" className="brand-logo" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg" alt="AC Milan" className="brand-logo" />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 4 Category Showcase Cards with Photos */}
-      <section className="categories-section" id="categories">
-        <div className="container">
-          <div className="section-header-wrap" style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <h2 className="section-title">Shop By Category</h2>
-            <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>
-              Explore our 4 signature sleeve styles & classic retro editions
-            </p>
-          </div>
-
-          <div className="category-cards-grid">
-            {/* Category 1: Full Sleeve */}
-            <div 
-              className={`category-card-item ${filter === 'Full Sleeve' ? 'active' : ''}`}
-              onClick={() => { setFilter('Full Sleeve'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <div className="category-card-img-wrap">
-                <img src="/images/jersey_product1.png" alt="Full Sleeve Category" />
-                <span className="category-badge-pill">Full Sleeve</span>
-              </div>
-              <div className="category-card-info">
-                <h3>Full Sleeve</h3>
-                <p>Long sleeve match kits & training wear</p>
-                <span className="category-link">Shop Collection →</span>
-              </div>
-            </div>
-
-            {/* Category 2: Half Sleeve */}
-            <div 
-              className={`category-card-item ${filter === 'Half Sleeve' ? 'active' : ''}`}
-              onClick={() => { setFilter('Half Sleeve'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <div className="category-card-img-wrap">
-                <img src="/images/jersey_product2.png" alt="Half Sleeve Category" />
-                <span className="category-badge-pill">Half Sleeve</span>
-              </div>
-              <div className="category-card-info">
-                <h3>Half Sleeve</h3>
-                <p>Classic short sleeve fan & player jerseys</p>
-                <span className="category-link">Shop Collection →</span>
-              </div>
-            </div>
-
-            {/* Category 3: 5 Sleeve */}
-            <div 
-              className={`category-card-item ${filter === '5 Sleeve' ? 'active' : ''}`}
-              onClick={() => { setFilter('5 Sleeve'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <div className="category-card-img-wrap">
-                <img src="/images/jersey_product3.png" alt="5 Sleeve Category" />
-                <span className="category-badge-pill">5 Sleeve</span>
-              </div>
-              <div className="category-card-info">
-                <h3>5 Sleeve</h3>
-                <p>Oversized streetwear & 3/4 sleeve fit</p>
-                <span className="category-link">Shop Collection →</span>
-              </div>
-            </div>
-
-            {/* Category 4: Retro */}
-            <div 
-              className={`category-card-item ${filter === 'Retro' ? 'active' : ''}`}
-              onClick={() => { setFilter('Retro'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
-            >
-              <div className="category-card-img-wrap">
-                <img src="/images/jersey_product4.png" alt="Retro Category" />
-                <span className="category-badge-pill" style={{ background: '#f59e0b', color: '#ffffff' }}>Retro</span>
-              </div>
-              <div className="category-card-info">
-                <h3>Retro</h3>
-                <p>Iconic vintage & classic heritage kits</p>
-                <span className="category-link">Shop Collection →</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Catalog Grid Section */}
-      <section className="products-section" id="shop" aria-label="Product catalog">
-        <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
-            <h2 className="section-title" style={{ margin: 0 }}>
-              {filter === 'all' ? 'All Jersey Collections' : `${filter} Jerseys`}
-            </h2>
-            <div className="filter-tabs" role="tablist">
-              {["all", "Full Sleeve", "Half Sleeve", "5 Sleeve", "Retro"].map(tab => (
-                <button 
-                  key={tab} 
-                  className={`filter-tab ${filter === tab ? "active" : ""}`} 
-                  onClick={() => setFilter(tab)}
-                >
-                  {tab === 'all' ? 'All Products' : tab}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="products-grid">
-            {filteredProducts.map(product => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                addToCart={addToCart} 
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="promo-section" id="premium" aria-label="Premium Quality">
-        <div className="container">
-          <h2 className="promo-title">Discover the Lines</h2>
-          <p className="promo-desc">
-            Explore our curated collection of authentic, premium-grade sports jerseys. Minimalist designs, maximum performance.
-          </p>
-          <button className="btn-primary" onClick={() => document.getElementById('shop')?.scrollIntoView({behavior:'smooth'})}>
-            Shop Now
-          </button>
-        </div>
-      </section>
-
-      <footer className="footer" role="contentinfo">
-        <div className="container">
-          <div className="footer-grid">
-            <div><a href="#" className="footer-logo">90drip</a></div>
-            <div>
-              <h4 className="footer-col-title">Shop</h4>
-              <ul className="footer-links">
-                <li><a href="#shop">New Arrivals</a></li>
-                <li><a href="#shop">Bestsellers</a></li>
-                <li><a href="#shop">Sale</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="footer-col-title">Customer Care</h4>
-              <ul className="footer-links">
-                <li><a href="#">Size Guide</a></li>
-                <li><a href="#">Shipping Info</a></li>
-                <li><a href="#">Returns</a></li>
-                <li><a href="/admin">Admin Portal</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="footer-col-title">About</h4>
-              <ul className="footer-links">
-                <li><a href="#">Our Story</a></li>
-                <li><a href="#">Contact Us</a></li>
-                <li><a href="#">Terms of Service</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>© 2025 90Drip. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-
-      {isCartOpen && <div className="cart-overlay" aria-hidden="true" onClick={() => setIsCartOpen(false)}></div>}
-      <aside className={`cart-sidebar ${isCartOpen ? "open" : ""}`} aria-label="Shopping cart" aria-hidden={!isCartOpen}>
-        <div className="cart-header">
-          <h2 className="cart-title">Your Cart</h2>
-          <button className="cart-close" onClick={() => setIsCartOpen(false)} aria-label="Close cart">✕</button>
-        </div>
-
-        <div className="cart-items">
-          {cart.length === 0 ? (
-            <p style={{ textAlign: "center", marginTop: "2rem" }}>Your cart is empty.</p>
-          ) : (
-            cart.map((item, idx) => (
-              <div key={idx} className="cart-item">
-                <img src={item.image} alt={item.name} className="cart-item-img" />
-                <div className="cart-item-details">
-                  <div className="cart-item-title">{item.name}</div>
-                  <div className="cart-item-price">₹{item.price}</div>
-                  <div className="cart-qty-controls">
-                    <button className="qty-btn" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
-                    <span>{item.quantity}</span>
-                    <button className="qty-btn" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
-                  </div>
-                </div>
-                <button className="remove-item" onClick={() => removeFromCart(item.id)}>🗑️</button>
-              </div>
-            ))
-          )}
-        </div>
-
-        {cart.length > 0 && (
-          <div className="cart-footer">
-            <div className="cart-total">
-              <span>Total</span>
-              <span>₹{cartTotal.toFixed(2)}</span>
-            </div>
-            <button className="btn-primary btn-checkout" onClick={() => alert("Checkout not implemented yet!")}>Checkout</button>
-          </div>
-        )}
-      </aside>
+      <Navbar
+        cartCount={cartCount}
+        onOpenCart={() => setIsCartOpen(true)}
+        isProfileOpen={isProfileOpen}
+        setIsProfileOpen={setIsProfileOpen}
+        onOpenCartFromProfile={() => setIsCartOpen(true)}
+      />
+      <HeroBanner />
+      <BrandsSlider />
+      <CategoriesSection filter={filter} setFilter={setFilter} />
+      <ProductsSection
+        products={products}
+        filter={filter}
+        setFilter={setFilter}
+        addToCart={addToCart}
+      />
+      <PromoSection />
+      <Footer />
+      <CartSidebar
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        updateQuantity={updateQuantity}
+        removeFromCart={removeFromCart}
+      />
     </>
   );
 }
