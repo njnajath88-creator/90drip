@@ -73,6 +73,7 @@ export default function Home() {
                 <li><a href="#home">Home</a></li>
                 <li><a href="#shop">Shop</a></li>
                 <li><a href="#premium">Premium Quality</a></li>
+                <li><a href="/admin" style={{ color: '#3b82f6', fontWeight: 600 }}>Admin</a></li>
               </ul>
               {/* Mobile-only left icons */}
               <button className="nav-icon-btn nav-icon-mobile" aria-label="Search">
@@ -164,8 +165,8 @@ export default function Home() {
                   <span className="product-category">{product.sport}</span>
                   <h3 className="product-name">{product.name}</h3>
                   <div className="product-price">
-                    <span>${product.price}</span>
-                    {product.originalPrice && <span className="original-price">${product.originalPrice}</span>}
+                    <span>₹{product.price}</span>
+                    {product.originalPrice && <span className="original-price">₹{product.originalPrice}</span>}
                   </div>
                   <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add to Cart</button>
                 </div>
@@ -205,6 +206,7 @@ export default function Home() {
                 <li><a href="#">Size Guide</a></li>
                 <li><a href="#">Shipping Info</a></li>
                 <li><a href="#">Returns</a></li>
+                <li><a href="/admin">Admin Portal</a></li>
               </ul>
             </div>
             <div>
@@ -238,7 +240,7 @@ export default function Home() {
                 <img src={item.image} alt={item.name} className="cart-item-img" />
                 <div className="cart-item-details">
                   <div className="cart-item-title">{item.name}</div>
-                  <div className="cart-item-price">${item.price}</div>
+                  <div className="cart-item-price">₹{item.price}</div>
                   <div className="cart-qty-controls">
                     <button className="qty-btn" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                     <span>{item.quantity}</span>
@@ -255,7 +257,7 @@ export default function Home() {
           <div className="cart-footer">
             <div className="cart-total">
               <span>Total</span>
-              <span>${cartTotal.toFixed(2)}</span>
+              <span>₹{cartTotal.toFixed(2)}</span>
             </div>
             <button className="btn-primary btn-checkout" onClick={() => alert("Checkout not implemented yet!")}>Checkout</button>
           </div>
