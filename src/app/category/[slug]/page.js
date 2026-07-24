@@ -22,7 +22,7 @@ const CATEGORY_MAP = {
     badgeColor: "#2563eb"
   },
   "5-sleeve": {
-    name: "5 Sleeve",
+    name: "Five Sleeve",
     description: "Oversized streetwear & 3/4 sleeve fit jerseys designed for modern athletic street culture.",
     image: "/images/cat_5_sleeve.png",
     badgeColor: "#2563eb"
@@ -99,13 +99,14 @@ export default function CategoryPage() {
   const categoryProducts = products.filter(
     (p) =>
       p.category?.toLowerCase() === categoryInfo.name.toLowerCase() ||
-      p.sport?.toLowerCase() === categoryInfo.name.toLowerCase()
+      p.sport?.toLowerCase() === categoryInfo.name.toLowerCase() ||
+      (slug === "5-sleeve" && p.category === "5 Sleeve")
   );
 
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fafafa" }}>
+    <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       <Navbar
         cartCount={cartCount}
         onOpenCart={() => setIsCartOpen(true)}
@@ -116,94 +117,45 @@ export default function CategoryPage() {
 
       <main style={{ paddingBottom: "80px" }}>
         {/* Category Header Banner */}
-        <div style={{ background: "#f4f4f0", borderBottom: "1px solid #e8e8e2", padding: "40px 0" }}>
-          <div className="container" style={{ maxWidth: "1000px" }}>
+        <div style={{ background: "#ffffff", padding: "28px 0 16px" }}>
+          <div className="container" style={{ maxWidth: "800px" }}>
             {/* Back Button */}
             <Link
               href="/"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
+                gap: "6px",
                 fontSize: "14px",
-                fontWeight: "800",
-                color: "#0f172a",
+                fontWeight: "700",
+                color: "#475569",
                 textDecoration: "none",
-                marginBottom: "24px",
-                background: "#ffffff",
-                padding: "8px 16px",
-                borderRadius: "50px",
-                border: "1.5px solid #e2e8f0",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.03)"
+                marginBottom: "20px"
               }}
             >
-              <span>←</span>
-              <span>Back to Home</span>
+              <span style={{ fontSize: "16px" }}>←</span>
+              <span>Back</span>
             </Link>
 
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "24px", flexWrap: "wrap" }}>
-              <div style={{ flex: 1, minWidth: "260px" }}>
-                <span
-                  style={{
-                    background: categoryInfo.badgeColor,
-                    color: "#ffffff",
-                    fontSize: "11px",
-                    fontWeight: "900",
-                    letterSpacing: "0.08em",
-                    padding: "5px 12px",
-                    borderRadius: "6px",
-                    textTransform: "uppercase",
-                    display: "inline-block",
-                    marginBottom: "12px"
-                  }}
-                >
-                  CATEGORY
-                </span>
-                <h1 style={{ fontSize: "36px", fontWeight: "900", color: "#0f172a", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                  {categoryInfo.name}
-                </h1>
-                <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 12px", lineHeight: 1.5, maxWidth: "540px" }}>
-                  {categoryInfo.description}
-                </p>
-                <div style={{ fontSize: "13px", fontWeight: "700", color: "#0f172a" }}>
-                  {categoryProducts.length} Products Found
-                </div>
-              </div>
-
-              {categoryInfo.image && (
-                <div
-                  style={{
-                    width: "160px",
-                    height: "160px",
-                    borderRadius: "20px",
-                    background: "#ffffff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
-                    border: "1px solid #e8e8e2",
-                    overflow: "hidden"
-                  }}
-                >
-                  <img
-                    src={categoryInfo.image}
-                    alt={categoryInfo.name}
-                    style={{ maxHeight: "140px", maxWidth: "140px", objectFit: "contain" }}
-                  />
-                </div>
-              )}
+            <div style={{ marginBottom: "16px" }}>
+              <h1 style={{ fontSize: "32px", fontWeight: "900", color: "#0f172a", margin: "0 0 6px", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                {categoryInfo.name}
+              </h1>
+              <p style={{ fontSize: "14px", color: "#64748b", margin: 0, fontWeight: "600" }}>
+                {categoryProducts.length} Products Found
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Product Catalog Grid (2 Grid Layout) */}
-        <div className="container" style={{ maxWidth: "1000px", marginTop: "40px" }}>
+        {/* Product Catalog Grid (Clean 2-Column Grid) */}
+        <div className="container" style={{ maxWidth: "800px" }}>
           {loading ? (
             <div style={{ textAlign: "center", padding: "60px 0", color: "#64748b" }}>
               Loading {categoryInfo.name} collection...
             </div>
           ) : categoryProducts.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "60px 0", background: "#ffffff", borderRadius: "20px", border: "1px solid #e2e8f0" }}>
+            <div style={{ textAlign: "center", padding: "60px 0", background: "#f8fafc", borderRadius: "20px", border: "1px solid #e2e8f0" }}>
               <div style={{ fontSize: "44px", marginBottom: "12px" }}>👕</div>
               <h3 style={{ fontSize: "18px", fontWeight: "800", color: "#0f172a", margin: "0 0 8px" }}>
                 No Products Found in {categoryInfo.name}
@@ -220,9 +172,8 @@ export default function CategoryPage() {
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "20px"
+                gap: "24px 16px"
               }}
-              className="neat-2-grid"
             >
               {categoryProducts.map((product) => (
                 <ProductCard key={product.id} product={product} addToCart={addToCart} />

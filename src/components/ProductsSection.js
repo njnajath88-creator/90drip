@@ -26,11 +26,11 @@ export default function ProductsSection({ products, filter, setFilter, addToCart
   });
 
   return (
-    <section id="shop" style={{ padding: "48px 0 80px", background: "#fafafa" }}>
-      <div className="container" style={{ maxWidth: "1000px" }}>
+    <section id="shop" style={{ padding: "40px 0 80px", background: "#ffffff" }}>
+      <div className="container" style={{ maxWidth: "800px" }}>
 
         {/* Section Header */}
-        <div style={{ marginBottom: "24px" }}>
+        <div style={{ marginBottom: "20px" }}>
           <h2
             style={{
               fontSize: "26px",
@@ -152,7 +152,7 @@ export default function ProductsSection({ products, filter, setFilter, addToCart
           </div>
         </div>
 
-        {/* Product Grid — Strict Neat 2-Column Grid as Requested */}
+        {/* 2-Column Grid */}
         {sorted.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
             <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
@@ -163,9 +163,8 @@ export default function ProductsSection({ products, filter, setFilter, addToCart
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "20px",
+              gap: "24px 16px",
             }}
-            className="neat-2-grid"
           >
             {sorted.map((product) => (
               <ProductCard key={product.id} product={product} addToCart={addToCart} />
@@ -173,13 +172,6 @@ export default function ProductsSection({ products, filter, setFilter, addToCart
           </div>
         )}
       </div>
-      <style>{`
-        @media (max-width: 540px) {
-          .neat-2-grid {
-            gap: 12px !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }
