@@ -92,6 +92,17 @@ export default function AdminPage() {
   }, []);
 
   // Form Handlers
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, image: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -680,14 +691,45 @@ export default function AdminPage() {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Image Path / URL</label>
-                <input 
-                  type="text" 
-                  placeholder="/images/jersey_product1.png" 
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="admin-input"
-                />
+                <label className="form-label">Jersey Photo (Phone Gallery or Camera)</label>
+                <div className="image-upload-wrapper">
+                  <input 
+                    type="file" 
+                    id="phone-gallery-input" 
+                    accept="image/*" 
+                    onChange={handleFileSelect} 
+                    style={{ display: "none" }} 
+                  />
+                  <label htmlFor="phone-gallery-input" className="gallery-upload-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>📷 Upload Photo from Gallery / Device</span>
+                  </label>
+                </div>
+
+                {formData.image && (
+                  <div className="image-preview-container">
+                    <img src={formData.image} alt="Jersey Preview" className="image-preview-img" />
+                    <button 
+                      type="button" 
+                      className="btn-remove-preview" 
+                      onClick={() => setFormData({ ...formData, image: "" })}
+                    >
+                      Remove Photo
+                    </button>
+                  </div>
+                )}
+
+                <details className="url-input-accordion" style={{ marginTop: '8px' }}>
+                  <summary style={{ cursor: 'pointer', fontSize: '12px', color: '#94a3b8' }}>Or enter Image URL manually</summary>
+                  <input 
+                    type="text" 
+                    placeholder="/images/jersey_product1.png or https://..." 
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    className="admin-input"
+                    style={{ marginTop: '6px' }}
+                  />
+                </details>
               </div>
 
               <div className="modal-actions">
