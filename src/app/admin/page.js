@@ -21,7 +21,9 @@ export default function AdminPage() {
     badges: "",
     sizes: "XS, S, M, L, XL",
     image: "/images/jersey_product1.png",
-    backImage: "/images/jersey_product2.png"
+    backImage: "/images/jersey_product2.png",
+    closeupImage: "/images/jersey_product3.png",
+    fitImage: "/images/jersey_product4.png"
   });
 
   // Mock Orders State in INR (₹)
@@ -115,6 +117,28 @@ export default function AdminPage() {
     }
   };
 
+  const handleCloseupFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, closeupImage: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFitFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, fitImage: reader.result }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setFormData({
@@ -125,7 +149,9 @@ export default function AdminPage() {
       badges: "",
       sizes: "S, M, L, XL",
       image: "/images/jersey_product1.png",
-      backImage: "/images/jersey_product2.png"
+      backImage: "/images/jersey_product2.png",
+      closeupImage: "/images/jersey_product3.png",
+      fitImage: "/images/jersey_product4.png"
     });
     setIsProductModalOpen(true);
   };
@@ -139,8 +165,10 @@ export default function AdminPage() {
       originalPrice: product.originalPrice || "",
       badges: Array.isArray(product.badges) ? product.badges.join(", ") : product.badges || "",
       sizes: Array.isArray(product.sizes) ? product.sizes.join(", ") : product.sizes || "",
-      image: product.image,
-      backImage: product.backImage || ""
+      image: product.image || "",
+      backImage: product.backImage || "",
+      closeupImage: product.closeupImage || "",
+      fitImage: product.fitImage || ""
     });
     setIsProductModalOpen(true);
   };
@@ -704,9 +732,9 @@ export default function AdminPage() {
                 />
               </div>
 
-              {/* Front View Image */}
+              {/* 1. Front View Image */}
               <div className="form-group">
-                <label className="form-label">1. Front View Photo (Front Side)</label>
+                <label className="form-label">1. Front View Photo</label>
                 <div className="image-upload-wrapper">
                   <input 
                     type="file" 
@@ -716,32 +744,24 @@ export default function AdminPage() {
                     style={{ display: "none" }} 
                   />
                   <label htmlFor="phone-gallery-input" className="gallery-upload-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     <span>📷 Upload Front View Photo</span>
                   </label>
                 </div>
-
                 {formData.image && (
                   <div className="image-preview-container">
-                    <img src={formData.image} alt="Front View Preview" className="image-preview-img" />
+                    <img src={formData.image} alt="Front View" className="image-preview-img" />
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: 600 }}>Front View Selected</div>
-                      <button 
-                        type="button" 
-                        className="btn-remove-preview" 
-                        onClick={() => setFormData({ ...formData, image: "" })}
-                        style={{ marginTop: '4px' }}
-                      >
-                        Remove
-                      </button>
+                      <div style={{ fontSize: '12px', fontWeight: 600 }}>Front View Active</div>
+                      <button type="button" className="btn-remove-preview" onClick={() => setFormData({ ...formData, image: "" })}>Remove</button>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Rear/Back View Image */}
+              {/* 2. Rear View Image */}
               <div className="form-group">
-                <label className="form-label">2. Rear View Photo (Back Side)</label>
+                <label className="form-label">2. Rear (Back) View Photo</label>
                 <div className="image-upload-wrapper">
                   <input 
                     type="file" 
@@ -751,31 +771,73 @@ export default function AdminPage() {
                     style={{ display: "none" }} 
                   />
                   <label htmlFor="phone-gallery-back-input" className="gallery-upload-btn" style={{ borderColor: '#a7f3d0', color: '#059669', background: '#ecfdf5' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    <span>📷 Upload Rear (Back) View Photo</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>📷 Upload Rear View Photo</span>
                   </label>
                 </div>
-
                 {formData.backImage && (
                   <div className="image-preview-container">
-                    <img src={formData.backImage} alt="Rear View Preview" className="image-preview-img" />
+                    <img src={formData.backImage} alt="Rear View" className="image-preview-img" />
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: 600 }}>Rear View Selected</div>
-                      <button 
-                        type="button" 
-                        className="btn-remove-preview" 
-                        onClick={() => setFormData({ ...formData, backImage: "" })}
-                        style={{ marginTop: '4px' }}
-                      >
-                        Remove
-                      </button>
+                      <div style={{ fontSize: '12px', fontWeight: 600 }}>Rear View Active</div>
+                      <button type="button" className="btn-remove-preview" onClick={() => setFormData({ ...formData, backImage: "" })}>Remove</button>
                     </div>
                   </div>
                 )}
+              </div>
 
-                <p style={{ fontSize: '11px', color: '#64748b', marginTop: '4px' }}>
-                  ⚡ Product cards will automatically toggle between Front and Rear view every 3 seconds!
-                </p>
+              {/* 3. Close-up Shot Image */}
+              <div className="form-group">
+                <label className="form-label">3. Close-up Detail Photo</label>
+                <div className="image-upload-wrapper">
+                  <input 
+                    type="file" 
+                    id="phone-gallery-closeup-input" 
+                    accept="image/*" 
+                    onChange={handleCloseupFileSelect} 
+                    style={{ display: "none" }} 
+                  />
+                  <label htmlFor="phone-gallery-closeup-input" className="gallery-upload-btn" style={{ borderColor: '#ddd6fe', color: '#7c3aed', background: '#f5f3ff' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>📷 Upload Close-up Shot Photo</span>
+                  </label>
+                </div>
+                {formData.closeupImage && (
+                  <div className="image-preview-container">
+                    <img src={formData.closeupImage} alt="Close-up View" className="image-preview-img" />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 600 }}>Close-up View Active</div>
+                      <button type="button" className="btn-remove-preview" onClick={() => setFormData({ ...formData, closeupImage: "" })}>Remove</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 4. Fit / Model Shot Image */}
+              <div className="form-group">
+                <label className="form-label">4. Model / Fit Shot Photo</label>
+                <div className="image-upload-wrapper">
+                  <input 
+                    type="file" 
+                    id="phone-gallery-fit-input" 
+                    accept="image/*" 
+                    onChange={handleFitFileSelect} 
+                    style={{ display: "none" }} 
+                  />
+                  <label htmlFor="phone-gallery-fit-input" className="gallery-upload-btn" style={{ borderColor: '#fed7aa', color: '#ea580c', background: '#fff7ed' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    <span>📷 Upload Fit / Model Shot Photo</span>
+                  </label>
+                </div>
+                {formData.fitImage && (
+                  <div className="image-preview-container">
+                    <img src={formData.fitImage} alt="Fit View" className="image-preview-img" />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 600 }}>Fit View Active</div>
+                      <button type="button" className="btn-remove-preview" onClick={() => setFormData({ ...formData, fitImage: "" })}>Remove</button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="modal-actions">

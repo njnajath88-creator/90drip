@@ -1,45 +1,64 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 function ProductCard({ product, addToCart }) {
-  const [showRear, setShowRear] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
+
+  const photos = [
+    product.image,
+    product.backImage,
+    product.closeupImage,
+    product.fitImage
+  ].filter(Boolean);
+
+  const labels = ["FRONT", "REAR", "CLOSE-UP", "FIT SHOT"];
 
   useEffect(() => {
-    if (!product.backImage) return;
+    if (photos.length <= 1) return;
     const timer = setInterval(() => {
-      setShowRear((prev) => !prev);
+      setPhotoIndex((prev) => (prev + 1) % photos.length);
     }, 3000);
 
     return () => clearInterval(timer);
-  }, [product.backImage]);
+  }, [photos.length]);
 
-  const activeSrc = (showRear && product.backImage) ? product.backImage : product.image;
+  const activePhoto = photos[photoIndex] || product.image || "/images/jersey_product1.png";
 
   return (
     <div className="product-card">
-      <div className="product-image-wrap">
+      <Link href={`/product/${product.id}`} className="product-image-wrap" style={{ textDecoration: 'none', display: 'block' }}>
         <img 
-          src={activeSrc} 
+          src={activePhoto} 
           alt={product.name} 
           className="product-image transition-image" 
         />
-        {product.backImage && (
+        {photos.length > 1 && (
           <span className="view-indicator-pill">
-            {showRear ? "REAR VIEW" : "FRONT VIEW"}
+            {labels[photoIndex] || `PHOTO ${photoIndex + 1}`} ({photoIndex + 1}/{photos.length})
           </span>
         )}
         {(product.badges || []).map(badge => (
           <span key={badge} className={`product-badge badge-${badge.toLowerCase()}`}>{badge}</span>
         ))}
-      </div>
+      </Link>
       <div className="product-info">
         <span className="product-category">{product.sport}</span>
-        <h3 className="product-name">{product.name}</h3>
+        <h3 className="product-name">
+          <Link href={`/product/${product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+            {product.name}
+          </Link>
+        </h3>
         <div className="product-price">
           <span>₹{product.price}</span>
           {product.originalPrice && <span className="original-price">₹{product.originalPrice}</span>}
         </div>
-        <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add to Cart</button>
+        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+          <Link href={`/product/${product.id}`} className="btn-secondary-sm" style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '8px 4px', fontSize: '12px' }}>
+            View Product Details
+          </Link>
+          <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add</button>
+        </div>
       </div>
     </div>
   );
@@ -76,7 +95,7 @@ export default function Home() {
 
   const filteredProducts = filter === "all" 
     ? products 
-    : products.filter(p => p.sport === filter || p.badges.includes(filter));
+    : products.filter(p => p.sport === filter || (p.badges && p.badges.includes(filter)));
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -247,7 +266,11 @@ export default function Home() {
 
           <div className="products-grid">
             {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} addToCart={addToCart} />
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                addToCart={addToCart} 
+              />
             ))}
           </div>
         </div>
@@ -312,8 +335,8 @@ export default function Home() {
           {cart.length === 0 ? (
             <p style={{ textAlign: "center", marginTop: "2rem" }}>Your cart is empty.</p>
           ) : (
-            cart.map(item => (
-              <div key={item.id} className="cart-item">
+            cart.map((item, idx) => (
+              <div key={idx} className="cart-item">
                 <img src={item.image} alt={item.name} className="cart-item-img" />
                 <div className="cart-item-details">
                   <div className="cart-item-title">{item.name}</div>

@@ -9,6 +9,8 @@ let products = [
     originalPrice: 2499,
     image: '/images/jersey_product1.png',
     backImage: '/images/jersey_product2.png',
+    closeupImage: '/images/jersey_product3.png',
+    fitImage: '/images/jersey_product4.png',
     badges: ['New'],
     sizes: ['S', 'M', 'L', 'XL'],
   },
@@ -20,6 +22,8 @@ let products = [
     originalPrice: null,
     image: '/images/jersey_product2.png',
     backImage: '/images/jersey_product1.png',
+    closeupImage: '/images/jersey_product4.png',
+    fitImage: '/images/jersey_product3.png',
     badges: ['Sale'],
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
   },
@@ -31,6 +35,8 @@ let products = [
     originalPrice: 2199,
     image: '/images/jersey_product3.png',
     backImage: '/images/jersey_product4.png',
+    closeupImage: '/images/jersey_product1.png',
+    fitImage: '/images/jersey_product2.png',
     badges: ['New'],
     sizes: ['S', 'M', 'L'],
   },
@@ -42,6 +48,8 @@ let products = [
     originalPrice: null,
     image: '/images/jersey_product4.png',
     backImage: '/images/jersey_product3.png',
+    closeupImage: '/images/jersey_product2.png',
+    fitImage: '/images/jersey_product1.png',
     badges: [],
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   },
@@ -62,6 +70,8 @@ export async function POST(request) {
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
       image: body.image || '/images/jersey_product1.png',
       backImage: body.backImage || null,
+      closeupImage: body.closeupImage || null,
+      fitImage: body.fitImage || null,
       badges: Array.isArray(body.badges) ? body.badges : (body.badges ? body.badges.split(',').map(b => b.trim()) : []),
       sizes: Array.isArray(body.sizes) ? body.sizes : (body.sizes ? body.sizes.split(',').map(s => s.trim()) : ['S', 'M', 'L', 'XL']),
     };
@@ -75,17 +85,20 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const body = await request.json();
-    const index = products.findIndex((p) => p.id === body.id);
+    const index = products.findIndex((p) => String(p.id) === String(body.id));
     if (index === -1) {
       return Response.json({ error: "Product not found" }, { status: 404 });
     }
     products[index] = {
       ...products[index],
       ...body,
+      id: products[index].id,
       price: parseFloat(body.price),
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
       image: body.image || products[index].image,
       backImage: body.backImage !== undefined ? body.backImage : products[index].backImage,
+      closeupImage: body.closeupImage !== undefined ? body.closeupImage : products[index].closeupImage,
+      fitImage: body.fitImage !== undefined ? body.fitImage : products[index].fitImage,
       badges: Array.isArray(body.badges) ? body.badges : (body.badges ? body.badges.split(',').map(b => b.trim()) : []),
       sizes: Array.isArray(body.sizes) ? body.sizes : (body.sizes ? body.sizes.split(',').map(s => s.trim()) : ['S', 'M', 'L', 'XL']),
     };
