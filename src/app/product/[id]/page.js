@@ -142,24 +142,28 @@ export default function ProductDetailPage() {
             <span style={{ color: "#0f172a", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "160px" }}>{product.name}</span>
           </div>
 
-          {/* Product Grid (Responsive: 1 col on mobile, 2 col on desktop) */}
+          {/* Product Grid */}
           <div className="product-detail-layout">
 
             {/* ─── LEFT: Image Gallery ─── */}
             <div className="gallery-wrapper">
 
-              {/* Main Display Image */}
+              {/* Main Image Display Container (objectFit: contain so zero image cropping) */}
               <div className="main-image-container">
                 <div
                   style={{
-                    background: "#ffffff",
-                    borderRadius: 18,
+                    background: "#f4f4f0",
+                    borderRadius: 22,
                     overflow: "hidden",
                     position: "relative",
                     cursor: isZoomed ? "zoom-out" : "zoom-in",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
                     aspectRatio: "3/4",
-                    border: "1px solid #e8e8e2"
+                    border: "1px solid #e8e8e2",
+                    padding: "16px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
                   }}
                   onMouseEnter={() => setIsZoomed(true)}
                   onMouseLeave={() => setIsZoomed(false)}
@@ -175,8 +179,7 @@ export default function ProductDetailPage() {
                       transition: isZoomed ? "none" : "opacity 0.3s",
                       transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
                       transform: isZoomed ? "scale(1.8)" : "scale(1)",
-                      display: "block",
-                      padding: "16px"
+                      display: "block"
                     }}
                   />
 
@@ -231,10 +234,10 @@ export default function ProductDetailPage() {
                       style={{
                         width: 64,
                         height: 72,
-                        borderRadius: 10,
+                        borderRadius: 12,
                         overflow: "hidden",
                         border: idx === activePhotoIdx ? "2.5px solid #2563eb" : "1.5px solid #e2e8f0",
-                        background: "#fff",
+                        background: "#f4f4f0",
                         cursor: "pointer",
                         padding: 4,
                         flexShrink: 0,
@@ -246,7 +249,7 @@ export default function ProductDetailPage() {
                       <img
                         src={photo.src}
                         alt={photo.label}
-                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                        style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
                       />
                     </button>
                   ))}
@@ -328,7 +331,7 @@ export default function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Action Buttons (Full width touch-friendly on mobile) */}
+              {/* Action Buttons */}
               <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 6 }}>
                 <button
                   onClick={handleAddToCart}

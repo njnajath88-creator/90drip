@@ -64,36 +64,33 @@ export default function OverviewTab({ orders, products, onAddProduct, setActiveT
 
       {/* Quick Actions & Recent Activity */}
       <div className="overview-sections">
-        <div className="admin-card">
-          <div className="admin-card-header">
-            <h3>Recent Customer Orders</h3>
+        {/* Recent Orders Card */}
+        <div className="admin-card" style={{ padding: "16px", overflow: "hidden" }}>
+          <div className="admin-card-header" style={{ marginBottom: "14px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: "900", color: "#0f172a", margin: 0 }}>Recent Customer Orders</h3>
             <button className="btn-secondary-sm" onClick={() => setActiveTab("orders")}>
               View All
             </button>
           </div>
-          <div className="table-responsive">
-            <table className="admin-table">
+
+          {/* Table Container with Horizontal Scroll for Mobile */}
+          <div style={{ overflowX: "auto", width: "100%", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
+            <table className="admin-table" style={{ width: "100%", minWidth: "460px", borderCollapse: "collapse" }}>
               <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Total</th>
-                  <th>Status</th>
+                <tr style={{ background: "#f8fafc", borderBottom: "1.5px solid #e2e8f0", textAlign: "left" }}>
+                  <th style={{ padding: "8px 10px", fontSize: "10px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>ORDER ID</th>
+                  <th style={{ padding: "8px 10px", fontSize: "10px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>CUSTOMER</th>
+                  <th style={{ padding: "8px 10px", fontSize: "10px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>ITEMS</th>
+                  <th style={{ padding: "8px 10px", fontSize: "10px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>TOTAL</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.slice(0, 3).map((order) => (
-                  <tr key={order.id}>
-                    <td><strong>{order.id}</strong></td>
-                    <td>{order.customer}</td>
-                    <td>{order.items}</td>
-                    <td>₹{order.total.toLocaleString()}</td>
-                    <td>
-                      <span className={`status-pill ${order.status.toLowerCase()}`}>
-                        {order.status}
-                      </span>
-                    </td>
+                  <tr key={order.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "10px", fontSize: "11px", fontWeight: "800", color: "#0f172a", whiteSpace: "nowrap" }}>{order.id}</td>
+                    <td style={{ padding: "10px", fontSize: "11px", fontWeight: "700", color: "#334155", whiteSpace: "nowrap" }}>{order.customer}</td>
+                    <td style={{ padding: "10px", fontSize: "11px", color: "#475569", whiteSpace: "nowrap", maxWidth: "160px", overflow: "hidden", textOverflow: "ellipsis" }}>{order.items}</td>
+                    <td style={{ padding: "10px", fontSize: "11px", fontWeight: "800", color: "#0f172a", whiteSpace: "nowrap" }}>₹{order.total.toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -101,30 +98,33 @@ export default function OverviewTab({ orders, products, onAddProduct, setActiveT
           </div>
         </div>
 
-        <div className="admin-card">
-          <div className="admin-card-header">
-            <h3>Quick Store Actions</h3>
+        {/* Quick Store Actions Card */}
+        <div className="admin-card" style={{ padding: "16px" }}>
+          <div className="admin-card-header" style={{ marginBottom: "14px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: "900", color: "#0f172a", margin: 0 }}>Quick Store Actions</h3>
           </div>
-          <div className="quick-actions-list">
-            <button className="action-btn" onClick={onAddProduct}>
-              <div className="action-icon">+</div>
+          <div className="quick-actions-list" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <button className="action-btn" onClick={onAddProduct} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "12px 14px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", textAlign: "left" }}>
+              <div className="action-icon" style={{ width: "34px", height: "34px", borderRadius: "10px", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "900", fontSize: "16px", flexShrink: 0 }}>+</div>
               <div className="action-info">
-                <strong>Add New Jersey</strong>
-                <span>Upload photos, set size &amp; price in ₹</span>
+                <strong style={{ display: "block", fontSize: "13px", color: "#0f172a", fontWeight: "800" }}>Add New Jersey</strong>
+                <span style={{ fontSize: "11px", color: "#64748b" }}>Upload photos, set size &amp; price in ₹</span>
               </div>
             </button>
-            <button className="action-btn" onClick={() => setActiveTab("products")}>
-              <div className="action-icon">📋</div>
+
+            <button className="action-btn" onClick={() => setActiveTab("products")} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "12px 14px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", textAlign: "left" }}>
+              <div className="action-icon" style={{ width: "34px", height: "34px", borderRadius: "10px", background: "#eff6ff", color: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", flexShrink: 0 }}>📋</div>
               <div className="action-info">
-                <strong>Manage Catalog</strong>
-                <span>Update badges, sale discounts &amp; stock</span>
+                <strong style={{ display: "block", fontSize: "13px", color: "#0f172a", fontWeight: "800" }}>Manage Catalog</strong>
+                <span style={{ fontSize: "11px", color: "#64748b" }}>Update badges, sale discounts &amp; stock</span>
               </div>
             </button>
-            <button className="action-btn" onClick={() => setActiveTab("settings")}>
-              <div className="action-icon">⚙️</div>
+
+            <button className="action-btn" onClick={() => setActiveTab("settings")} style={{ display: "flex", alignItems: "center", gap: "12px", width: "100%", padding: "12px 14px", borderRadius: "12px", border: "1.5px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", textAlign: "left" }}>
+              <div className="action-icon" style={{ width: "34px", height: "34px", borderRadius: "10px", background: "#f1f5f9", color: "#475569", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", flexShrink: 0 }}>⚙️</div>
               <div className="action-info">
-                <strong>Store Announcement Bar</strong>
-                <span>Edit top banner promotional messaging</span>
+                <strong style={{ display: "block", fontSize: "13px", color: "#0f172a", fontWeight: "800" }}>Store Announcement Bar</strong>
+                <span style={{ fontSize: "11px", color: "#64748b" }}>Edit top banner promotional messaging</span>
               </div>
             </button>
           </div>
