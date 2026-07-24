@@ -13,8 +13,10 @@ export default function AdminPage() {
   // Modal states
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    category: "Half Sleeve",
     sport: "Football",
     price: "",
     originalPrice: "",
@@ -94,55 +96,81 @@ export default function AdminPage() {
     fetchProducts();
   }, []);
 
+  // Mobile Phone Image Compressor & Reader
+  const compressAndReadImage = (file, callback) => {
+    if (!file) return;
+    // Fallback if file is small or not an image
+    if (file.size < 300000) {
+      const reader = new FileReader();
+      reader.onloadend = () => callback(reader.result);
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const MAX_SIZE = 800;
+
+        if (width > height) {
+          if (width > MAX_SIZE) {
+            height = Math.round((height * MAX_SIZE) / width);
+            width = MAX_SIZE;
+          }
+        } else {
+          if (height > MAX_SIZE) {
+            width = Math.round((width * MAX_SIZE) / height);
+            height = MAX_SIZE;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+        callback(compressedDataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Form Handlers
   const handleFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, image: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
+    compressAndReadImage(e.target.files?.[0], (res) => {
+      setFormData((prev) => ({ ...prev, image: res }));
+    });
   };
 
   const handleBackFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, backImage: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
+    compressAndReadImage(e.target.files?.[0], (res) => {
+      setFormData((prev) => ({ ...prev, backImage: res }));
+    });
   };
 
   const handleCloseupFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, closeupImage: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
+    compressAndReadImage(e.target.files?.[0], (res) => {
+      setFormData((prev) => ({ ...prev, closeupImage: res }));
+    });
   };
 
   const handleFitFileSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, fitImage: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
+    compressAndReadImage(e.target.files?.[0], (res) => {
+      setFormData((prev) => ({ ...prev, fitImage: res }));
+    });
   };
 
   const handleOpenAddModal = () => {
     setEditingProduct(null);
     setFormData({
       name: "",
+      category: "Half Sleeve",
       sport: "Football",
       price: "",
       originalPrice: "",
@@ -160,6 +188,7 @@ export default function AdminPage() {
     setEditingProduct(product);
     setFormData({
       name: product.name,
+      category: product.category || "Half Sleeve",
       sport: product.sport,
       price: product.price,
       originalPrice: product.originalPrice || "",
@@ -175,35 +204,44 @@ export default function AdminPage() {
 
   const handleSaveProduct = async (e) => {
     e.preventDefault();
+    setSaving(true);
     try {
       const payload = {
         ...formData,
-        price: parseFloat(formData.price),
+        price: parseFloat(formData.price) || 0,
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
         badges: formData.badges ? formData.badges.split(",").map(b => b.trim()).filter(Boolean) : [],
         sizes: formData.sizes ? formData.sizes.split(",").map(s => s.trim()).filter(Boolean) : ["S", "M", "L"]
       };
 
+      let res;
       if (editingProduct) {
         // Update product
-        await fetch("/api/products", {
+        res = await fetch("/api/products", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: editingProduct.id, ...payload })
         });
       } else {
         // Add new product
-        await fetch("/api/products", {
+        res = await fetch("/api/products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
       }
 
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Server error saving product");
+      }
+
       setIsProductModalOpen(false);
-      fetchProducts();
+      await fetchProducts();
     } catch (err) {
       alert("Error saving product: " + err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -656,16 +694,32 @@ export default function AdminPage() {
               <button className="modal-close" onClick={() => setIsProductModalOpen(false)}>×</button>
             </div>
             <form onSubmit={handleSaveProduct} className="modal-form">
-              <div className="form-group">
-                <label className="form-label">Jersey Name</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="e.g. Real Madrid #5 Bellingham" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="admin-input"
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Jersey Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. FC Barcelona #10" 
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                    className="admin-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Sleeve Category</label>
+                  <select 
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="admin-select"
+                  >
+                    <option value="Full Sleeve">Full Sleeve</option>
+                    <option value="Half Sleeve">Half Sleeve</option>
+                    <option value="5 Sleeve">5 Sleeve</option>
+                    <option value="Retro">Retro</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-row">
@@ -840,12 +894,12 @@ export default function AdminPage() {
                 )}
               </div>
 
-              <div className="modal-actions">
-                <button type="button" className="btn-secondary-sm" onClick={() => setIsProductModalOpen(false)}>
+              <div className="modal-actions" style={{ position: 'sticky', bottom: 0, background: '#ffffff', padding: '12px 0', borderTop: '1px solid #e2e8f0', zIndex: 10 }}>
+                <button type="button" className="btn-secondary-sm" onClick={() => setIsProductModalOpen(false)} disabled={saving}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary-admin">
-                  {editingProduct ? "Save Changes" : "Create Jersey"}
+                <button type="submit" className="btn-primary-admin" disabled={saving} style={{ opacity: saving ? 0.7 : 1 }}>
+                  {saving ? "⏳ Saving Changes..." : (editingProduct ? "Save Changes" : "Create Jersey")}
                 </button>
               </div>
             </form>

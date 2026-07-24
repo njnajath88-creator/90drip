@@ -43,7 +43,7 @@ function ProductCard({ product, addToCart }) {
         ))}
       </Link>
       <div className="product-info">
-        <span className="product-category">{product.sport}</span>
+        <span className="product-category">{product.category || product.sport}</span>
         <h3 className="product-name">
           <Link href={`/product/${product.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
             {product.name}
@@ -55,7 +55,7 @@ function ProductCard({ product, addToCart }) {
         </div>
         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
           <Link href={`/product/${product.id}`} className="btn-secondary-sm" style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '8px 4px', fontSize: '12px' }}>
-            View Product Details
+            View Details
           </Link>
           <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add</button>
         </div>
@@ -95,7 +95,7 @@ export default function Home() {
 
   const filteredProducts = filter === "all" 
     ? products 
-    : products.filter(p => p.sport === filter || (p.badges && p.badges.includes(filter)));
+    : products.filter(p => p.category === filter || p.sport === filter || (p.badges && p.badges.includes(filter)));
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -135,8 +135,8 @@ export default function Home() {
             <div className="nav-left">
               <ul className="nav-links" role="list">
                 <li><a href="#home">Home</a></li>
+                <li><a href="#categories">Categories</a></li>
                 <li><a href="#shop">Shop</a></li>
-                <li><a href="#premium">Premium Quality</a></li>
                 <li><a href="/admin" style={{ color: '#3b82f6', fontWeight: 600 }}>Admin</a></li>
               </ul>
               {/* Mobile-only left icons */}
@@ -249,19 +249,102 @@ export default function Home() {
         </div>
       </div>
 
+      {/* 4 Category Showcase Cards with Photos */}
+      <section className="categories-section" id="categories">
+        <div className="container">
+          <div className="section-header-wrap" style={{ textAlign: 'center', marginBottom: '32px' }}>
+            <h2 className="section-title">Shop By Category</h2>
+            <p style={{ color: '#64748b', fontSize: '14px', marginTop: '4px' }}>
+              Explore our 4 signature sleeve styles & classic retro editions
+            </p>
+          </div>
+
+          <div className="category-cards-grid">
+            {/* Category 1: Full Sleeve */}
+            <div 
+              className={`category-card-item ${filter === 'Full Sleeve' ? 'active' : ''}`}
+              onClick={() => { setFilter('Full Sleeve'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
+            >
+              <div className="category-card-img-wrap">
+                <img src="/images/jersey_product1.png" alt="Full Sleeve Category" />
+                <span className="category-badge-pill">Full Sleeve</span>
+              </div>
+              <div className="category-card-info">
+                <h3>Full Sleeve</h3>
+                <p>Long sleeve match kits & training wear</p>
+                <span className="category-link">Shop Collection →</span>
+              </div>
+            </div>
+
+            {/* Category 2: Half Sleeve */}
+            <div 
+              className={`category-card-item ${filter === 'Half Sleeve' ? 'active' : ''}`}
+              onClick={() => { setFilter('Half Sleeve'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
+            >
+              <div className="category-card-img-wrap">
+                <img src="/images/jersey_product2.png" alt="Half Sleeve Category" />
+                <span className="category-badge-pill">Half Sleeve</span>
+              </div>
+              <div className="category-card-info">
+                <h3>Half Sleeve</h3>
+                <p>Classic short sleeve fan & player jerseys</p>
+                <span className="category-link">Shop Collection →</span>
+              </div>
+            </div>
+
+            {/* Category 3: 5 Sleeve */}
+            <div 
+              className={`category-card-item ${filter === '5 Sleeve' ? 'active' : ''}`}
+              onClick={() => { setFilter('5 Sleeve'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
+            >
+              <div className="category-card-img-wrap">
+                <img src="/images/jersey_product3.png" alt="5 Sleeve Category" />
+                <span className="category-badge-pill">5 Sleeve</span>
+              </div>
+              <div className="category-card-info">
+                <h3>5 Sleeve</h3>
+                <p>Oversized streetwear & 3/4 sleeve fit</p>
+                <span className="category-link">Shop Collection →</span>
+              </div>
+            </div>
+
+            {/* Category 4: Retro */}
+            <div 
+              className={`category-card-item ${filter === 'Retro' ? 'active' : ''}`}
+              onClick={() => { setFilter('Retro'); document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' }); }}
+            >
+              <div className="category-card-img-wrap">
+                <img src="/images/jersey_product4.png" alt="Retro Category" />
+                <span className="category-badge-pill" style={{ background: '#f59e0b', color: '#ffffff' }}>Retro</span>
+              </div>
+              <div className="category-card-info">
+                <h3>Retro</h3>
+                <p>Iconic vintage & classic heritage kits</p>
+                <span className="category-link">Shop Collection →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Catalog Grid Section */}
       <section className="products-section" id="shop" aria-label="Product catalog">
         <div className="container">
-          <h2 className="section-title">world cup collections</h2>
-          <div className="filter-tabs" role="tablist">
-            {["all", "Football", "Basketball", "Custom"].map(tab => (
-              <button 
-                key={tab} 
-                className={`filter-tab ${filter === tab ? "active" : ""}`} 
-                onClick={() => setFilter(tab)}
-              >
-                {tab === 'Custom' ? 'Premium' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
+            <h2 className="section-title" style={{ margin: 0 }}>
+              {filter === 'all' ? 'All Jersey Collections' : `${filter} Jerseys`}
+            </h2>
+            <div className="filter-tabs" role="tablist">
+              {["all", "Full Sleeve", "Half Sleeve", "5 Sleeve", "Retro"].map(tab => (
+                <button 
+                  key={tab} 
+                  className={`filter-tab ${filter === tab ? "active" : ""}`} 
+                  onClick={() => setFilter(tab)}
+                >
+                  {tab === 'all' ? 'All Products' : tab}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="products-grid">

@@ -4,6 +4,7 @@ let products = [
   {
     id: 1,
     name: 'FC Barcelona #10 Home',
+    category: 'Full Sleeve',
     sport: 'Football',
     price: 1999,
     originalPrice: 2499,
@@ -17,6 +18,7 @@ let products = [
   {
     id: 2,
     name: 'Classic #7 Red',
+    category: 'Half Sleeve',
     sport: 'Football',
     price: 1499,
     originalPrice: null,
@@ -30,6 +32,7 @@ let products = [
   {
     id: 3,
     name: 'City FC #9 Blue',
+    category: '5 Sleeve',
     sport: 'Football',
     price: 1799,
     originalPrice: 2199,
@@ -43,6 +46,7 @@ let products = [
   {
     id: 4,
     name: 'Green Eagle #11',
+    category: 'Retro',
     sport: 'Football',
     price: 1299,
     originalPrice: null,
@@ -65,6 +69,7 @@ export async function POST(request) {
     const newProduct = {
       id: Date.now(),
       name: body.name || 'Untitled Jersey',
+      category: body.category || 'Half Sleeve',
       sport: body.sport || 'Football',
       price: parseFloat(body.price) || 0,
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
@@ -93,6 +98,7 @@ export async function PUT(request) {
       ...products[index],
       ...body,
       id: products[index].id,
+      category: body.category || products[index].category || 'Half Sleeve',
       price: parseFloat(body.price),
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
       image: body.image || products[index].image,
