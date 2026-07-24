@@ -1,19 +1,11 @@
 /**
  * Compresses and reads an image file using a canvas element.
- * Falls back to plain FileReader for small files (< 300KB).
+ * Ensures data URLs stay compact (< 150KB) to prevent Vercel 4.5MB payload limits.
  * @param {File} file - The image file to compress
- * @param {function} callback - Called with the resulting base64 data URL
+ * @param {function} callback - Called with the resulting compressed base64 data URL
  */
 export function compressAndReadImage(file, callback) {
   if (!file) return;
-
-  // Fallback: skip compression for small files
-  if (file.size < 300000) {
-    const reader = new FileReader();
-    reader.onloadend = () => callback(reader.result);
-    reader.readAsDataURL(file);
-    return;
-  }
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -22,7 +14,7 @@ export function compressAndReadImage(file, callback) {
       const canvas = document.createElement("canvas");
       let width = img.width;
       let height = img.height;
-      const MAX_SIZE = 800;
+      const MAX_SIZE = 700; // Max dimension for fast loading & compact payload
 
       if (width > height) {
         if (width > MAX_SIZE) {
@@ -39,9 +31,12 @@ export function compressAndReadImage(file, callback) {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
 
-      const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+      // Export as compressed JPEG (quality 0.7)
+      const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.7);
       callback(compressedDataUrl);
     };
     img.src = e.target.result;

@@ -5,13 +5,13 @@ const ProductSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     category: {
       type: String,
-      enum: ["Full Sleeve", "Half Sleeve", "5 Sleeve", "Retro"],
       default: "Half Sleeve",
+      trim: true
     },
     sport: {
       type: String,
-      enum: ["Football", "Basketball", "Custom"],
       default: "Football",
+      trim: true
     },
     price: { type: Number, required: true },
     originalPrice: { type: Number, default: null },
@@ -24,7 +24,6 @@ const ProductSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    // Use _id as id in JSON output
     toJSON: {
       virtuals: true,
       transform: (_, ret) => {

@@ -117,7 +117,6 @@ export async function GET() {
 
     let products = await Product.find().sort({ createdAt: -1 });
 
-    // Auto-seed if count is low
     if (products.length < 4) {
       await Product.deleteMany({});
       await Product.insertMany(SEED_PRODUCTS);
@@ -127,7 +126,7 @@ export async function GET() {
     return Response.json(products.map((p) => p.toJSON()));
   } catch (error) {
     console.error("GET /api/products error:", error);
-    return Response.json({ error: "Failed to fetch products" }, { status: 500 });
+    return Response.json({ error: error.message || "Failed to fetch products" }, { status: 500 });
   }
 }
 
@@ -162,7 +161,7 @@ export async function POST(request) {
     return Response.json(product.toJSON(), { status: 201 });
   } catch (error) {
     console.error("POST /api/products error:", error);
-    return Response.json({ error: "Failed to create product" }, { status: 400 });
+    return Response.json({ error: error.message || "Failed to create product" }, { status: 400 });
   }
 }
 
@@ -171,29 +170,31 @@ export async function PUT(request) {
   try {
     await connectDB();
     const body = await request.json();
-    const { id, ...updateData } = body;
+    const productId = body.id || body._id;
 
-    if (!id) {
+    if (!productId) {
       return Response.json({ error: "Product ID is required" }, { status: 400 });
     }
 
+    const { id, _id, ...updateFields } = body;
+
     const updated = await Product.findByIdAndUpdate(
-      id,
+      productId,
       {
-        ...updateData,
-        price: parseFloat(updateData.price),
-        originalPrice: updateData.originalPrice
-          ? parseFloat(updateData.originalPrice)
+        ...updateFields,
+        price: parseFloat(updateFields.price) || 0,
+        originalPrice: updateFields.originalPrice
+          ? parseFloat(updateFields.originalPrice)
           : null,
-        badges: Array.isArray(updateData.badges)
-          ? updateData.badges
-          : updateData.badges
-          ? updateData.badges.split(",").map((b) => b.trim())
+        badges: Array.isArray(updateFields.badges)
+          ? updateFields.badges
+          : updateFields.badges
+          ? updateFields.badges.split(",").map((b) => b.trim())
           : [],
-        sizes: Array.isArray(updateData.sizes)
-          ? updateData.sizes
-          : updateData.sizes
-          ? updateData.sizes.split(",").map((s) => s.trim())
+        sizes: Array.isArray(updateFields.sizes)
+          ? updateFields.sizes
+          : updateFields.sizes
+          ? updateFields.sizes.split(",").map((s) => s.trim())
           : ["S", "M", "L", "XL"],
       },
       { new: true, runValidators: true }
@@ -206,7 +207,7 @@ export async function PUT(request) {
     return Response.json(updated.toJSON());
   } catch (error) {
     console.error("PUT /api/products error:", error);
-    return Response.json({ error: "Failed to update product" }, { status: 400 });
+    return Response.json({ error: error.message || "Failed to update product" }, { status: 400 });
   }
 }
 
@@ -225,6 +226,6 @@ export async function DELETE(request) {
     return Response.json({ success: true, message: "Product deleted" });
   } catch (error) {
     console.error("DELETE /api/products error:", error);
-    return Response.json({ error: "Failed to delete product" }, { status: 400 });
+    return Response.json({ error: error.message || "Failed to delete product" }, { status: 400 });
   }
 }

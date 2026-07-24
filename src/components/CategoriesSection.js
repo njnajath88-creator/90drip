@@ -31,7 +31,7 @@ export default function CategoriesSection() {
 
   return (
     <section className="categories-section" id="categories" style={{ padding: "36px 0", background: "#ffffff" }}>
-      <div className="container" style={{ maxWidth: "800px" }}>
+      <div className="container" style={{ maxWidth: "1200px" }}>
         <div
           className="section-header-wrap"
           style={{ textAlign: "center", marginBottom: "24px" }}
@@ -41,14 +41,8 @@ export default function CategoriesSection() {
           </h2>
         </div>
 
-        {/* 2-Column Grid Layout — Edge-to-Edge Image + Category Name (No Tag Overlay) */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "20px 16px"
-          }}
-        >
+        {/* Responsive Category Grid (4 columns on PC, 2 columns on Mobile) */}
+        <div className="categories-grid-responsive">
           {categories.map((cat) => (
             <Link
               key={cat.key}
@@ -64,16 +58,17 @@ export default function CategoriesSection() {
                   transition: "all 0.25s ease",
                   cursor: "pointer",
                   display: "flex",
-                  flexDirection: "column"
+                  flexDirection: "column",
+                  height: "100%"
                 }}
                 className="category-card-hover"
               >
-                {/* Edge-to-Edge Image (No tags, no padding) */}
+                {/* Edge-to-Edge Image */}
                 <div
                   style={{
                     position: "relative",
                     width: "100%",
-                    height: "260px",
+                    height: "240px",
                     overflow: "hidden"
                   }}
                 >
@@ -99,7 +94,7 @@ export default function CategoriesSection() {
                     background: "#ffffff"
                   }}
                 >
-                  <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "900", color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                  <h3 style={{ margin: 0, fontSize: "15px", fontWeight: "900", color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                     {cat.key}
                   </h3>
                 </div>
@@ -109,6 +104,19 @@ export default function CategoriesSection() {
         </div>
       </div>
       <style>{`
+        .categories-grid-responsive {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px 16px;
+        }
+
+        @media (max-width: 768px) {
+          .categories-grid-responsive {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px 12px;
+          }
+        }
+
         .category-card-hover:hover {
           transform: translateY(-4px);
           box-shadow: 0 10px 25px rgba(0,0,0,0.1);

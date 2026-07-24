@@ -118,7 +118,7 @@ export default function CategoryPage() {
       <main style={{ paddingBottom: "80px" }}>
         {/* Category Header Banner */}
         <div style={{ background: "#ffffff", padding: "28px 0 16px" }}>
-          <div className="container" style={{ maxWidth: "800px" }}>
+          <div className="container" style={{ maxWidth: "1200px" }}>
             {/* Back Button */}
             <Link
               href="/"
@@ -148,8 +148,8 @@ export default function CategoryPage() {
           </div>
         </div>
 
-        {/* Product Catalog Grid (Clean 2-Column Grid) */}
-        <div className="container" style={{ maxWidth: "800px" }}>
+        {/* Product Catalog Grid (4 Columns on PC, 2 Columns on Mobile) */}
+        <div className="container" style={{ maxWidth: "1200px" }}>
           {loading ? (
             <div style={{ textAlign: "center", padding: "60px 0", color: "#64748b" }}>
               Loading {categoryInfo.name} collection...
@@ -168,13 +168,7 @@ export default function CategoryPage() {
               </Link>
             </div>
           ) : (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, 1fr)",
-                gap: "24px 16px"
-              }}
-            >
+            <div className="products-grid-responsive">
               {categoryProducts.map((product) => (
                 <ProductCard key={product.id} product={product} addToCart={addToCart} />
               ))}
@@ -192,6 +186,27 @@ export default function CategoryPage() {
         updateQuantity={updateQuantity}
         removeFromCart={removeFromCart}
       />
+
+      <style>{`
+        .products-grid-responsive {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px 18px;
+        }
+
+        @media (max-width: 1024px) {
+          .products-grid-responsive {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .products-grid-responsive {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px 14px;
+          }
+        }
+      `}</style>
     </div>
   );
 }
