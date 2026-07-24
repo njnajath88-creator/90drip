@@ -7,29 +7,25 @@ export default function CategoriesSection() {
       key: "Full Sleeve",
       slug: "full-sleeve",
       image: "/images/cat_full_sleeve.png",
-      alt: "Full Sleeve Category",
-      badgeColor: "#2563eb"
+      alt: "Full Sleeve Category"
     },
     {
       key: "Half Sleeve",
       slug: "half-sleeve",
       image: "/images/cat_half_sleeve.png",
-      alt: "Half Sleeve Category",
-      badgeColor: "#2563eb"
+      alt: "Half Sleeve Category"
     },
     {
       key: "5 Sleeve",
       slug: "5-sleeve",
       image: "/images/cat_5_sleeve.png",
-      alt: "5 Sleeve Category",
-      badgeColor: "#2563eb"
+      alt: "5 Sleeve Category"
     },
     {
       key: "Retro",
       slug: "retro",
       image: "/images/cat_retro.png",
-      alt: "Retro Category",
-      badgeColor: "#f59e0b"
+      alt: "Retro Category"
     },
   ];
 
@@ -45,7 +41,7 @@ export default function CategoriesSection() {
           </h2>
         </div>
 
-        {/* 2-Column Grid Layout — Edge-to-Edge Image + Category Name */}
+        {/* 2-Column Grid Layout — Edge-to-Edge Image + Category Name (No Tag Overlay) */}
         <div
           style={{
             display: "grid",
@@ -72,34 +68,15 @@ export default function CategoriesSection() {
                 }}
                 className="category-card-hover"
               >
-                {/* Edge-to-Edge Image Container (No padding, no extra background border) */}
+                {/* Edge-to-Edge Image (No tags, no padding) */}
                 <div
                   style={{
                     position: "relative",
                     width: "100%",
                     height: "260px",
-                    overflow: "hidden",
-                    background: "#1e293b"
+                    overflow: "hidden"
                   }}
                 >
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 12,
-                      left: 12,
-                      background: cat.badgeColor,
-                      color: "#ffffff",
-                      fontSize: "10px",
-                      fontWeight: "900",
-                      padding: "4px 10px",
-                      borderRadius: "6px",
-                      zIndex: 2,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase"
-                    }}
-                  >
-                    {cat.key}
-                  </span>
                   <img
                     src={cat.image}
                     alt={cat.alt}
@@ -114,7 +91,7 @@ export default function CategoriesSection() {
                   />
                 </div>
 
-                {/* Category Name Only */}
+                {/* Category Name Below Image */}
                 <div
                   style={{
                     padding: "14px 16px",

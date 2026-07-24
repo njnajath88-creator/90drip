@@ -22,7 +22,7 @@ export default function ProductCard({ product }) {
       onMouseLeave={() => setHovered(false)}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {/* Soft Grey Rounded Image Container */}
+        {/* Soft Grey Edge-to-Edge Image Container (No tags, no inner white padding) */}
         <div
           style={{
             background: "#e5e5e0",
@@ -32,42 +32,20 @@ export default function ProductCard({ product }) {
             alignItems: "center",
             justifyContent: "center",
             overflow: "hidden",
-            padding: "20px",
             position: "relative",
             transition: "transform 0.25s ease, box-shadow 0.25s ease",
             transform: hovered ? "scale(1.02)" : "scale(1)",
             boxShadow: hovered ? "0 10px 25px rgba(0,0,0,0.08)" : "none"
           }}
         >
-          {/* Optional subtle badge */}
-          {(product.badges && product.badges.length > 0) && (
-            <span
-              style={{
-                position: "absolute",
-                top: 12,
-                left: 12,
-                background: "#0f172a",
-                color: "#ffffff",
-                fontSize: "10px",
-                fontWeight: "900",
-                letterSpacing: "0.06em",
-                padding: "4px 8px",
-                borderRadius: "6px",
-                textTransform: "uppercase",
-                zIndex: 2
-              }}
-            >
-              {product.badges[0]}
-            </span>
-          )}
-
           <img
             src={displaySrc}
             alt={product.name}
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "contain",
+              objectFit: "cover",
+              display: "block",
               transition: "transform 0.35s ease",
               transform: hovered ? "scale(1.06)" : "scale(1)"
             }}

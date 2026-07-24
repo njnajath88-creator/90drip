@@ -15,7 +15,7 @@ export default function Home() {
   const [filter, setFilter] = useState("all");
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   // Fetch products from backend on mount
   useEffect(() => {
@@ -59,13 +59,12 @@ export default function Home() {
       <Navbar
         cartCount={cartCount}
         onOpenCart={() => setIsCartOpen(true)}
-        isProfileOpen={isProfileOpen}
-        setIsProfileOpen={setIsProfileOpen}
-        onOpenCartFromProfile={() => setIsCartOpen(true)}
+        user={user}
+        setUser={setUser}
       />
       <HeroBanner />
       <BrandsSlider />
-      <CategoriesSection filter={filter} setFilter={setFilter} />
+      <CategoriesSection />
       <ProductsSection
         products={products}
         filter={filter}

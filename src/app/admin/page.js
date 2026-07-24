@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 import AdminHeader from "@/components/admin/AdminHeader";
 import AdminTabs from "@/components/admin/AdminTabs";
@@ -49,16 +50,34 @@ const INITIAL_ORDERS = [
 ];
 
 export default function AdminPage() {
+  const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [orders, setOrders] = useState(INITIAL_ORDERS);
+
+  // Admin LoginForm State
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [authError, setAuthError] = useState("");
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_FORM);
+
+  // Read logged in user on mount
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem("90drip_user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (e) {
+      console.error("Failed to read user:", e);
+    }
+  }, []);
 
   // Fetch products
   const fetchProducts = async () => {
@@ -77,6 +96,136 @@ export default function AdminPage() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleAdminFormSubmit = (e) => {
+    e.preventDefault();
+    setAuthError("");
+
+    const cleanEmail = adminEmail.toLowerCase().trim();
+
+    if (cleanEmail === "ad123@gmail.com" && adminPassword === "ad123") {
+      const adminUser = {
+        email: "ad123@gmail.com",
+        name: "Admin Manager",
+        role: "admin"
+      };
+      setUser(adminUser);
+      try {
+        localStorage.setItem("90drip_user", JSON.stringify(adminUser));
+      } catch (e) {
+        console.error("Failed to save admin user:", e);
+      }
+    } else {
+      setAuthError("Invalid Admin credentials. Email: ad123@gmail.com, Password: ad123");
+    }
+  };
+
+  const isAdmin = user?.email?.toLowerCase() === "ad123@gmail.com" || user?.role === "admin";
+
+  // Protection Guard: If not logged in as ad123@gmail.com with password ad123
+  if (!isAdmin) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+        <div style={{ background: "#ffffff", borderRadius: "20px", border: "1px solid #e2e8f0", padding: "36px 28px", maxWidth: "380px", width: "100%", textAlign: "center", boxShadow: "0 10px 30px rgba(0,0,0,0.06)" }}>
+          <img src="/images/90driplogo.png" alt="90DRIP" style={{ height: "30px", marginBottom: "16px" }} />
+          
+          <h2 style={{ fontSize: "20px", fontWeight: "900", color: "#0f172a", margin: "0 0 6px", textTransform: "uppercase" }}>
+            Admin Login
+          </h2>
+          <p style={{ fontSize: "12px", color: "#64748b", margin: "0 0 20px" }}>
+            Enter your admin credentials to access the portal
+          </p>
+
+          {authError && (
+            <div style={{ background: "#fef2f2", color: "#ef4444", border: "1px solid #fee2e2", padding: "10px", borderRadius: "10px", fontSize: "12px", fontWeight: "700", marginBottom: "16px" }}>
+              {authError}
+            </div>
+          )}
+
+          <form onSubmit={handleAdminFormSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "left" }}>
+            <div>
+              <label style={{ fontSize: "11px", fontWeight: "800", color: "#0f172a", display: "block", marginBottom: "4px", textTransform: "uppercase" }}>
+                Admin Email
+              </label>
+              <input
+                type="email"
+                placeholder="ad123@gmail.com"
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  border: "1.5px solid #cbd5e1",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  outline: "none"
+                }}
+              />
+            </div>
+
+            <div>
+              <label style={{ fontSize: "11px", fontWeight: "800", color: "#0f172a", display: "block", marginBottom: "4px", textTransform: "uppercase" }}>
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  border: "1.5px solid #cbd5e1",
+                  fontSize: "14px",
+                  fontWeight: "600",
+                  outline: "none"
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: "14px",
+                borderRadius: "12px",
+                border: "none",
+                background: "#0f172a",
+                color: "#ffffff",
+                fontSize: "13px",
+                fontWeight: "900",
+                cursor: "pointer",
+                textTransform: "uppercase",
+                letterSpacing: "0.04em",
+                marginTop: "6px",
+                boxShadow: "0 4px 14px rgba(15,23,42,0.25)"
+              }}
+            >
+              Sign In as Admin
+            </button>
+          </form>
+
+          <div style={{ marginTop: "20px" }}>
+            <Link
+              href="/"
+              style={{
+                fontSize: "12px",
+                fontWeight: "700",
+                color: "#64748b",
+                textDecoration: "none"
+              }}
+            >
+              ← Back to Store Front
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Modal handlers
   const handleOpenAddModal = () => {
