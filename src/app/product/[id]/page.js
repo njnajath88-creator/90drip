@@ -42,8 +42,8 @@ export default function ProductDetailPage() {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc" }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ width: 48, height: 48, border: "4px solid #e2e8f0", borderTopColor: "#2563eb", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 16px" }} />
-          <p style={{ color: "#64748b", fontWeight: 500 }}>Loading product...</p>
+          <div style={{ width: 44, height: 44, border: "4px solid #e2e8f0", borderTopColor: "#2563eb", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 16px" }} />
+          <p style={{ color: "#64748b", fontWeight: 600 }}>Loading product...</p>
         </div>
       </div>
     );
@@ -51,10 +51,10 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
-        <h2 style={{ fontSize: 24, fontWeight: 700 }}>Product Not Found</h2>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: "20px" }}>
+        <h2 style={{ fontSize: 22, fontWeight: 800 }}>Product Not Found</h2>
         <p style={{ color: "#64748b" }}>This jersey could not be found.</p>
-        <Link href="/" className="btn-primary">Back to Shop</Link>
+        <Link href="/" className="btn-primary" style={{ textDecoration: "none" }}>Back to Shop</Link>
       </div>
     );
   }
@@ -101,20 +101,20 @@ export default function ProductDetailPage() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
-      {/* Sticky Navbar */}
+      {/* Responsive Navbar */}
       <nav className="navbar scrolled" id="navbar" style={{ position: "sticky", top: 0, zIndex: 1000, background: "#ffffff" }}>
         <div className="container">
-          <div className="navbar-inner">
+          <div className="navbar-inner" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div className="nav-left">
-              <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, color: "#0f172a", textDecoration: "none", fontWeight: 700, fontSize: 14 }}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, color: "#0f172a", textDecoration: "none", fontWeight: 800, fontSize: 13 }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
                 </svg>
-                Back to Store
+                <span className="hide-on-mobile">Back to Store</span>
               </Link>
             </div>
             <Link href="/" className="nav-logo">
-              <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" />
+              <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" style={{ maxHeight: "28px" }} />
             </Link>
             <div className="nav-actions">
               <button className="nav-icon-btn" onClick={() => setIsCartOpen(true)} aria-label="Cart">
@@ -130,67 +130,36 @@ export default function ProductDetailPage() {
         </div>
       </nav>
 
-      <main style={{ padding: "28px 0 60px" }}>
+      <main style={{ padding: "20px 0 60px" }}>
         <div className="container">
 
           {/* Breadcrumb */}
-          <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 24, display: "flex", alignItems: "center", gap: 6 }}>
+          <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 16, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "#94a3b8", textDecoration: "none" }}>Home</Link>
             <span>›</span>
             <Link href="/#shop" style={{ color: "#94a3b8", textDecoration: "none" }}>Jerseys</Link>
             <span>›</span>
-            <span style={{ color: "#0f172a", fontWeight: 600 }}>{product.name}</span>
+            <span style={{ color: "#0f172a", fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "160px" }}>{product.name}</span>
           </div>
 
-          {/* Product Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "start" }}>
+          {/* Product Grid (Responsive: 1 col on mobile, 2 col on desktop) */}
+          <div className="product-detail-layout">
 
             {/* ─── LEFT: Image Gallery ─── */}
-            <div style={{ display: "flex", gap: 14 }}>
+            <div className="gallery-wrapper">
 
-              {/* Vertical Thumbnail Strip */}
-              {photos.length > 1 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
-                  {photos.map((photo, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActivePhotoIdx(idx)}
-                      style={{
-                        width: 72,
-                        height: 80,
-                        borderRadius: 10,
-                        overflow: "hidden",
-                        border: idx === activePhotoIdx ? "2.5px solid #2563eb" : "2px solid #e2e8f0",
-                        background: "#fff",
-                        cursor: "pointer",
-                        padding: 0,
-                        transition: "border-color 0.2s, transform 0.15s",
-                        transform: idx === activePhotoIdx ? "scale(1.05)" : "scale(1)",
-                        boxShadow: idx === activePhotoIdx ? "0 4px 12px rgba(37,99,235,0.2)" : "none",
-                      }}
-                      title={photo.label}
-                    >
-                      <img
-                        src={photo.src}
-                        alt={photo.label}
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {/* Main Image */}
-              <div style={{ flex: 1, position: "relative" }}>
+              {/* Main Display Image */}
+              <div className="main-image-container">
                 <div
                   style={{
-                    background: "#fff",
+                    background: "#ffffff",
                     borderRadius: 18,
                     overflow: "hidden",
                     position: "relative",
                     cursor: isZoomed ? "zoom-out" : "zoom-in",
-                    boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
                     aspectRatio: "3/4",
+                    border: "1px solid #e8e8e2"
                   }}
                   onMouseEnter={() => setIsZoomed(true)}
                   onMouseLeave={() => setIsZoomed(false)}
@@ -202,29 +171,24 @@ export default function ProductDetailPage() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",
+                      objectFit: "contain",
                       transition: isZoomed ? "none" : "opacity 0.3s",
                       transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
                       transform: isZoomed ? "scale(1.8)" : "scale(1)",
                       display: "block",
+                      padding: "16px"
                     }}
                   />
 
                   {/* View label badge */}
                   <div style={{
-                    position: "absolute", bottom: 14, left: 14,
-                    background: "rgba(0,0,0,0.65)", color: "#fff",
-                    fontSize: 11, fontWeight: 700, letterSpacing: "0.06em",
+                    position: "absolute", bottom: 12, left: 12,
+                    background: "rgba(15,23,42,0.75)", color: "#fff",
+                    fontSize: 10, fontWeight: 800, letterSpacing: "0.06em",
                     padding: "4px 10px", borderRadius: 20, backdropFilter: "blur(4px)",
+                    textTransform: "uppercase"
                   }}>
                     {photos[activePhotoIdx]?.label} · {activePhotoIdx + 1}/{photos.length}
-                  </div>
-
-                  {/* Badges */}
-                  <div style={{ position: "absolute", top: 14, left: 14, display: "flex", flexDirection: "column", gap: 6 }}>
-                    {(product.badges || []).map((badge) => (
-                      <span key={badge} className={`product-badge badge-${badge.toLowerCase()}`}>{badge}</span>
-                    ))}
                   </div>
 
                   {/* Prev / Next arrows */}
@@ -255,63 +219,73 @@ export default function ProductDetailPage() {
                     </>
                   )}
                 </div>
-
-                {/* Dot indicators */}
-                {photos.length > 1 && (
-                  <div style={{ display: "flex", justifyContent: "center", gap: 7, marginTop: 12 }}>
-                    {photos.map((_, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setActivePhotoIdx(idx)}
-                        style={{
-                          width: idx === activePhotoIdx ? 22 : 7,
-                          height: 7,
-                          borderRadius: 4,
-                          background: idx === activePhotoIdx ? "#2563eb" : "#cbd5e1",
-                          border: "none",
-                          cursor: "pointer",
-                          transition: "all 0.25s",
-                          padding: 0,
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
               </div>
+
+              {/* Thumbnails Row */}
+              {photos.length > 1 && (
+                <div className="thumbnail-strip">
+                  {photos.map((photo, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActivePhotoIdx(idx)}
+                      style={{
+                        width: 64,
+                        height: 72,
+                        borderRadius: 10,
+                        overflow: "hidden",
+                        border: idx === activePhotoIdx ? "2.5px solid #2563eb" : "1.5px solid #e2e8f0",
+                        background: "#fff",
+                        cursor: "pointer",
+                        padding: 4,
+                        flexShrink: 0,
+                        transition: "all 0.2s",
+                        boxShadow: idx === activePhotoIdx ? "0 4px 12px rgba(37,99,235,0.2)" : "none",
+                      }}
+                      title={photo.label}
+                    >
+                      <img
+                        src={photo.src}
+                        alt={photo.label}
+                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* ─── RIGHT: Product Info ─── */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 
               {/* Tags */}
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ background: "#eff6ff", color: "#2563eb", fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 20, letterSpacing: "0.04em" }}>
+                <span style={{ background: "#eff6ff", color: "#2563eb", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
                   {product.sport}
                 </span>
-                <span style={{ background: "#f1f5f9", color: "#475569", fontSize: 12, fontWeight: 600, padding: "4px 12px", borderRadius: 20 }}>
+                <span style={{ background: "#f1f5f9", color: "#475569", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 6, textTransform: "uppercase" }}>
                   {product.category}
                 </span>
               </div>
 
               {/* Name */}
-              <h1 style={{ fontSize: 28, fontWeight: 800, color: "#0f172a", lineHeight: 1.2, margin: 0 }}>
+              <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", lineHeight: 1.25, margin: 0, textTransform: "uppercase" }}>
                 {product.name}
               </h1>
 
               {/* Price */}
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 32, fontWeight: 800, color: "#0f172a" }}>₹{product.price.toLocaleString()}</span>
+                <span style={{ fontSize: 28, fontWeight: 900, color: "#0f172a" }}>₹{product.price?.toLocaleString()}</span>
                 {product.originalPrice && (
                   <>
-                    <span style={{ fontSize: 18, color: "#94a3b8", textDecoration: "line-through" }}>₹{product.originalPrice.toLocaleString()}</span>
-                    <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 13, fontWeight: 700, padding: "3px 10px", borderRadius: 20 }}>
+                    <span style={{ fontSize: 16, color: "#94a3b8", textDecoration: "line-through", fontWeight: 600 }}>₹{product.originalPrice.toLocaleString()}</span>
+                    <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 12, fontWeight: 800, padding: "3px 8px", borderRadius: 6 }}>
                       {discountPct}% OFF
                     </span>
                   </>
                 )}
               </div>
 
-              <p style={{ color: "#64748b", lineHeight: 1.7, margin: 0, fontSize: 14 }}>
+              <p style={{ color: "#64748b", lineHeight: 1.6, margin: 0, fontSize: 13, fontWeight: 500 }}>
                 Official premium match-quality jersey. Sweat-wicking performance mesh, ultra-lightweight fabric, and heat-applied crest for maximum comfort on and off the pitch.
               </p>
 
@@ -320,8 +294,8 @@ export default function ProductDetailPage() {
               {/* Size Selection */}
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <label style={{ fontWeight: 700, fontSize: 14, color: "#0f172a" }}>Select Size</label>
-                  <span style={{ fontSize: 12, color: "#2563eb", fontWeight: 600, cursor: "pointer" }}>📏 Size Guide</span>
+                  <label style={{ fontWeight: 800, fontSize: 13, color: "#0f172a", textTransform: "uppercase" }}>Select Size</label>
+                  <span style={{ fontSize: 12, color: "#2563eb", fontWeight: 700, cursor: "pointer" }}>📏 Size Guide</span>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {(product.sizes || ["S", "M", "L", "XL"]).map((size) => (
@@ -329,13 +303,13 @@ export default function ProductDetailPage() {
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       style={{
-                        width: 52, height: 52, borderRadius: 10, fontWeight: 700,
+                        minWidth: 48, height: 48, borderRadius: 10, fontWeight: 800,
                         fontSize: 13, cursor: "pointer", transition: "all 0.2s",
-                        border: selectedSize === size ? "2.5px solid #2563eb" : "2px solid #e2e8f0",
-                        background: selectedSize === size ? "#eff6ff" : "#fff",
-                        color: selectedSize === size ? "#2563eb" : "#475569",
-                        boxShadow: selectedSize === size ? "0 4px 12px rgba(37,99,235,0.2)" : "none",
-                        transform: selectedSize === size ? "scale(1.05)" : "scale(1)",
+                        border: selectedSize === size ? "2.5px solid #0f172a" : "1.5px solid #e2e8f0",
+                        background: selectedSize === size ? "#0f172a" : "#fff",
+                        color: selectedSize === size ? "#ffffff" : "#475569",
+                        boxShadow: selectedSize === size ? "0 4px 12px rgba(15,23,42,0.18)" : "none",
+                        padding: "0 14px"
                       }}
                     >
                       {size}
@@ -346,35 +320,36 @@ export default function ProductDetailPage() {
 
               {/* Quantity */}
               <div>
-                <label style={{ fontWeight: 700, fontSize: 14, color: "#0f172a", display: "block", marginBottom: 10 }}>Quantity</label>
-                <div style={{ display: "flex", alignItems: "center", gap: 0, border: "2px solid #e2e8f0", borderRadius: 12, overflow: "hidden", width: "fit-content" }}>
-                  <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 44, height: 44, border: "none", background: "#f8fafc", cursor: "pointer", fontSize: 18, fontWeight: 700, color: "#475569" }}>−</button>
-                  <span style={{ width: 52, textAlign: "center", fontWeight: 800, fontSize: 16, color: "#0f172a" }}>{qty}</span>
-                  <button onClick={() => setQty(qty + 1)} style={{ width: 44, height: 44, border: "none", background: "#f8fafc", cursor: "pointer", fontSize: 18, fontWeight: 700, color: "#475569" }}>+</button>
+                <label style={{ fontWeight: 800, fontSize: 13, color: "#0f172a", display: "block", marginBottom: 10, textTransform: "uppercase" }}>Quantity</label>
+                <div style={{ display: "flex", alignItems: "center", gap: 0, border: "1.5px solid #e2e8f0", borderRadius: 12, overflow: "hidden", width: "fit-content", background: "#ffffff" }}>
+                  <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 44, height: 44, border: "none", background: "#f8fafc", cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#475569" }}>−</button>
+                  <span style={{ width: 52, textAlign: "center", fontWeight: 900, fontSize: 16, color: "#0f172a" }}>{qty}</span>
+                  <button onClick={() => setQty(qty + 1)} style={{ width: 44, height: 44, border: "none", background: "#f8fafc", cursor: "pointer", fontSize: 18, fontWeight: 800, color: "#475569" }}>+</button>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Action Buttons (Full width touch-friendly on mobile) */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 6 }}>
                 <button
                   onClick={handleAddToCart}
                   style={{
-                    padding: "16px 24px", borderRadius: 14, border: "2.5px solid #0f172a",
-                    background: "#0f172a", color: "#fff", fontWeight: 800, fontSize: 15,
-                    cursor: "pointer", transition: "all 0.2s",
+                    padding: "16px 20px", borderRadius: 14, border: "none",
+                    background: "#0f172a", color: "#fff", fontWeight: 900, fontSize: 14,
+                    cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase",
+                    letterSpacing: "0.04em", boxShadow: "0 4px 14px rgba(15,23,42,0.2)",
+                    width: "100%"
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = "#1e293b"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "#0f172a"; }}
                 >
                   🛒 Add {qty} to Cart — ₹{(product.price * qty).toLocaleString()}
                 </button>
                 <button
                   onClick={() => { handleAddToCart(); setIsCartOpen(true); }}
                   style={{
-                    padding: "16px 24px", borderRadius: 14, border: "none",
-                    background: "linear-gradient(135deg, #2563eb, #1d4ed8)", color: "#fff",
-                    fontWeight: 800, fontSize: 15, cursor: "pointer", transition: "all 0.2s",
-                    boxShadow: "0 4px 14px rgba(37,99,235,0.4)",
+                    padding: "16px 20px", borderRadius: 14, border: "none",
+                    background: "#2563eb", color: "#fff",
+                    fontWeight: 900, fontSize: 14, cursor: "pointer", transition: "all 0.2s",
+                    textTransform: "uppercase", letterSpacing: "0.04em",
+                    boxShadow: "0 4px 14px rgba(37,99,235,0.3)", width: "100%"
                   }}
                 >
                   ⚡ Buy Now
@@ -385,84 +360,15 @@ export default function ProductDetailPage() {
               {addedToast && (
                 <div style={{
                   background: "#dcfce7", color: "#15803d", borderRadius: 12,
-                  padding: "12px 18px", fontWeight: 700, fontSize: 14,
+                  padding: "12px 18px", fontWeight: 800, fontSize: 13,
                   border: "1px solid #bbf7d0", display: "flex", alignItems: "center", gap: 8,
                 }}>
                   ✓ {product.name} ({selectedSize}) added to cart!
                 </div>
               )}
 
-              {/* Specs */}
-              <div style={{ background: "#fff", borderRadius: 14, padding: "18px 20px", border: "1px solid #f1f5f9", marginTop: 4 }}>
-                <h3 style={{ fontWeight: 800, fontSize: 14, color: "#0f172a", margin: "0 0 12px" }}>Product Specifications</h3>
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
-                  {[
-                    ["Fit", "Athletic Slim Fit"],
-                    ["Material", "100% Recycled Breathability Polyester"],
-                    ["Technology", "Dri-FIT Moisture Wicking"],
-                    ["Crest", "Heat-sealed Official Team Crest"],
-                    ["Care", "Machine Wash Cold, Line Dry"],
-                  ].map(([key, val]) => (
-                    <li key={key} style={{ display: "flex", gap: 8, fontSize: 13, color: "#475569" }}>
-                      <strong style={{ color: "#0f172a", minWidth: 80 }}>{key}:</strong>
-                      <span>{val}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
           </div>
-
-          {/* All Photos Strip at Bottom */}
-          {photos.length > 1 && (
-            <div style={{ marginTop: 48 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: "#0f172a", marginBottom: 20 }}>All Photos</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
-                {photos.map((photo, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      setActivePhotoIdx(idx);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    style={{
-                      position: "relative", borderRadius: 14, overflow: "hidden",
-                      aspectRatio: "3/4", border: idx === activePhotoIdx ? "3px solid #2563eb" : "2px solid #e2e8f0",
-                      background: "#fff", cursor: "pointer", padding: 0,
-                      boxShadow: idx === activePhotoIdx ? "0 4px 16px rgba(37,99,235,0.25)" : "0 2px 8px rgba(0,0,0,0.06)",
-                      transition: "all 0.2s",
-                    }}
-                  >
-                    <img
-                      src={photo.src}
-                      alt={photo.label}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                    <div style={{
-                      position: "absolute", bottom: 0, left: 0, right: 0,
-                      background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
-                      padding: "20px 10px 10px",
-                    }}>
-                      <span style={{ color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em" }}>
-                        {photo.label}
-                      </span>
-                    </div>
-                    {idx === activePhotoIdx && (
-                      <div style={{
-                        position: "absolute", top: 8, right: 8,
-                        background: "#2563eb", borderRadius: "50%", width: 22, height: 22,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </main>
 
@@ -501,17 +407,53 @@ export default function ProductDetailPage() {
               <span>Total</span>
               <span>₹{cartTotal.toFixed(2)}</span>
             </div>
-            <button className="btn-primary btn-checkout" onClick={() => alert("Checkout not implemented yet!")}>Checkout</button>
+            <button className="btn-primary btn-checkout" onClick={() => alert("Checkout initialized!")}>Checkout</button>
           </div>
         )}
       </aside>
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .product-detail-layout {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 36px;
+          align-items: start;
+        }
+
+        .gallery-wrapper {
+          display: flex;
+          gap: 14px;
+        }
+
+        .thumbnail-strip {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+
+        .main-image-container {
+          flex: 1;
+        }
+
         @media (max-width: 768px) {
-          .product-detail-grid-responsive { grid-template-columns: 1fr !important; }
-          .product-photos-strip { grid-template-columns: repeat(2, 1fr) !important; }
-          .product-thumb-strip { flex-direction: row !important; overflow-x: auto; }
+          .hide-on-mobile {
+            display: none !important;
+          }
+          .product-detail-layout {
+            grid-template-columns: 1fr !important;
+            gap: 24px !important;
+          }
+          .gallery-wrapper {
+            flex-direction: column !important;
+          }
+          .thumbnail-strip {
+            flex-direction: row !important;
+            overflow-x: auto;
+            padding-bottom: 4px;
+          }
         }
       `}</style>
     </div>

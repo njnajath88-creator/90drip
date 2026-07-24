@@ -2,41 +2,78 @@ import Link from "next/link";
 
 export default function AdminHeader() {
   return (
-    <header className="admin-header">
-      <div className="admin-header-container">
-        <div className="admin-brand">
-          <Link href="/" className="admin-logo-link">
-            <img
-              src="/images/90driplogo.png"
-              alt="90DRIP"
-              style={{ height: "36px", objectFit: "contain" }}
-            />
-          </Link>
-          <span className="admin-badge">ADMIN PORTAL</span>
-        </div>
-
-        <div className="admin-nav-actions">
-          <Link href="/" className="admin-back-btn">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+    <header className="admin-header" style={{ background: "#ffffff", borderBottom: "1px solid #e2e8f0", padding: "12px 0" }}>
+      <div className="container">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+          
+          {/* Brand Logo & Portal Tag */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+              <img
+                src="/images/90driplogo.png"
+                alt="90DRIP"
+                style={{ height: "26px", objectFit: "contain" }}
+              />
+            </Link>
+            <span
+              style={{
+                background: "#2563eb",
+                color: "#ffffff",
+                fontSize: "10px",
+                fontWeight: "900",
+                letterSpacing: "0.06em",
+                padding: "4px 8px",
+                borderRadius: "6px",
+                textTransform: "uppercase"
+              }}
             >
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            View Shop Front
-          </Link>
-          <div className="admin-user-profile">
-            <div className="admin-avatar">AD</div>
-            <span className="admin-user-name">Manager</span>
+              ADMIN
+            </span>
           </div>
+
+          {/* Right Action Buttons */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <Link
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                fontSize: "12px",
+                fontWeight: "800",
+                color: "#0f172a",
+                textDecoration: "none",
+                background: "#f8fafc",
+                padding: "8px 12px",
+                borderRadius: "10px",
+                border: "1.5px solid #e2e8f0"
+              }}
+            >
+              <span>←</span>
+              <span>Shop Front</span>
+            </Link>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#f8fafc", padding: "4px 10px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+              <div
+                style={{
+                  width: "28px",
+                  height: "28px",
+                  borderRadius: "50%",
+                  background: "#0f172a",
+                  color: "#ffffff",
+                  fontSize: "11px",
+                  fontWeight: "900",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                AD
+              </div>
+              <span style={{ fontSize: "12px", fontWeight: "800", color: "#0f172a" }}>Manager</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </header>

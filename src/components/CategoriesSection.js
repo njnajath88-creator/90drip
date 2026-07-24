@@ -38,25 +38,26 @@ export default function CategoriesSection() {
   ];
 
   return (
-    <section className="categories-section" id="categories" style={{ padding: "40px 0" }}>
-      <div className="container">
+    <section className="categories-section" id="categories" style={{ padding: "40px 0", background: "#ffffff" }}>
+      <div className="container" style={{ maxWidth: "800px" }}>
         <div
           className="section-header-wrap"
-          style={{ textAlign: "center", marginBottom: "32px" }}
+          style={{ textAlign: "center", marginBottom: "28px" }}
         >
-          <h2 className="section-title" style={{ fontSize: "28px", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          <h2 className="section-title" style={{ fontSize: "26px", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.04em", color: "#0f172a" }}>
             Shop By Category
           </h2>
-          <p style={{ color: "#64748b", fontSize: "14px", marginTop: "4px" }}>
+          <p style={{ color: "#64748b", fontSize: "13px", marginTop: "4px", fontWeight: "600" }}>
             Explore our 4 signature sleeve styles &amp; classic retro editions
           </p>
         </div>
 
+        {/* 2-Column Grid Layout for 4 Category Showcase Cards */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: "20px"
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "20px 16px"
           }}
         >
           {categories.map((cat) => (
@@ -83,27 +84,29 @@ export default function CategoriesSection() {
                 <div
                   style={{
                     position: "relative",
-                    padding: "24px 16px",
+                    padding: "20px 16px",
                     background: "#f4f4f0",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    height: "220px",
+                    height: "200px",
                     overflow: "hidden"
                   }}
                 >
                   <span
                     style={{
                       position: "absolute",
-                      top: 14,
-                      left: 14,
+                      top: 12,
+                      left: 12,
                       background: cat.badgeColor,
                       color: "#ffffff",
-                      fontSize: "11px",
-                      fontWeight: "800",
-                      padding: "4px 10px",
+                      fontSize: "10px",
+                      fontWeight: "900",
+                      padding: "4px 9px",
                       borderRadius: "6px",
-                      zIndex: 2
+                      zIndex: 2,
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase"
                     }}
                   >
                     {cat.key}
@@ -112,7 +115,7 @@ export default function CategoriesSection() {
                     src={cat.image}
                     alt={cat.alt}
                     style={{
-                      maxHeight: "190px",
+                      maxHeight: "170px",
                       maxWidth: "100%",
                       objectFit: "contain",
                       transition: "transform 0.35s ease"
@@ -125,7 +128,7 @@ export default function CategoriesSection() {
                 <div
                   style={{
                     background: "#ffffff",
-                    padding: "18px 20px 20px",
+                    padding: "16px",
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
@@ -133,14 +136,14 @@ export default function CategoriesSection() {
                   }}
                 >
                   <div>
-                    <h3 style={{ margin: "0 0 4px", fontSize: "18px", fontWeight: "900", color: "#0f172a" }}>
+                    <h3 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: "900", color: "#0f172a", textTransform: "uppercase" }}>
                       {cat.key}
                     </h3>
-                    <p style={{ margin: 0, fontSize: "12px", color: "#64748b", lineHeight: 1.4 }}>
+                    <p style={{ margin: 0, fontSize: "12px", color: "#64748b", lineHeight: 1.35, fontWeight: "500" }}>
                       {cat.description}
                     </p>
                   </div>
-                  <div style={{ marginTop: "16px", fontSize: "13px", fontWeight: "800", color: "#2563eb", display: "flex", alignItems: "center", gap: "4px" }}>
+                  <div style={{ marginTop: "14px", fontSize: "12px", fontWeight: "800", color: "#2563eb", display: "flex", alignItems: "center", gap: "4px" }}>
                     <span>Shop Collection</span>
                     <span>→</span>
                   </div>
@@ -152,11 +155,11 @@ export default function CategoriesSection() {
       </div>
       <style>{`
         .category-card-hover:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+          transform: translateY(-4px);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.08);
         }
         .category-card-hover:hover .cat-img {
-          transform: scale(1.06);
+          transform: scale(1.05);
         }
       `}</style>
     </section>

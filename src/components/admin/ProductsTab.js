@@ -21,25 +21,44 @@ export default function ProductsTab({
 
   return (
     <div className="tab-content fade-in">
-      <div className="admin-card-header-bar">
-        <div className="search-filter-group">
-          <div className="search-input-wrap">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
+      {/* Search, Filter & Add Button Bar */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+        
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          {/* Search Input */}
+          <div style={{ flex: 1, minWidth: "200px", position: "relative" }}>
             <input
               type="text"
               placeholder="Search jerseys..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="admin-input"
+              style={{
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: "12px",
+                border: "1.5px solid #e2e8f0",
+                fontSize: "14px",
+                fontWeight: "600",
+                background: "#ffffff",
+                outline: "none"
+              }}
             />
           </div>
+
+          {/* Sport Select */}
           <select
             value={sportFilter}
             onChange={(e) => setSportFilter(e.target.value)}
-            className="admin-select"
+            style={{
+              padding: "12px 14px",
+              borderRadius: "12px",
+              border: "1.5px solid #e2e8f0",
+              fontSize: "13px",
+              fontWeight: "700",
+              background: "#ffffff",
+              color: "#0f172a",
+              outline: "none"
+            }}
           >
             <option value="all">All Sports</option>
             <option value="Football">Football</option>
@@ -47,102 +66,99 @@ export default function ProductsTab({
           </select>
         </div>
 
-        <button className="btn-primary-admin" onClick={onAddProduct}>
+        {/* Add Product Button */}
+        <button
+          onClick={onAddProduct}
+          style={{
+            width: "100%",
+            padding: "14px 20px",
+            borderRadius: "12px",
+            border: "none",
+            background: "#2563eb",
+            color: "#ffffff",
+            fontSize: "14px",
+            fontWeight: "900",
+            cursor: "pointer",
+            letterSpacing: "0.03em",
+            boxShadow: "0 4px 14px rgba(37,99,235,0.25)"
+          }}
+        >
           + Add New Jersey
         </button>
       </div>
 
       {loading ? (
-        <div className="admin-loading">Loading products catalog...</div>
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}>Loading products catalog...</div>
       ) : (
-        <div className="admin-card">
-          <div className="table-responsive">
-            <table className="admin-table">
+        <div style={{ background: "#ffffff", borderRadius: "16px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table className="admin-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: "600px" }}>
               <thead>
-                <tr>
-                  <th>Preview</th>
-                  <th>Jersey Name</th>
-                  <th>Category</th>
-                  <th>Price (₹)</th>
-                  <th>Original (₹)</th>
-                  <th>Badges</th>
-                  <th>Sizes</th>
-                  <th>Actions</th>
+                <tr style={{ background: "#f8fafc", borderBottom: "1.5px solid #e2e8f0", textAlign: "left" }}>
+                  <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Preview</th>
+                  <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Jersey Name</th>
+                  <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Category</th>
+                  <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Price</th>
+                  <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="empty-table">
-                      No products found.
-                    </td>
+                    <td colSpan="5" style={{ padding: "30px", textAlign: "center", color: "#94a3b8" }}>No products found.</td>
                   </tr>
                 ) : (
                   filteredProducts.map((product) => (
-                    <tr key={product.id}>
-                      <td>
+                    <tr key={product.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                      <td style={{ padding: "10px 16px" }}>
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="product-thumb"
+                          style={{ width: "44px", height: "52px", objectFit: "contain", borderRadius: "8px", background: "#f4f4f0", padding: "4px" }}
                         />
                       </td>
-                      <td><strong>{product.name}</strong></td>
-                      <td>
-                        <span className="category-badge">{product.sport}</span>
+                      <td style={{ padding: "10px 16px", fontSize: "13px", fontWeight: "800", color: "#0f172a" }}>
+                        {product.name}
                       </td>
-                      <td><strong>₹{product.price.toLocaleString()}</strong></td>
-                      <td>
-                        {product.originalPrice
-                          ? `₹${product.originalPrice.toLocaleString()}`
-                          : "—"}
+                      <td style={{ padding: "10px 16px" }}>
+                        <span style={{ background: "#f1f5f9", color: "#475569", fontSize: "11px", fontWeight: "800", padding: "4px 8px", borderRadius: "6px" }}>
+                          {product.category || product.sport}
+                        </span>
                       </td>
-                      <td>
-                        {product.badges && product.badges.length > 0 ? (
-                          product.badges.map((b) => (
-                            <span
-                              key={b}
-                              className={`product-badge-pill badge-${b.toLowerCase()}`}
-                            >
-                              {b}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-muted">None</span>
-                        )}
+                      <td style={{ padding: "10px 16px", fontSize: "13px", fontWeight: "800", color: "#0f172a" }}>
+                        ₹{product.price?.toLocaleString()}
                       </td>
-                      <td>
-                        <div className="sizes-wrap">
-                          {(Array.isArray(product.sizes) ? product.sizes : []).map(
-                            (s) => (
-                              <span key={s} className="size-chip">
-                                {s}
-                              </span>
-                            )
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
+                      <td style={{ padding: "10px 16px" }}>
+                        <div style={{ display: "flex", gap: "8px" }}>
                           <button
-                            className="btn-icon edit"
                             onClick={() => onEditProduct(product)}
-                            title="Edit Product"
+                            style={{
+                              padding: "6px 12px",
+                              borderRadius: "8px",
+                              border: "1px solid #e2e8f0",
+                              background: "#f8fafc",
+                              fontSize: "12px",
+                              fontWeight: "700",
+                              color: "#2563eb",
+                              cursor: "pointer"
+                            }}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                            </svg>
+                            Edit
                           </button>
                           <button
-                            className="btn-icon delete"
                             onClick={() => onDeleteProduct(product.id)}
-                            title="Delete Product"
+                            style={{
+                              padding: "6px 12px",
+                              borderRadius: "8px",
+                              border: "1px solid #fee2e2",
+                              background: "#fef2f2",
+                              fontSize: "12px",
+                              fontWeight: "700",
+                              color: "#ef4444",
+                              cursor: "pointer"
+                            }}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="3 6 5 6 21 6"></polyline>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
+                            Delete
                           </button>
                         </div>
                       </td>
