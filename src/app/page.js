@@ -1,6 +1,50 @@
 "use client";
 import { useState, useEffect } from "react";
 
+function ProductCard({ product, addToCart }) {
+  const [showRear, setShowRear] = useState(false);
+
+  useEffect(() => {
+    if (!product.backImage) return;
+    const timer = setInterval(() => {
+      setShowRear((prev) => !prev);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [product.backImage]);
+
+  const activeSrc = (showRear && product.backImage) ? product.backImage : product.image;
+
+  return (
+    <div className="product-card">
+      <div className="product-image-wrap">
+        <img 
+          src={activeSrc} 
+          alt={product.name} 
+          className="product-image transition-image" 
+        />
+        {product.backImage && (
+          <span className="view-indicator-pill">
+            {showRear ? "REAR VIEW" : "FRONT VIEW"}
+          </span>
+        )}
+        {(product.badges || []).map(badge => (
+          <span key={badge} className={`product-badge badge-${badge.toLowerCase()}`}>{badge}</span>
+        ))}
+      </div>
+      <div className="product-info">
+        <span className="product-category">{product.sport}</span>
+        <h3 className="product-name">{product.name}</h3>
+        <div className="product-price">
+          <span>₹{product.price}</span>
+          {product.originalPrice && <span className="original-price">₹{product.originalPrice}</span>}
+        </div>
+        <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add to Cart</button>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [filter, setFilter] = useState("all");
@@ -203,23 +247,7 @@ export default function Home() {
 
           <div className="products-grid">
             {filteredProducts.map(product => (
-              <div key={product.id} className="product-card">
-                <div className="product-image-wrap">
-                  <img src={product.image} alt={product.name} className="product-image" />
-                  {product.badges.map(badge => (
-                    <span key={badge} className={`product-badge badge-${badge.toLowerCase()}`}>{badge}</span>
-                  ))}
-                </div>
-                <div className="product-info">
-                  <span className="product-category">{product.sport}</span>
-                  <h3 className="product-name">{product.name}</h3>
-                  <div className="product-price">
-                    <span>₹{product.price}</span>
-                    {product.originalPrice && <span className="original-price">₹{product.originalPrice}</span>}
-                  </div>
-                  <button className="btn-primary add-to-cart-btn" onClick={() => addToCart(product)}>Add to Cart</button>
-                </div>
-              </div>
+              <ProductCard key={product.id} product={product} addToCart={addToCart} />
             ))}
           </div>
         </div>

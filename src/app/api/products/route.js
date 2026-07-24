@@ -8,6 +8,7 @@ let products = [
     price: 1999,
     originalPrice: 2499,
     image: '/images/jersey_product1.png',
+    backImage: '/images/jersey_product2.png',
     badges: ['New'],
     sizes: ['S', 'M', 'L', 'XL'],
   },
@@ -18,6 +19,7 @@ let products = [
     price: 1499,
     originalPrice: null,
     image: '/images/jersey_product2.png',
+    backImage: '/images/jersey_product1.png',
     badges: ['Sale'],
     sizes: ['XS', 'S', 'M', 'L', 'XL'],
   },
@@ -28,6 +30,7 @@ let products = [
     price: 1799,
     originalPrice: 2199,
     image: '/images/jersey_product3.png',
+    backImage: '/images/jersey_product4.png',
     badges: ['New'],
     sizes: ['S', 'M', 'L'],
   },
@@ -38,13 +41,14 @@ let products = [
     price: 1299,
     originalPrice: null,
     image: '/images/jersey_product4.png',
+    backImage: '/images/jersey_product3.png',
     badges: [],
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
   },
 ];
 
 export async function GET() {
-  return NextResponse.json(products);
+  return Response.json(products);
 }
 
 export async function POST(request) {
@@ -57,13 +61,14 @@ export async function POST(request) {
       price: parseFloat(body.price) || 0,
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
       image: body.image || '/images/jersey_product1.png',
+      backImage: body.backImage || null,
       badges: Array.isArray(body.badges) ? body.badges : (body.badges ? body.badges.split(',').map(b => b.trim()) : []),
       sizes: Array.isArray(body.sizes) ? body.sizes : (body.sizes ? body.sizes.split(',').map(s => s.trim()) : ['S', 'M', 'L', 'XL']),
     };
     products.unshift(newProduct);
-    return NextResponse.json(newProduct, { status: 201 });
+    return Response.json(newProduct, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create product" }, { status: 400 });
+    return Response.json({ error: "Failed to create product" }, { status: 400 });
   }
 }
 
@@ -72,30 +77,38 @@ export async function PUT(request) {
     const body = await request.json();
     const index = products.findIndex((p) => p.id === body.id);
     if (index === -1) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      return Response.json({ error: "Product not found" }, { status: 404 });
     }
     products[index] = {
       ...products[index],
       ...body,
       price: parseFloat(body.price),
       originalPrice: body.originalPrice ? parseFloat(body.originalPrice) : null,
+      image: body.image || products[index].image,
+      backImage: body.backImage !== undefined ? body.backImage : products[index].backImage,
       badges: Array.isArray(body.badges) ? body.badges : (body.badges ? body.badges.split(',').map(b => b.trim()) : []),
       sizes: Array.isArray(body.sizes) ? body.sizes : (body.sizes ? body.sizes.split(',').map(s => s.trim()) : ['S', 'M', 'L', 'XL']),
     };
-    return NextResponse.json(products[index]);
+    return Response.json(products[index]);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update product" }, { status: 400 });
+    return Response.json({ error: "Failed to update product" }, { status: 400 });
   }
 }
 
 export async function DELETE(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const idParam = searchParams.get('id');
-    const id = idParam ? parseInt(idParam, 10) : (await request.json()).id;
-    products = products.filter((p) => p.id !== Number(id));
-    return NextResponse.json({ success: true, message: "Product deleted" });
+    const url = new URL(request.url, "http://localhost:3000");
+    const idParam = url.searchParams.get('id');
+    let id = idParam ? parseInt(idParam, 10) : null;
+    if (!id) {
+      const body = await request.json().catch(() => ({}));
+      id = body.id;
+    }
+    if (id) {
+      products = products.filter((p) => p.id !== Number(id));
+    }
+    return Response.json({ success: true, message: "Product deleted" });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to delete product" }, { status: 400 });
+    return Response.json({ error: "Failed to delete product" }, { status: 400 });
   }
 }

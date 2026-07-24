@@ -1404,6 +1404,27 @@ button {
   .admin-card-header-bar { flex-direction: column; align-items: stretch; }
   .search-filter-group { flex-direction: column; width: 100%; }
 }
+/* Front / Rear View Image Transitions */
+.transition-image {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.view-indicator-pill {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 
 
 
