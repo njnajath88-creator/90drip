@@ -148,19 +148,20 @@ export default function ProductDetailPage() {
             {/* ─── LEFT: Image Gallery ─── */}
             <div className="gallery-wrapper">
 
-              {/* Main Image Display Container (objectFit: contain so zero image cropping) */}
+              {/* Main Image Display Container */}
               <div className="main-image-container">
                 <div
+                  className="product-main-card"
                   style={{
-                    background: "#f4f4f0",
+                    background: "#ffffff",
                     borderRadius: 22,
                     overflow: "hidden",
                     position: "relative",
                     cursor: isZoomed ? "zoom-out" : "zoom-in",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-                    aspectRatio: "3/4",
+                    aspectRatio: "1 / 1",
                     border: "1px solid #e8e8e2",
-                    padding: "16px",
+                    padding: 0,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
@@ -175,10 +176,10 @@ export default function ProductDetailPage() {
                     style={{
                       width: "100%",
                       height: "100%",
-                      objectFit: "contain",
-                      transition: isZoomed ? "none" : "opacity 0.3s",
+                      objectFit: "cover",
+                      transition: isZoomed ? "none" : "opacity 0.3s, transform 0.3s ease-out",
                       transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-                      transform: isZoomed ? "scale(1.8)" : "scale(1)",
+                      transform: isZoomed ? "scale(1.8)" : "scale(1.05)",
                       display: "block"
                     }}
                   />
@@ -233,13 +234,13 @@ export default function ProductDetailPage() {
                       onClick={() => setActivePhotoIdx(idx)}
                       style={{
                         width: 64,
-                        height: 72,
+                        height: 64,
                         borderRadius: 12,
                         overflow: "hidden",
                         border: idx === activePhotoIdx ? "2.5px solid #2563eb" : "1.5px solid #e2e8f0",
-                        background: "#f4f4f0",
+                        background: "#ffffff",
                         cursor: "pointer",
-                        padding: 4,
+                        padding: 0,
                         flexShrink: 0,
                         transition: "all 0.2s",
                         boxShadow: idx === activePhotoIdx ? "0 4px 12px rgba(37,99,235,0.2)" : "none",
@@ -249,7 +250,7 @@ export default function ProductDetailPage() {
                       <img
                         src={photo.src}
                         alt={photo.label}
-                        style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                       />
                     </button>
                   ))}
@@ -447,7 +448,7 @@ export default function ProductDetailPage() {
           }
           .product-detail-layout {
             grid-template-columns: 1fr !important;
-            gap: 24px !important;
+            gap: 20px !important;
           }
           .gallery-wrapper {
             flex-direction: column !important;
@@ -456,6 +457,12 @@ export default function ProductDetailPage() {
             flex-direction: row !important;
             overflow-x: auto;
             padding-bottom: 4px;
+          }
+          .product-main-card {
+            aspect-ratio: 1 / 1 !important;
+            max-height: 380px !important;
+            width: 100% !important;
+            margin: 0 auto !important;
           }
         }
       `}</style>

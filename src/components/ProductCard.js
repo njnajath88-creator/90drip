@@ -22,12 +22,13 @@ export default function ProductCard({ product }) {
       onMouseLeave={() => setHovered(false)}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        {/* Soft Grey Edge-to-Edge Image Container (No tags, no inner white padding) */}
+        {/* Edge-to-Edge Clean Image Container */}
         <div
           style={{
-            background: "#e5e5e0",
-            borderRadius: "22px",
-            aspectRatio: "3/4",
+            background: "#ffffff",
+            borderRadius: "20px",
+            aspectRatio: "4/5",
+            border: "1px solid #e8e8e2",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
