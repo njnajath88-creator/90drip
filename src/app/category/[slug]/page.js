@@ -51,7 +51,7 @@ export default function CategoryPage() {
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     async function loadProducts() {
@@ -108,14 +108,14 @@ export default function CategoryPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       <Navbar
+        solid={true}
         cartCount={cartCount}
         onOpenCart={() => setIsCartOpen(true)}
-        isProfileOpen={isProfileOpen}
-        setIsProfileOpen={setIsProfileOpen}
-        onOpenCartFromProfile={() => setIsCartOpen(true)}
+        user={user}
+        setUser={setUser}
       />
 
-      <main style={{ paddingBottom: "80px" }}>
+      <main style={{ paddingTop: "90px", paddingBottom: "80px" }}>
         {/* Category Header Banner */}
         <div style={{ background: "#ffffff", padding: "28px 0 16px" }}>
           <div className="container" style={{ maxWidth: "1200px" }}>

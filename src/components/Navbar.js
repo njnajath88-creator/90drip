@@ -7,7 +7,8 @@ export default function Navbar({
   cartCount,
   onOpenCart,
   user,
-  setUser
+  setUser,
+  solid = false
 }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function Navbar({
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem("90drip_user");
-      if (savedUser) {
+      if (savedUser && setUser) {
         setUser(JSON.parse(savedUser));
       }
     } catch (e) {
@@ -27,6 +28,10 @@ export default function Navbar({
   // Navbar scroll behavior
   useEffect(() => {
     const navbar = document.getElementById("navbar");
+    if (solid) {
+      navbar?.classList.add("scrolled");
+      return;
+    }
     const onScroll = () => {
       if (window.scrollY > 50) {
         navbar?.classList.add("scrolled");
@@ -34,9 +39,10 @@ export default function Navbar({
         navbar?.classList.remove("scrolled");
       }
     };
+    onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [solid]);
 
   const handleProfileClick = () => {
     if (user) {

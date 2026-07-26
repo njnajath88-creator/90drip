@@ -5,14 +5,7 @@ import Link from "next/link";
 export default function ProductCard({ product }) {
   const [hovered, setHovered] = useState(false);
 
-  const photos = [
-    product.image,
-    product.backImage,
-    product.closeupImage,
-    product.fitImage,
-  ].filter(Boolean);
-
-  const displaySrc = hovered && photos[1] ? photos[1] : photos[0] || "/images/jersey_product1.png";
+  const displaySrc = product.image || "/images/jersey_product1.png";
 
   return (
     <Link
