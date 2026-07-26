@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import AuthModal from "./AuthModal";
 
+import ProfileDetailsModal from "./ProfileDetailsModal";
+
 export default function Navbar({
   cartCount,
   onOpenCart,
@@ -12,6 +14,7 @@ export default function Navbar({
 }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -64,6 +67,7 @@ export default function Navbar({
   const handleLogout = () => {
     setUser(null);
     setIsProfileOpen(false);
+    setIsProfileModalOpen(false);
     try {
       localStorage.removeItem("90drip_user");
     } catch (e) {
@@ -124,7 +128,7 @@ export default function Navbar({
                 title={user ? `Logged in as ${user.email}` : "Sign In"}
               >
                 {user ? (
-                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "#2563eb" : "#0f172a", color: "#fff", fontSize: "11px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "11px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
                     {userInitials}
                   </div>
                 ) : (
@@ -142,7 +146,7 @@ export default function Navbar({
                 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
               </button>
 
-              {/* Profile Dropdown Menu (Logged In State) */}
+              {/* Advanced Profile Dropdown Menu */}
               {user && isProfileOpen && (
                 <>
                   <div
@@ -150,16 +154,39 @@ export default function Navbar({
                     onClick={() => setIsProfileOpen(false)}
                   />
                   <div className="profile-dropdown-menu">
+                    {/* Header with Avatar & Online Dot */}
                     <div className="profile-dropdown-header">
-                      <div className="profile-avatar" style={{ background: isAdmin ? "#2563eb" : "#0f172a" }}>
-                        {userInitials}
+                      <div className="profile-avatar-wrapper">
+                        <div className="profile-avatar" style={{ background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a" }}>
+                          {userInitials}
+                        </div>
+                        <div className="profile-online-dot" title="Active Session" />
                       </div>
                       <div className="profile-user-info">
-                        <div className="profile-name">{user.name || "User"}</div>
+                        <div className="profile-name">{user.name || "User Account"}</div>
                         <div className="profile-email">{user.email}</div>
+                        <div className={`profile-role-badge ${isAdmin ? "admin" : "customer"}`}>
+                          {isAdmin ? "⚡ Administrator" : "⭐ VIP Member"}
+                        </div>
                       </div>
                     </div>
+
+                    {/* Quick Stats Bar */}
+                    <div className="profile-stats-row">
+                      <div className="profile-stat-chip">
+                        Cart
+                        <span>{cartCount} Items</span>
+                      </div>
+                      <div style={{ width: "1px", background: "#cbd5e1" }} />
+                      <div className="profile-stat-chip">
+                        Status
+                        <span style={{ color: "#16a34a" }}>Active</span>
+                      </div>
+                    </div>
+
                     <div className="profile-divider"></div>
+
+                    {/* Action Items List */}
                     <ul className="profile-menu-list">
                       {isAdmin && (
                         <li>
@@ -175,11 +202,23 @@ export default function Navbar({
                           className="profile-menu-item"
                           onClick={() => {
                             setIsProfileOpen(false);
-                            alert(`Account Details:\nName: ${user.name}\nEmail: ${user.email}\nRole: ${isAdmin ? "Admin" : "Customer"}`);
+                            setIsProfileModalOpen(true);
                           }}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                          <span>My Profile</span>
+                          <span>My Profile & Details</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="profile-menu-item"
+                          onClick={() => {
+                            setIsProfileOpen(false);
+                            if (onOpenCart) onOpenCart();
+                          }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                          <span>View My Cart ({cartCount})</span>
                         </button>
                       </li>
                       <li>
@@ -207,6 +246,14 @@ export default function Navbar({
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onLogin={handleLogin}
+      />
+
+      {/* Profile Details Modal */}
+      <ProfileDetailsModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={user}
+        onLogout={handleLogout}
       />
     </>
   );

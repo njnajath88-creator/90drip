@@ -1437,59 +1437,152 @@ button {
 
 .profile-dropdown-menu {
   position: absolute;
-  top: calc(100% + 12px);
+  top: calc(100% + 14px);
   right: 0;
-  width: 260px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  padding: 16px;
+  width: 290px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(0, 0, 0, 0.04);
+  padding: 18px;
   z-index: 10000;
-  animation: profileFadeIn 0.2s ease-out;
+  animation: profilePopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   color: #0f172a;
 }
 
-@keyframes profileFadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes profilePopIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .profile-dropdown-header {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding-bottom: 12px;
 }
 
+.profile-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .profile-avatar {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 900;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.profile-online-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+.profile-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
 }
 
 .profile-user-info .profile-name {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .profile-user-info .profile-email {
   font-size: 12px;
   color: #64748b;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  width: fit-content;
+}
+
+.profile-role-badge.admin {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.profile-role-badge.customer {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.profile-stats-row {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 14px;
+  background: #f8fafc;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.profile-stat-chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.profile-stat-chip span {
+  font-size: 12px;
+  font-weight: 900;
+  color: #0f172a;
 }
 
 .profile-divider {
   height: 1px;
-  background: #e2e8f0;
-  margin: 6px 0 10px;
+  background: #f1f5f9;
+  margin: 4px 0 10px;
 }
 
 .profile-menu-list {
@@ -1498,53 +1591,56 @@ button {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .profile-menu-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: #334155;
   background: transparent;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
 }
 
 .profile-menu-item:hover {
   background: #f1f5f9;
   color: #0f172a;
+  transform: translateX(4px);
 }
 
 .profile-menu-item.admin-link {
-  color: #2563eb;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+  border: 1px solid #c7d2fe;
 }
 
 .profile-menu-item.admin-link:hover {
-  background: #dbeafe;
-  border-color: #2563eb;
-  color: #1d4ed8;
+  background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 100%);
+  border-color: #93c5fd;
+  color: #1e40af;
+  transform: translateX(4px);
 }
 
 .badge-admin-pill {
   margin-left: auto;
-  background: #2563eb;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #ffffff;
   font-size: 10px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
 }
 
 /* Product Detail Quick-View Modal & 4 Photo Slider */
