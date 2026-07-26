@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function FanGallerySection({ addToCart }) {
   const [activeReel, setActiveReel] = useState(null);
+  const sliderRef = useRef(null);
 
   const reels = [
     {
@@ -69,14 +70,53 @@ export default function FanGallerySection({ addToCart }) {
       },
       caption: "Jordan x PSG collab is street culture perfection. Tap to shop the exact fit! ⚡",
     },
+    {
+      id: 5,
+      creator: "@albiceleste_drp",
+      location: "World Cup Stadium",
+      views: "52.9K",
+      likes: "4.8K",
+      comments: "180",
+      img: "/images/jersey_product5.png",
+      product: {
+        id: "arg-home-2425",
+        name: "Argentina 3-Star Champions Kit",
+        price: 2599,
+        image: "/images/jersey_product5.png",
+      },
+      caption: "3-Star Champions badge is embroidered crisp. 10/10 quality from 90DRIP ⭐⭐⭐",
+    },
+    {
+      id: 6,
+      creator: "@gunners_uk",
+      location: "Emirates Stadium",
+      views: "41.3K",
+      likes: "3.1K",
+      comments: "115",
+      img: "/images/jersey_product6.png",
+      product: {
+        id: "ars-home-2425",
+        name: "Arsenal 24/25 Home Kit",
+        price: 2499,
+        image: "/images/jersey_product6.png",
+      },
+      caption: "Clean retro collar detailing is perfection 🔴⚪ Fast delivery to Kochi!",
+    },
   ];
+
+  const handleScroll = (direction) => {
+    if (sliderRef.current) {
+      const scrollAmount = direction === "left" ? -290 : 290;
+      sliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   return (
     <section style={{ padding: "80px 0", background: "#ffffff", color: "#0f172a", borderTop: "1px solid #f1f5f9" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 20px" }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: "center", marginBottom: "52px" }}>
+        <div style={{ textAlign: "center", marginBottom: "40px" }}>
           <div
             style={{
               display: "inline-flex",
@@ -102,196 +142,265 @@ export default function FanGallerySection({ addToCart }) {
             As Seen On Streetwear Fans
           </h2>
           <p style={{ fontSize: "15px", color: "#64748b", maxWidth: "560px", margin: "0 auto", fontWeight: "600" }}>
-            Tap any mobile frame to watch matchday fit reels & shop the exact kit.
+            Swipe left or right to watch matchday fit reels & shop the exact kit.
           </p>
         </div>
 
-        {/* Smartphone Reel Frames Grid */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "24px",
-          }}
-        >
-          {reels.map((reel) => (
-            <div
-              key={reel.id}
-              onClick={() => setActiveReel(reel)}
-              style={{
-                position: "relative",
-                borderRadius: "46px",
-                padding: "8px",
-                background: "linear-gradient(145deg, #1e293b, #0f172a)",
-                border: "2px solid #334155",
-                boxShadow: "0 25px 50px rgba(15, 23, 42, 0.18), inset 0 0 4px rgba(255, 255, 255, 0.2)",
-                cursor: "pointer",
-                overflow: "hidden",
-                transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), boxShadow 0.35s ease",
-              }}
-              className="phone-frame"
-            >
-              {/* Phone Inner Screen Container */}
+        {/* Carousel Slider Wrapper with Navigation Arrows */}
+        <div style={{ position: "relative" }}>
+          {/* Left Arrow Button */}
+          <button
+            onClick={() => handleScroll("left")}
+            aria-label="Previous Reels"
+            style={{
+              position: "absolute",
+              left: "-18px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: "44px",
+              height: "44px",
+              borderRadius: "50%",
+              background: "#0f172a",
+              color: "#ffffff",
+              border: "none",
+              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.25)",
+              cursor: "pointer",
+              zIndex: 15,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s ease",
+            }}
+            className="slider-arrow-btn"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+
+          {/* Horizontal Right-to-Left Scroll Slider */}
+          <div
+            ref={sliderRef}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "24px",
+              overflowX: "auto",
+              scrollSnapType: "x mandatory",
+              padding: "15px 10px 30px",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+              WebkitOverflowScrolling: "touch",
+            }}
+            className="reels-slider-track"
+          >
+            {reels.map((reel) => (
               <div
+                key={reel.id}
+                onClick={() => setActiveReel(reel)}
                 style={{
+                  flex: "0 0 260px",
+                  scrollSnapAlign: "start",
                   position: "relative",
-                  borderRadius: "38px",
+                  borderRadius: "46px",
+                  padding: "8px",
+                  background: "linear-gradient(145deg, #1e293b, #0f172a)",
+                  border: "2px solid #334155",
+                  boxShadow: "0 25px 50px rgba(15, 23, 42, 0.18), inset 0 0 4px rgba(255, 255, 255, 0.2)",
+                  cursor: "pointer",
                   overflow: "hidden",
-                  height: "510px",
-                  background: "#020617",
+                  transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), boxShadow 0.35s ease",
                 }}
+                className="phone-frame"
               >
-                {/* iPhone 17 Pro Dynamic Island Notch */}
+                {/* Phone Inner Screen Container */}
                 <div
                   style={{
-                    position: "absolute",
-                    top: "8px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "88px",
-                    height: "22px",
-                    background: "#000000",
-                    borderRadius: "14px",
-                    zIndex: 10,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
+                    position: "relative",
+                    borderRadius: "38px",
+                    overflow: "hidden",
+                    height: "510px",
+                    background: "#020617",
                   }}
                 >
-                  <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#090d16" }}></span>
-                  <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#1d4ed8" }}></span>
-                </div>
-
-                {/* Reel Product / Fan Photo Image */}
-                <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #0f172a, #020617)", display: "flex", alignItems: "center", justifyContent: "center", padding: "45px 15px 95px", overflow: "hidden" }}>
-                  <img
-                    src={reel.img}
-                    alt={reel.creator}
+                  {/* iPhone 17 Pro Dynamic Island Notch */}
+                  <div
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                      display: "block",
-                      transition: "transform 0.5s ease",
-                      filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.6))",
-                    }}
-                    className="reel-bg-img"
-                  />
-                </div>
-
-                {/* Top Views Badge */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "36px",
-                    left: "14px",
-                    zIndex: 5,
-                  }}
-                >
-                  <span
-                    style={{
-                      background: "rgba(15, 23, 42, 0.8)",
-                      backdropFilter: "blur(8px)",
-                      color: "#ffffff",
-                      fontSize: "11px",
-                      fontWeight: "800",
-                      padding: "4px 10px",
-                      borderRadius: "16px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "5px",
-                      border: "1px solid rgba(255, 255, 255, 0.15)",
-                    }}
-                  >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffffff"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                    <span>{reel.views} views</span>
-                  </span>
-                </div>
-
-                {/* Right Action Icons (Heart & Comment) */}
-                <div
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    bottom: "115px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "14px",
-                    zIndex: 5,
-                  }}
-                >
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(15,23,42,0.75)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                    </div>
-                    <span style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", marginTop: "2px", display: "block" }}>{reel.likes}</span>
-                  </div>
-
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(15,23,42,0.75)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-                    <span style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", marginTop: "2px", display: "block" }}>{reel.comments}</span>
-                  </div>
-                </div>
-
-                {/* Bottom Overlay: Creator info & Shop Button */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: "20px 14px 14px",
-                    background: "linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.7) 65%, transparent 100%)",
-                    zIndex: 5,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                    <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "900" }}>
-                      {reel.creator.charAt(1).toUpperCase()}
-                    </div>
-                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff" }}>{reel.creator}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  </div>
-
-                  <p style={{ fontSize: "11px", color: "#cbd5e1", margin: "0 0 10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: "600" }}>
-                    {reel.product.name}
-                  </p>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart(reel.product);
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "10px 12px",
+                      position: "absolute",
+                      top: "8px",
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      width: "88px",
+                      height: "22px",
+                      background: "#000000",
                       borderRadius: "14px",
-                      background: "#2563eb",
-                      color: "#ffffff",
-                      border: "none",
-                      fontWeight: "900",
-                      fontSize: "12px",
-                      cursor: "pointer",
+                      zIndex: 10,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "6px",
-                      boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
+                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
                     }}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                    <span>Shop Fit — ₹{reel.product.price}</span>
-                  </button>
-                </div>
+                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#090d16" }}></span>
+                    <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#1d4ed8" }}></span>
+                  </div>
 
+                  {/* Reel Product / Fan Photo Image */}
+                  <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #0f172a, #020617)", display: "flex", alignItems: "center", justifyContent: "center", padding: "45px 15px 95px", overflow: "hidden" }}>
+                    <img
+                      src={reel.img}
+                      alt={reel.creator}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        display: "block",
+                        transition: "transform 0.5s ease",
+                        filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.6))",
+                      }}
+                      className="reel-bg-img"
+                    />
+                  </div>
+
+                  {/* Top Views Badge */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "36px",
+                      left: "14px",
+                      zIndex: 5,
+                    }}
+                  >
+                    <span
+                      style={{
+                        background: "rgba(15, 23, 42, 0.8)",
+                        backdropFilter: "blur(8px)",
+                        color: "#ffffff",
+                        fontSize: "11px",
+                        fontWeight: "800",
+                        padding: "4px 10px",
+                        borderRadius: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "5px",
+                        border: "1px solid rgba(255, 255, 255, 0.15)",
+                      }}
+                    >
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffffff"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                      <span>{reel.views} views</span>
+                    </span>
+                  </div>
+
+                  {/* Right Action Icons (Heart & Comment) */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      right: "12px",
+                      bottom: "115px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "14px",
+                      zIndex: 5,
+                    }}
+                  >
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(15,23,42,0.75)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                      </div>
+                      <span style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", marginTop: "2px", display: "block" }}>{reel.likes}</span>
+                    </div>
+
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(15,23,42,0.75)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                      </div>
+                      <span style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", marginTop: "2px", display: "block" }}>{reel.comments}</span>
+                    </div>
+                  </div>
+
+                  {/* Bottom Overlay: Creator info & Shop Button */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      padding: "20px 14px 14px",
+                      background: "linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.7) 65%, transparent 100%)",
+                      zIndex: 5,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                      <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "900" }}>
+                        {reel.creator.charAt(1).toUpperCase()}
+                      </div>
+                      <span style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff" }}>{reel.creator}</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+
+                    <p style={{ fontSize: "11px", color: "#cbd5e1", margin: "0 0 10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: "600" }}>
+                      {reel.product.name}
+                    </p>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(reel.product);
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "10px 12px",
+                        borderRadius: "14px",
+                        background: "#2563eb",
+                        color: "#ffffff",
+                        border: "none",
+                        fontWeight: "900",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px",
+                        boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                      <span>Shop Fit — ₹{reel.product.price}</span>
+                    </button>
+                  </div>
+
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Right Arrow Button */}
+          <button
+            onClick={() => handleScroll("right")}
+            aria-label="Next Reels"
+            style={{
+              position: "absolute",
+              right: "-18px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: "44px",
+              height: "44px",
+              borderRadius: "50%",
+              background: "#0f172a",
+              color: "#ffffff",
+              border: "none",
+              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.25)",
+              cursor: "pointer",
+              zIndex: 15,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "all 0.2s ease",
+            }}
+            className="slider-arrow-btn"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
 
       </div>
@@ -425,12 +534,19 @@ export default function FanGallerySection({ addToCart }) {
       )}
 
       <style>{`
+        .reels-slider-track::-webkit-scrollbar {
+          display: none;
+        }
         .phone-frame:hover {
           transform: translateY(-8px);
-          box-shadow: 0 25px 50px rgba(15, 23, 42, 0.22) !important;
+          box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25) !important;
         }
         .phone-frame:hover .reel-bg-img {
           transform: scale(1.08);
+        }
+        .slider-arrow-btn:hover {
+          background: #2563eb !important;
+          transform: translateY(-50%) scale(1.1) !important;
         }
       `}</style>
     </section>
