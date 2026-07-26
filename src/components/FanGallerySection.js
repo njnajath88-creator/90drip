@@ -424,7 +424,7 @@ export default function FanGallerySection({ addToCart }) {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .phone-frame:hover {
           transform: translateY(-8px);
           box-shadow: 0 25px 50px rgba(15, 23, 42, 0.22) !important;

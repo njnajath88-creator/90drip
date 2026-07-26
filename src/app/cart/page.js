@@ -599,7 +599,7 @@ export default function CartPage() {
         finalTotal={finalTotal}
       />
 
-      <style jsx>{`
+      <style>{`
         @media (min-width: 900px) {
           .cart-grid-layout {
             grid-template-columns: 1fr 380px !important;

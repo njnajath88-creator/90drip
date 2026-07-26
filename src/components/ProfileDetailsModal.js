@@ -287,7 +287,7 @@ export default function ProfileDetailsModal({ isOpen, onClose, user, onLogout })
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }

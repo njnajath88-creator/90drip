@@ -125,7 +125,7 @@ export default function MarqueeBanner() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes marqueeLeft {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }

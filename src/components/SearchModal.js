@@ -218,7 +218,7 @@ export default function SearchModal({ isOpen, onClose }) {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes searchPopIn {
           from { opacity: 0; transform: translateY(-12px) scale(0.96); }
           to { opacity: 1; transform: translateY(0) scale(1); }

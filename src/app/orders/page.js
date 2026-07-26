@@ -368,7 +368,7 @@ export default function OrdersPage() {
 
       <Footer />
 
-      <style jsx>{`
+      <style>{`
         @media (min-width: 900px) {
           .orders-grid-layout {
             grid-template-columns: 420px 1fr !important;
