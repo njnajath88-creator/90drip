@@ -4,6 +4,7 @@ import Link from "next/link";
 import AuthModal from "./AuthModal";
 
 import ProfileDetailsModal from "./ProfileDetailsModal";
+import SearchModal from "./SearchModal";
 
 export default function Navbar({
   cartCount,
@@ -15,6 +16,7 @@ export default function Navbar({
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -90,6 +92,8 @@ export default function Navbar({
                 <li><a href="/#home">Home</a></li>
                 <li><a href="/#categories">Categories</a></li>
                 <li><a href="/#shop">Shop</a></li>
+                <li><a href="/wishlist">Wishlist</a></li>
+                <li><a href="/orders">Orders</a></li>
                 {isAdmin && (
                   <li>
                     <a href="/admin" style={{ color: "#3b82f6", fontWeight: 800 }}>
@@ -120,7 +124,17 @@ export default function Navbar({
             </a>
 
             {/* Right Action Icons */}
-            <div className="nav-actions" style={{ position: "relative" }}>
+            <div className="nav-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "16px" }}>
+              {/* Search Trigger Button */}
+              <button
+                className="nav-icon-btn"
+                aria-label="Search"
+                title="Search Jerseys"
+                onClick={() => setIsSearchModalOpen(true)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </button>
+
               <button
                 className={`nav-icon-btn nav-icon-desktop ${isProfileOpen ? "active" : ""}`}
                 aria-label="User Account"
@@ -128,7 +142,7 @@ export default function Navbar({
                 title={user ? `Logged in as ${user.email}` : "Sign In"}
               >
                 {user ? (
-                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "11px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
+                  <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "11px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
                     {userInitials}
                   </div>
                 ) : (
@@ -166,7 +180,7 @@ export default function Navbar({
                         <div className="profile-name">{user.name || "User Account"}</div>
                         <div className="profile-email">{user.email}</div>
                         <div className={`profile-role-badge ${isAdmin ? "admin" : "customer"}`}>
-                          {isAdmin ? "⚡ Administrator" : "⭐ VIP Member"}
+                          {isAdmin ? "Administrator" : "VIP Member"}
                         </div>
                       </div>
                     </div>
@@ -198,6 +212,18 @@ export default function Navbar({
                         </li>
                       )}
                       <li>
+                        <a href="/orders" className="profile-menu-item">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                          <span>My Orders & Tracking</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/wishlist" className="profile-menu-item">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                          <span>My Saved Wishlist</span>
+                        </a>
+                      </li>
+                      <li>
                         <button
                           className="profile-menu-item"
                           onClick={() => {
@@ -207,18 +233,6 @@ export default function Navbar({
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                           <span>My Profile & Details</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="profile-menu-item"
-                          onClick={() => {
-                            setIsProfileOpen(false);
-                            if (onOpenCart) onOpenCart();
-                          }}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                          <span>View My Cart ({cartCount})</span>
                         </button>
                       </li>
                       <li>
@@ -254,6 +268,12 @@ export default function Navbar({
         onClose={() => setIsProfileModalOpen(false)}
         user={user}
         onLogout={handleLogout}
+      />
+
+      {/* Instant Search Overlay Modal */}
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
       />
     </>
   );

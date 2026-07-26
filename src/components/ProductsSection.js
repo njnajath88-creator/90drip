@@ -28,13 +28,15 @@ export default function ProductsSection({ products, addToCart }) {
         {/* Responsive Product Grid (4 columns on PC, 2 columns on Mobile/Tablet) */}
         {products.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 0", color: "#94a3b8" }}>
-            <div style={{ fontSize: "48px", marginBottom: "16px" }}>🔍</div>
+            <div style={{ width: "64px", height: "64px", borderRadius: "50%", background: "#f1f5f9", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
             <p style={{ fontWeight: "700", fontSize: "16px" }}>No jerseys found.</p>
           </div>
         ) : (
           <div className="products-grid-responsive">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} addToCart={addToCart} />
+            {products.map((product, idx) => (
+              <ProductCard key={product.id} product={product} addToCart={addToCart} index={idx} />
             ))}
           </div>
         )}

@@ -1,14 +1,14 @@
-"use client";
+import Link from "next/link";
 
 export default function CartSidebar({
   isOpen,
   onClose,
-  cart,
+  cart = [],
   updateQuantity,
   removeFromCart,
 }) {
   const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
+    (total, item) => total + (parseFloat(item.price) || 0) * item.quantity,
     0
   );
 
@@ -39,44 +39,53 @@ export default function CartSidebar({
 
         <div className="cart-items">
           {cart.length === 0 ? (
-            <p style={{ textAlign: "center", marginTop: "2rem" }}>
-              Your cart is empty.
-            </p>
+            <div style={{ textAlign: "center", marginTop: "3rem", color: "#64748b" }}>
+              <div style={{ fontSize: "40px", marginBottom: "8px" }}>🛍️</div>
+              <p style={{ fontWeight: "700" }}>Your cart is empty.</p>
+            </div>
           ) : (
-            cart.map((item, idx) => (
-              <div key={idx} className="cart-item">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="cart-item-img"
-                />
-                <div className="cart-item-details">
-                  <div className="cart-item-title">{item.name}</div>
-                  <div className="cart-item-price">₹{item.price}</div>
-                  <div className="cart-qty-controls">
-                    <button
-                      className="qty-btn"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    >
-                      -
-                    </button>
-                    <span>{item.quantity}</span>
-                    <button
-                      className="qty-btn"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    >
-                      +
-                    </button>
+            cart.map((item, idx) => {
+              const itemKey = item.cartItemId || item.id || idx;
+              return (
+                <div key={itemKey} className="cart-item">
+                  <img
+                    src={item.image || "/images/jersey_product1.png"}
+                    alt={item.name}
+                    className="cart-item-img"
+                  />
+                  <div className="cart-item-details">
+                    <div className="cart-item-title">{item.name}</div>
+                    {item.size && (
+                      <div style={{ fontSize: "11px", color: "#64748b", fontWeight: "700" }}>
+                        Size: {item.size}
+                      </div>
+                    )}
+                    <div className="cart-item-price">₹{parseFloat(item.price).toLocaleString()}</div>
+                    <div className="cart-qty-controls">
+                      <button
+                        className="qty-btn"
+                        onClick={() => updateQuantity && updateQuantity(itemKey, item.quantity - 1)}
+                      >
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button
+                        className="qty-btn"
+                        onClick={() => updateQuantity && updateQuantity(itemKey, item.quantity + 1)}
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+                  <button
+                    className="remove-item"
+                    onClick={() => removeFromCart && removeFromCart(itemKey)}
+                  >
+                    🗑️
+                  </button>
                 </div>
-                <button
-                  className="remove-item"
-                  onClick={() => removeFromCart(item.id)}
-                >
-                  🗑️
-                </button>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
 
@@ -84,14 +93,23 @@ export default function CartSidebar({
           <div className="cart-footer">
             <div className="cart-total">
               <span>Total</span>
-              <span>₹{cartTotal.toFixed(2)}</span>
+              <span>₹{cartTotal.toLocaleString()}</span>
             </div>
-            <button
-              className="btn-primary btn-checkout"
-              onClick={() => alert("Checkout not implemented yet!")}
-            >
-              Checkout
-            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <Link
+                href="/cart"
+                onClick={onClose}
+                className="btn-primary btn-checkout"
+                style={{
+                  textDecoration: "none",
+                  textAlign: "center",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
+                  boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
+                }}
+              >
+                View Full Cart Page →
+              </Link>
+            </div>
           </div>
         )}
       </aside>

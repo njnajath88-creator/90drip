@@ -188,34 +188,45 @@ button {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .nav-icon-btn {
-  font-size: 20px;
-  transition: opacity var(--transition-fast);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   color: inherit;
   position: relative;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
 .nav-icon-btn:hover {
-  opacity: 0.7;
+  opacity: 0.8;
+  transform: scale(1.05);
 }
 
 .cart-badge {
   position: absolute;
-  top: -8px;
-  right: -10px;
+  top: -4px;
+  right: -4px;
   background: var(--text-primary);
   color: var(--text-inverse);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   width: 18px;
   height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -274,7 +285,7 @@ button {
   align-items: center;
   gap: 100px;
   width: max-content;
-  animation: slideLogos 30s linear infinite;
+  animation: slideLogos 8s linear infinite;
   padding: 0 50px;
 }
 

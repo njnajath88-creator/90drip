@@ -5,10 +5,19 @@ import Navbar from "@/components/Navbar";
 import HeroBanner from "@/components/HeroBanner";
 import BrandsSlider from "@/components/BrandsSlider";
 import CategoriesSection from "@/components/CategoriesSection";
+import MarqueeBanner from "@/components/MarqueeBanner";
 import ProductsSection from "@/components/ProductsSection";
+import FanGallerySection from "@/components/FanGallerySection";
 import PromoSection from "@/components/PromoSection";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
+
+import {
+  getCart,
+  addToCart as addToCartStore,
+  updateCartQuantity as updateCartStoreQty,
+  removeFromCart as removeFromCartStore,
+} from "@/lib/cartStore";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -16,6 +25,14 @@ export default function Home() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [user, setUser] = useState(null);
+
+  // Sync cart from cartStore
+  useEffect(() => {
+    const syncCart = () => setCart(getCart());
+    syncCart();
+    window.addEventListener("90drip_cart_updated", syncCart);
+    return () => window.removeEventListener("90drip_cart_updated", syncCart);
+  }, []);
 
   // Fetch products from backend on mount
   useEffect(() => {
@@ -25,31 +42,17 @@ export default function Home() {
       .catch((err) => console.error("Failed to fetch products:", err));
   }, []);
 
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((item) => item.id === product.id);
-      if (existing) {
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prevCart, { ...product, quantity: 1 }];
-    });
+  const handleAddToCart = (product, selectedSize = "M") => {
+    addToCartStore(product, selectedSize);
+    setIsCartOpen(true);
   };
 
-  const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  const handleRemoveFromCart = (cartItemId) => {
+    removeFromCartStore(cartItemId);
   };
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const handleUpdateQuantity = (cartItemId, newQuantity) => {
+    updateCartStoreQty(cartItemId, newQuantity);
   };
 
   const cartCount = cart.reduce((count, item) => count + item.quantity, 0);
@@ -65,20 +68,22 @@ export default function Home() {
       <HeroBanner />
       <BrandsSlider />
       <CategoriesSection />
+      <MarqueeBanner />
       <ProductsSection
         products={products}
         filter={filter}
         setFilter={setFilter}
-        addToCart={addToCart}
+        addToCart={handleAddToCart}
       />
+      <FanGallerySection addToCart={handleAddToCart} />
       <PromoSection />
       <Footer />
       <CartSidebar
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
-        updateQuantity={updateQuantity}
-        removeFromCart={removeFromCart}
+        updateQuantity={handleUpdateQuantity}
+        removeFromCart={handleRemoveFromCart}
       />
     </>
   );

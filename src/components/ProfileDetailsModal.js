@@ -68,7 +68,7 @@ export default function ProfileDetailsModal({ isOpen, onClose, user, onLogout })
               backdropFilter: "blur(4px)",
             }}
           >
-            {isAdmin ? "⚡ System Administrator" : "⭐ VIP Member"}
+            {isAdmin ? "System Administrator" : "VIP Member"}
           </span>
 
           <button
@@ -191,8 +191,9 @@ export default function ProfileDetailsModal({ isOpen, onClose, user, onLogout })
               <div style={{ fontSize: "11px", fontWeight: "700", color: "#94a3b8", textTransform: "uppercase" }}>
                 Security Status
               </div>
-              <div style={{ fontSize: "14px", fontWeight: "800", color: "#16a34a", marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
-                <span>🔒</span> Active & Safe
+              <div style={{ fontSize: "14px", fontWeight: "800", color: "#16a34a", marginTop: "2px", display: "flex", alignItems: "center", gap: "6px" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span>Active & Safe</span>
               </div>
             </div>
           </div>
@@ -216,22 +217,22 @@ export default function ProfileDetailsModal({ isOpen, onClose, user, onLogout })
               {isAdmin ? (
                 <>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#334155", fontWeight: "600" }}>
-                    <span style={{ color: "#2563eb", fontWeight: "bold" }}>✓</span> Full Product & Inventory Management
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Full Product & Inventory Management
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#334155", fontWeight: "600" }}>
-                    <span style={{ color: "#2563eb", fontWeight: "bold" }}>✓</span> Customer Orders & Analytics Access
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Customer Orders & Analytics Access
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#334155", fontWeight: "600" }}>
-                    <span style={{ color: "#2563eb", fontWeight: "bold" }}>✓</span> System Settings & Store Configuration
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> System Settings & Store Configuration
                   </div>
                 </>
               ) : (
                 <>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#334155", fontWeight: "600" }}>
-                    <span style={{ color: "#16a34a", fontWeight: "bold" }}>✓</span> Express Checkout & Order Tracking
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Express Checkout & Order Tracking
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#334155", fontWeight: "600" }}>
-                    <span style={{ color: "#16a34a", fontWeight: "bold" }}>✓</span> Priority Customer Support
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Priority Customer Support
                   </div>
                 </>
               )}

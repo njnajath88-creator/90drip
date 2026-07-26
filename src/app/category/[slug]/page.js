@@ -35,6 +35,13 @@ const CATEGORY_MAP = {
   }
 };
 
+import {
+  getCart,
+  addToCart as addToCartStore,
+  updateCartQuantity as updateCartStoreQty,
+  removeFromCart as removeFromCartStore,
+} from "@/lib/cartStore";
+
 export default function CategoryPage() {
   const params = useParams();
   const rawSlug = params?.slug || "";
@@ -53,6 +60,14 @@ export default function CategoryPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [user, setUser] = useState(null);
 
+  // Sync cart from cartStore
+  useEffect(() => {
+    const syncCart = () => setCart(getCart());
+    syncCart();
+    window.addEventListener("90drip_cart_updated", syncCart);
+    return () => window.removeEventListener("90drip_cart_updated", syncCart);
+  }, []);
+
   useEffect(() => {
     async function loadProducts() {
       try {
@@ -69,31 +84,17 @@ export default function CategoryPage() {
     loadProducts();
   }, []);
 
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((item) => item.id === product.id);
-      if (existing) {
-        return prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prevCart, { ...product, quantity: 1 }];
-    });
+  const handleAddToCart = (product, selectedSize = "M") => {
+    addToCartStore(product, selectedSize);
+    setIsCartOpen(true);
   };
 
-  const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  const handleRemoveFromCart = (cartItemId) => {
+    removeFromCartStore(cartItemId);
   };
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const handleUpdateQuantity = (cartItemId, newQuantity) => {
+    updateCartStoreQty(cartItemId, newQuantity);
   };
 
   const categoryProducts = products.filter(
@@ -169,8 +170,8 @@ export default function CategoryPage() {
             </div>
           ) : (
             <div className="products-grid-responsive">
-              {categoryProducts.map((product) => (
-                <ProductCard key={product.id} product={product} addToCart={addToCart} />
+              {categoryProducts.map((product, idx) => (
+                <ProductCard key={product.id} product={product} addToCart={handleAddToCart} index={idx} />
               ))}
             </div>
           )}
@@ -183,8 +184,8 @@ export default function CategoryPage() {
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
-        updateQuantity={updateQuantity}
-        removeFromCart={removeFromCart}
+        updateQuantity={handleUpdateQuantity}
+        removeFromCart={handleRemoveFromCart}
       />
 
       <style>{`

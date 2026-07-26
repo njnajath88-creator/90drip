@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import CartSidebar from "@/components/CartSidebar";
+import {
+  getCart,
+  addToCart as addToCartStore,
+  updateCartQuantity as updateCartStoreQty,
+  removeFromCart as removeFromCartStore,
+} from "@/lib/cartStore";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -18,6 +25,14 @@ export default function ProductDetailPage() {
   const [addedToast, setAddedToast] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+
+  // Sync cart from cartStore
+  useEffect(() => {
+    const syncCart = () => setCart(getCart());
+    syncCart();
+    window.addEventListener("90drip_cart_updated", syncCart);
+    return () => window.removeEventListener("90drip_cart_updated", syncCart);
+  }, []);
 
   useEffect(() => {
     async function loadProduct() {
@@ -70,20 +85,9 @@ export default function ProductDetailPage() {
   const cartCount = cart.reduce((t, i) => t + i.quantity, 0);
 
   const handleAddToCart = () => {
-    const cartItem = { ...product, selectedSize, quantity: qty };
-    setCart((prev) => {
-      const existing = prev.find(
-        (i) => i.id === product.id && i.selectedSize === selectedSize
-      );
-      if (existing) {
-        return prev.map((i) =>
-          i.id === product.id && i.selectedSize === selectedSize
-            ? { ...i, quantity: i.quantity + qty }
-            : i
-        );
-      }
-      return [...prev, cartItem];
-    });
+    for (let i = 0; i < qty; i++) {
+      addToCartStore(product, selectedSize);
+    }
     setAddedToast(true);
     setTimeout(() => setAddedToast(false), 3000);
   };
@@ -259,64 +263,58 @@ export default function ProductDetailPage() {
             </div>
 
             {/* ─── RIGHT: Product Info ─── */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-
-              {/* Tags */}
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ background: "#eff6ff", color: "#2563eb", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                  {product.sport}
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <div>
+                <span style={{ fontSize: "11px", fontWeight: "900", color: "#2563eb", textTransform: "uppercase", background: "#eff6ff", padding: "4px 10px", borderRadius: "20px" }}>
+                  {product.category} • Authentic Match Edition
                 </span>
-                <span style={{ background: "#f1f5f9", color: "#475569", fontSize: 11, fontWeight: 800, padding: "4px 10px", borderRadius: 6, textTransform: "uppercase" }}>
-                  {product.category}
-                </span>
+                <h1 style={{ fontSize: "28px", fontWeight: "900", color: "#0f172a", margin: "8px 0 6px", textTransform: "uppercase" }}>
+                  {product.name}
+                </h1>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ color: "#f59e0b", fontSize: "14px", fontWeight: "800" }}>★★★★★</span>
+                  <span style={{ fontSize: "13px", fontWeight: "800", color: "#0f172a" }}>4.9</span>
+                  <span style={{ fontSize: "12px", color: "#64748b" }}>({reviews.length} Verified Reviews)</span>
+                </div>
               </div>
 
-              {/* Name */}
-              <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", lineHeight: 1.25, margin: 0, textTransform: "uppercase" }}>
-                {product.name}
-              </h1>
-
-              {/* Price */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 28, fontWeight: 900, color: "#0f172a" }}>₹{product.price?.toLocaleString()}</span>
+              {/* Price Row */}
+              <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+                <span style={{ fontSize: "26px", fontWeight: "900", color: "#0f172a" }}>
+                  ₹{product.price?.toLocaleString()}
+                </span>
                 {product.originalPrice && (
                   <>
-                    <span style={{ fontSize: 16, color: "#94a3b8", textDecoration: "line-through", fontWeight: 600 }}>₹{product.originalPrice.toLocaleString()}</span>
-                    <span style={{ background: "#dcfce7", color: "#16a34a", fontSize: 12, fontWeight: 800, padding: "3px 8px", borderRadius: 6 }}>
-                      {discountPct}% OFF
+                    <span style={{ fontSize: "16px", color: "#94a3b8", textDecoration: "line-through", fontWeight: "600" }}>
+                      ₹{product.originalPrice?.toLocaleString()}
+                    </span>
+                    <span style={{ fontSize: "12px", fontWeight: "800", color: "#16a34a", background: "#dcfce7", padding: "2px 8px", borderRadius: "6px" }}>
+                      Save {discountPct}%
                     </span>
                   </>
                 )}
               </div>
 
-              <p style={{ color: "#64748b", lineHeight: 1.6, margin: 0, fontSize: 13, fontWeight: 500 }}>
-                Official premium match-quality jersey. Sweat-wicking performance mesh, ultra-lightweight fabric, and heat-applied crest for maximum comfort on and off the pitch.
-              </p>
-
-              <hr style={{ border: "none", borderTop: "1px solid #f1f5f9", margin: 0 }} />
-
-              {/* Size Selection */}
+              {/* Size Selector */}
               <div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <label style={{ fontWeight: 800, fontSize: 13, color: "#0f172a", textTransform: "uppercase" }}>Select Size</label>
-                  <span style={{ fontSize: 12, color: "#2563eb", fontWeight: 700, cursor: "pointer" }}>📏 Size Guide</span>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <label style={{ fontSize: "12px", fontWeight: "800", color: "#0f172a", textTransform: "uppercase" }}>Select Size</label>
+                  <span style={{ fontSize: "11px", color: "#2563eb", fontWeight: "700", cursor: "pointer" }}>Size Guide</span>
                 </div>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {(product.sizes || ["S", "M", "L", "XL"]).map((size) => (
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {(product.sizes || ["S", "M", "L", "XL"]).map((sz) => (
                     <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
+                      key={sz}
+                      onClick={() => setSelectedSize(sz)}
                       style={{
-                        minWidth: 48, height: 48, borderRadius: 10, fontWeight: 800,
-                        fontSize: 13, cursor: "pointer", transition: "all 0.2s",
-                        border: selectedSize === size ? "2.5px solid #0f172a" : "1.5px solid #e2e8f0",
-                        background: selectedSize === size ? "#0f172a" : "#fff",
-                        color: selectedSize === size ? "#ffffff" : "#475569",
-                        boxShadow: selectedSize === size ? "0 4px 12px rgba(15,23,42,0.18)" : "none",
-                        padding: "0 14px"
+                        padding: "10px 18px", borderRadius: "10px",
+                        border: selectedSize === sz ? "2px solid #2563eb" : "1px solid #cbd5e1",
+                        background: selectedSize === sz ? "#eff6ff" : "#ffffff",
+                        color: selectedSize === sz ? "#1d4ed8" : "#334155",
+                        fontWeight: "800", fontSize: "13px", cursor: "pointer"
                       }}
                     >
-                      {size}
+                      {sz}
                     </button>
                   ))}
                 </div>
@@ -341,10 +339,11 @@ export default function ProductDetailPage() {
                     background: "#0f172a", color: "#fff", fontWeight: 900, fontSize: 14,
                     cursor: "pointer", transition: "all 0.2s", textTransform: "uppercase",
                     letterSpacing: "0.04em", boxShadow: "0 4px 14px rgba(15,23,42,0.2)",
-                    width: "100%"
+                    width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px"
                   }}
                 >
-                  🛒 Add {qty} to Cart — ₹{(product.price * qty).toLocaleString()}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                  <span>Add {qty} to Cart — ₹{(product.price * qty).toLocaleString()}</span>
                 </button>
                 <button
                   onClick={() => { handleAddToCart(); setIsCartOpen(true); }}
@@ -356,7 +355,7 @@ export default function ProductDetailPage() {
                     boxShadow: "0 4px 14px rgba(37,99,235,0.3)", width: "100%"
                   }}
                 >
-                  ⚡ Buy Now
+                  Buy Now
                 </button>
               </div>
 
@@ -367,54 +366,221 @@ export default function ProductDetailPage() {
                   padding: "12px 18px", fontWeight: 800, fontSize: 13,
                   border: "1px solid #bbf7d0", display: "flex", alignItems: "center", gap: 8,
                 }}>
-                  ✓ {product.name} ({selectedSize}) added to cart!
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>{product.name} ({selectedSize}) added to cart!</span>
                 </div>
               )}
 
             </div>
           </div>
+
+          {/* Customer Reviews & Fit Rating Section */}
+          <div style={{ marginTop: "60px", paddingTop: "40px", borderTop: "1px solid #e2e8f0" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+              <div>
+                <span style={{ fontSize: "11px", fontWeight: "900", color: "#2563eb", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  Verified Buyer Reviews
+                </span>
+                <h2 style={{ fontSize: "24px", fontWeight: "900", color: "#0f172a", margin: "4px 0 0" }}>
+                  Customer Ratings & Reviews
+                </h2>
+              </div>
+
+              <button
+                onClick={() => setIsReviewModalOpen(true)}
+                style={{
+                  background: "#0f172a",
+                  color: "#ffffff",
+                  padding: "12px 20px",
+                  borderRadius: "12px",
+                  fontWeight: "800",
+                  fontSize: "13px",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                <span>Write a Review</span>
+              </button>
+            </div>
+
+            {/* Overall Rating & Fit Score Card */}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: "20px",
+                background: "#ffffff",
+                borderRadius: "20px",
+                padding: "24px",
+                border: "1px solid #e2e8f0",
+                marginBottom: "32px",
+              }}
+            >
+              <div style={{ textAlign: "center", paddingRight: "20px", borderRight: "1px solid #f1f5f9" }}>
+                <div style={{ fontSize: "44px", fontWeight: "900", color: "#0f172a", lineHeight: 1 }}>4.9</div>
+                <div style={{ color: "#f59e0b", fontSize: "18px", margin: "6px 0" }}>★★★★★</div>
+                <div style={{ fontSize: "12px", color: "#64748b", fontWeight: "700" }}>Based on {reviews.length} ratings</div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", justifyCenter: "center", gap: "6px" }}>
+                <div style={{ fontSize: "12px", fontWeight: "800", color: "#334155" }}>Fit Rating Summary</div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#16a34a", fontWeight: "800" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span>96% of buyers say True to Size</span>
+                </div>
+                <div style={{ fontSize: "12px", color: "#64748b" }}>Order your standard shirt size for optimal match day fit.</div>
+              </div>
+            </div>
+
+            {/* Reviews List */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {reviews.map((rev) => (
+                <div
+                  key={rev.id}
+                  style={{
+                    background: "#ffffff",
+                    borderRadius: "16px",
+                    padding: "20px",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a" }}>{rev.name}</span>
+                        <span style={{ fontSize: "10px", fontWeight: "800", color: "#16a34a", background: "#dcfce7", padding: "2px 8px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "4px" }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          <span>Verified Buyer</span>
+                        </span>
+                      </div>
+                      <div style={{ color: "#f59e0b", fontSize: "12px", marginTop: "2px" }}>
+                        {"★".repeat(rev.rating)}
+                      </div>
+                    </div>
+                    <span style={{ fontSize: "12px", color: "#94a3b8", fontWeight: "600" }}>{rev.date}</span>
+                  </div>
+
+                  <h4 style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a", margin: "4px 0" }}>{rev.title}</h4>
+                  <p style={{ fontSize: "13px", color: "#475569", margin: 0, lineHeight: 1.5 }}>{rev.comment}</p>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
         </div>
       </main>
 
-      {/* Cart Sidebar */}
-      {isCartOpen && <div className="cart-overlay" onClick={() => setIsCartOpen(false)} />}
-      <aside className={`cart-sidebar ${isCartOpen ? "open" : ""}`}>
-        <div className="cart-header">
-          <h2 className="cart-title">Your Cart</h2>
-          <button className="cart-close" onClick={() => setIsCartOpen(false)}>✕</button>
-        </div>
-        <div className="cart-items">
-          {cart.length === 0 ? (
-            <p style={{ textAlign: "center", marginTop: "2rem", color: "#64748b" }}>Your cart is empty.</p>
-          ) : (
-            cart.map((item, idx) => (
-              <div key={idx} className="cart-item">
-                <img src={item.image} alt={item.name} className="cart-item-img" />
-                <div className="cart-item-details">
-                  <div className="cart-item-title">{item.name}</div>
-                  <div style={{ fontSize: 11, color: "#64748b" }}>Size: {item.selectedSize}</div>
-                  <div className="cart-item-price">₹{item.price}</div>
-                  <div className="cart-qty-controls">
-                    <button className="qty-btn" onClick={() => setCart(prev => prev.map((it, i) => i === idx ? { ...it, quantity: Math.max(1, it.quantity - 1) } : it))}>-</button>
-                    <span>{item.quantity}</span>
-                    <button className="qty-btn" onClick={() => setCart(prev => prev.map((it, i) => i === idx ? { ...it, quantity: it.quantity + 1 } : it))}>+</button>
-                  </div>
-                </div>
-                <button className="remove-item" onClick={() => setCart(prev => prev.filter((_, i) => i !== idx))}>🗑️</button>
+      {/* Write a Review Modal */}
+      {isReviewModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(15, 23, 42, 0.65)",
+            backdropFilter: "blur(6px)",
+            zIndex: 100000,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "20px",
+          }}
+          onClick={() => setIsReviewModalOpen(false)}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              borderRadius: "24px",
+              padding: "28px",
+              maxWidth: "460px",
+              width: "100%",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ fontSize: "20px", fontWeight: "900", color: "#0f172a", margin: "0 0 16px" }}>
+              Write a Review for {product.name}
+            </h2>
+
+            <form onSubmit={handleAddReview} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", marginBottom: "4px" }}>Your Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Alex M."
+                  value={newReview.name}
+                  onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}
+                />
               </div>
-            ))
-          )}
-        </div>
-        {cart.length > 0 && (
-          <div className="cart-footer">
-            <div className="cart-total">
-              <span>Total</span>
-              <span>₹{cartTotal.toFixed(2)}</span>
-            </div>
-            <button className="btn-primary btn-checkout" onClick={() => alert("Checkout initialized!")}>Checkout</button>
+
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", marginBottom: "4px" }}>Star Rating *</label>
+                <select
+                  value={newReview.rating}
+                  onChange={(e) => setNewReview({ ...newReview, rating: e.target.value })}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}
+                >
+                  <option value={5}>★★★★★ (5 / 5 - Excellent)</option>
+                  <option value={4}>★★★★☆ (4 / 5 - Very Good)</option>
+                  <option value={3}>★★★☆☆ (3 / 5 - Average)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", marginBottom: "4px" }}>Review Title</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Superb Quality & Fit!"
+                  value={newReview.title}
+                  onChange={(e) => setNewReview({ ...newReview, title: e.target.value })}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "12px", fontWeight: "700", marginBottom: "4px" }}>Your Review *</label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="Share details about the jersey quality, sizing fit, or shipping speed..."
+                  value={newReview.comment}
+                  onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: "10px", border: "1px solid #cbd5e1", fontSize: "14px", outline: "none", fontFamily: "inherit" }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                style={{
+                  background: "#2563eb",
+                  color: "#ffffff",
+                  padding: "14px",
+                  borderRadius: "12px",
+                  fontWeight: "900",
+                  fontSize: "14px",
+                  border: "none",
+                  cursor: "pointer",
+                  marginTop: "6px",
+                }}
+              >
+                Submit Review
+              </button>
+            </form>
           </div>
-        )}
-      </aside>
+        </div>
+      )}
+
+      {/* Cart Sidebar */}
+      <CartSidebar
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        updateQuantity={(id, q) => updateCartStoreQty(id, q)}
+        removeFromCart={(id) => removeFromCartStore(id)}
+      />
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
