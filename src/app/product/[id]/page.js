@@ -26,6 +26,51 @@ export default function ProductDetailPage() {
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
 
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [newReview, setNewReview] = useState({ name: "", rating: 5, title: "", comment: "" });
+  const [reviews, setReviews] = useState([
+    {
+      id: 1,
+      name: "Marcus V.",
+      rating: 5,
+      date: "2 days ago",
+      title: "Phenomenal Quality & Stitching",
+      comment: "The authentic match fabric feels incredible. Breathable, sleek fit, and the badge details are top tier. Will definitely buy again!"
+    },
+    {
+      id: 2,
+      name: "Liam K.",
+      rating: 5,
+      date: "1 week ago",
+      title: "Spot on sizing and super fast delivery",
+      comment: "Ordered an M and it fits like a glove. The printing on the back looks official and sharp."
+    },
+    {
+      id: 3,
+      name: "Rohan S.",
+      rating: 4,
+      date: "2 weeks ago",
+      title: "Great jersey for matchdays",
+      comment: "Premium fabric, lightweight, feels great during intense football sessions."
+    }
+  ]);
+
+  const handleAddReview = (e) => {
+    e.preventDefault();
+    if (!newReview.name || !newReview.comment) return;
+    const reviewToAdd = {
+      id: Date.now(),
+      name: newReview.name,
+      rating: Number(newReview.rating),
+      date: "Just now",
+      title: newReview.title || "Great product!",
+      comment: newReview.comment
+    };
+    setReviews([reviewToAdd, ...reviews]);
+    setNewReview({ name: "", rating: 5, title: "", comment: "" });
+    setIsReviewModalOpen(false);
+  };
+
   // Sync cart from cartStore
   useEffect(() => {
     const syncCart = () => setCart(getCart());
