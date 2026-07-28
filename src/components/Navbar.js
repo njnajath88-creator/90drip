@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import AuthModal from "./AuthModal";
 
 import ProfileDetailsModal from "./ProfileDetailsModal";
@@ -13,6 +14,7 @@ export default function Navbar({
   setUser,
   solid = false
 }) {
+  const pathname = usePathname() || "";
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -80,36 +82,41 @@ export default function Navbar({
   const isAdmin = user?.email?.toLowerCase() === "ad123@gmail.com" || user?.role === "admin";
   const userInitials = user ? (user.name ? user.name.slice(0, 2).toUpperCase() : user.email.slice(0, 2).toUpperCase()) : "";
 
+  const isHomeActive = pathname === "/" || pathname === "";
+  const isWishlistActive = pathname === "/wishlist";
+
   return (
     <>
       <nav className="navbar" id="navbar" role="navigation" aria-label="Main navigation">
         <div className="container">
           <div className="navbar-inner">
 
-            {/* Left Links & Mobile Search */}
+            {/* Left Glass Floating Pill Links Bar */}
             <div className="nav-left">
-              <ul className="nav-links" role="list">
-                <li><a href="/#home">Home</a></li>
-                <li><a href="/#categories">Categories</a></li>
-                <li><a href="/#shop">Shop</a></li>
-                <li><a href="/wishlist">Wishlist</a></li>
-                <li><a href="/orders">Orders</a></li>
-                {isAdmin && (
-                  <li>
-                    <a href="/admin" style={{ color: "#3b82f6", fontWeight: 800 }}>
-                      Admin
-                    </a>
-                  </li>
-                )}
-              </ul>
-              {/* Mobile Profile & Search Icon */}
+              <div className="nav-pill-container" role="list">
+                <Link href="/" className={`nav-pill-item ${isHomeActive ? "active" : ""}`}>
+                  Home
+                </Link>
+                <Link href="/wishlist" className={`nav-pill-item ${isWishlistActive ? "active" : ""}`}>
+                  Wishlist
+                </Link>
+                <a href="/#shop" className="nav-pill-item">
+                  Drops
+                </a>
+                <a href="/#categories" className="nav-pill-item">
+                  <span>Fresh In</span>
+                  <span className="nav-pill-badge">New</span>
+                </a>
+              </div>
+
+              {/* Mobile Profile Icon */}
               <button
                 className="nav-icon-btn nav-icon-mobile"
                 aria-label="User Account"
                 onClick={handleProfileClick}
               >
                 {user ? (
-                  <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: isAdmin ? "#2563eb" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "#2563eb" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {userInitials}
                   </div>
                 ) : (
@@ -123,41 +130,48 @@ export default function Navbar({
               <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" />
             </a>
 
-            {/* Right Action Icons */}
-            <div className="nav-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "16px" }}>
-              {/* Search Trigger Button */}
+            {/* Right Standalone Circle Buttons */}
+            <div className="nav-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "10px" }}>
+              {/* Search Button */}
               <button
-                className="nav-icon-btn"
+                className="nav-glass-circle"
                 aria-label="Search"
                 title="Search Jerseys"
                 onClick={() => setIsSearchModalOpen(true)}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
               </button>
 
+              {/* Cart Button with Red Notification Dot */}
               <button
-                className={`nav-icon-btn nav-icon-desktop ${isProfileOpen ? "active" : ""}`}
+                className="nav-glass-circle"
+                id="cart-btn"
+                aria-label="Shopping cart"
+                onClick={onOpenCart}
+                title="View Shopping Cart"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                {cartCount > 0 ? (
+                  <span className="nav-cart-count-badge">{cartCount}</span>
+                ) : (
+                  <span className="nav-red-dot" />
+                )}
+              </button>
+
+              {/* User Profile Button */}
+              <button
+                className={`nav-glass-circle nav-icon-desktop ${isProfileOpen ? "active" : ""}`}
                 aria-label="User Account"
                 onClick={handleProfileClick}
                 title={user ? `Logged in as ${user.email}` : "Sign In"}
               >
                 {user ? (
-                  <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "11px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
+                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {userInitials}
                   </div>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 )}
-              </button>
-
-              <button
-                className="nav-icon-btn"
-                id="cart-btn"
-                aria-label="Shopping cart"
-                onClick={onOpenCart}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
               </button>
 
               {/* Advanced Profile Dropdown Menu */}

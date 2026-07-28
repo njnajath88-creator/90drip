@@ -280,7 +280,7 @@ export default function AdminPage() {
         res = await fetch("/api/products", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: editingProduct.id, ...payload }),
+          body: JSON.stringify({ id: editingProduct.id || editingProduct._id, ...payload }),
         });
       } else {
         res = await fetch("/api/products", {
@@ -295,8 +295,23 @@ export default function AdminPage() {
         throw new Error(errData.error || "Server error saving product");
       }
 
+      const savedItem = await res.json();
+
+      // Optimistically update products state immediately so UI reflects changes instantly
+      if (editingProduct) {
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.id === savedItem.id || p._id === savedItem.id || p.id === editingProduct.id
+              ? { ...p, ...savedItem }
+              : p
+          )
+        );
+      } else {
+        setProducts((prev) => [savedItem, ...prev]);
+      }
+
       setIsModalOpen(false);
-      await fetchProducts();
+      fetchProducts();
     } catch (err) {
       alert("Error saving product: " + err.message);
     } finally {

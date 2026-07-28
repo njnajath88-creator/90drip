@@ -96,17 +96,18 @@ button {
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 20px 0;
+  padding: 16px 0;
   transition: all var(--transition-smooth);
   background: transparent;
   color: var(--text-primary);
 }
 
 .navbar.scrolled {
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .navbar-inner {
@@ -133,8 +134,8 @@ button {
 }
 
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
+  .nav-pill-container {
+    display: none !important;
   }
   .nav-icon-mobile {
     display: flex;
@@ -144,22 +145,139 @@ button {
   }
 }
 
-.nav-links {
+/* ---- Dynamic Glassmorphic Floating Pill Navbar ---- */
+.nav-pill-container {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  padding: 4px;
+  border-radius: 9999px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  transition: all 0.3s ease;
 }
 
-.nav-links a {
-  font-size: 13px;
+.navbar.scrolled .nav-pill-container {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.nav-pill-item {
+  font-size: 13.5px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: opacity var(--transition-fast);
+  color: #ffffff;
+  padding: 7px 18px;
+  border-radius: 9999px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  letter-spacing: 0.01em;
 }
 
-.nav-links a:hover {
-  opacity: 0.7;
+.navbar.scrolled .nav-pill-item {
+  color: #0f172a;
+}
+
+.nav-pill-item.active {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.navbar.scrolled .nav-pill-item.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.25);
+}
+
+.nav-pill-item:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.navbar.scrolled .nav-pill-item:hover:not(.active) {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.nav-pill-badge {
+  position: absolute;
+  top: -3px;
+  right: 6px;
+  background: #eab308;
+  color: #000000;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 1.5px 5.5px;
+  border-radius: 9999px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Glass Circle Action Buttons */
+.nav-glass-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.navbar.scrolled .nav-glass-circle {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1.5px solid rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.nav-glass-circle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.nav-red-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 7px;
+  height: 7px;
+  background: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid #ffffff;
+}
+
+.nav-cart-count-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
 }
 
 .nav-logo {
