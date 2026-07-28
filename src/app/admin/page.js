@@ -65,6 +65,7 @@ export default function AdminPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [formData, setFormData] = useState(DEFAULT_FORM);
 
   // Read logged in user on mount
@@ -83,7 +84,7 @@ export default function AdminPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/products");
+      const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -305,11 +306,20 @@ export default function AdminPage() {
 
   const handleDeleteProduct = async (id) => {
     if (!confirm("Are you sure you want to delete this jersey product?")) return;
+    setDeletingId(id);
     try {
-      await fetch(`/api/products?id=${id}`, { method: "DELETE" });
-      fetchProducts();
+      const res = await fetch(`/api/products?id=${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to delete product");
+      }
+      // Optimistically remove product from state immediately so UI updates instantly without refresh
+      setProducts((prev) => prev.filter((p) => p.id !== id && p._id !== id));
+      await fetchProducts();
     } catch (err) {
       alert("Error deleting product: " + err.message);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -344,6 +354,7 @@ export default function AdminPage() {
           <ProductsTab
             products={products}
             loading={loading}
+            deletingId={deletingId}
             onAddProduct={handleOpenAddModal}
             onEditProduct={handleOpenEditModal}
             onDeleteProduct={handleDeleteProduct}

@@ -4,6 +4,7 @@ import { useState } from "react";
 export default function ProductsTab({
   products,
   loading,
+  deletingId,
   onAddProduct,
   onEditProduct,
   onDeleteProduct,
@@ -146,7 +147,8 @@ export default function ProductsTab({
                             Edit
                           </button>
                           <button
-                            onClick={() => onDeleteProduct(product.id)}
+                            onClick={() => onDeleteProduct(product.id || product._id)}
+                            disabled={deletingId === (product.id || product._id)}
                             style={{
                               padding: "6px 12px",
                               borderRadius: "8px",
@@ -155,10 +157,31 @@ export default function ProductsTab({
                               fontSize: "12px",
                               fontWeight: "700",
                               color: "#ef4444",
-                              cursor: "pointer"
+                              cursor: deletingId === (product.id || product._id) ? "not-allowed" : "pointer",
+                              opacity: deletingId === (product.id || product._id) ? 0.7 : 1,
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "6px"
                             }}
                           >
-                            Delete
+                            {deletingId === (product.id || product._id) ? (
+                              <>
+                                <span
+                                  style={{
+                                    display: "inline-block",
+                                    width: "12px",
+                                    height: "12px",
+                                    border: "2px solid #ef4444",
+                                    borderTopColor: "transparent",
+                                    borderRadius: "50%",
+                                    animation: "spin 0.6s linear infinite"
+                                  }}
+                                />
+                                <span>Deleting...</span>
+                              </>
+                            ) : (
+                              "Delete"
+                            )}
                           </button>
                         </div>
                       </td>

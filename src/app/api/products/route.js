@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Product } from "@/lib/models/Product";
+import mongoose from "mongoose";
 
 // Seed data — inserted once if the collection is empty
 const SEED_PRODUCTS = [
@@ -261,8 +262,15 @@ export async function DELETE(request) {
       return Response.json({ error: "Product ID is required" }, { status: 400 });
     }
 
-    await Product.findByIdAndDelete(id);
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      await Product.findByIdAndDelete(id);
+    } else {
+      // Fallback for seed string IDs or custom string IDs
+      await Product.deleteOne({ _id: id }).catch(() => {});
+    }
+
     global.productsCache = null;
+    global.productsCacheTime = 0;
     return Response.json({ success: true, message: "Product deleted" });
   } catch (error) {
     console.error("DELETE /api/products error:", error);
