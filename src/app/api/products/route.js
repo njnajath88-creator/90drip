@@ -217,33 +217,44 @@ export async function PUT(request) {
 
     const { id, _id, ...updateFields } = body;
 
-    const updated = await Product.findByIdAndUpdate(
-      productId,
-      {
-        ...updateFields,
-        price: parseFloat(updateFields.price) || 0,
-        originalPrice: updateFields.originalPrice
-          ? parseFloat(updateFields.originalPrice)
-          : null,
-        badges: Array.isArray(updateFields.badges)
-          ? updateFields.badges
-          : updateFields.badges
-          ? updateFields.badges.split(",").map((b) => b.trim())
-          : [],
-        sizes: Array.isArray(updateFields.sizes)
-          ? updateFields.sizes
-          : updateFields.sizes
-          ? updateFields.sizes.split(",").map((s) => s.trim())
-          : ["S", "M", "L", "XL"],
-      },
-      { new: true, runValidators: true }
-    );
+    const formattedFields = {
+      ...updateFields,
+      price: parseFloat(updateFields.price) || 0,
+      originalPrice: updateFields.originalPrice
+        ? parseFloat(updateFields.originalPrice)
+        : null,
+      badges: Array.isArray(updateFields.badges)
+        ? updateFields.badges
+        : updateFields.badges
+        ? updateFields.badges.split(",").map((b) => b.trim())
+        : [],
+      sizes: Array.isArray(updateFields.sizes)
+        ? updateFields.sizes
+        : updateFields.sizes
+        ? updateFields.sizes.split(",").map((s) => s.trim())
+        : ["S", "M", "L", "XL"],
+    };
 
+    let updated = null;
+
+    if (mongoose.Types.ObjectId.isValid(productId)) {
+      updated = await Product.findByIdAndUpdate(
+        productId,
+        formattedFields,
+        { new: true, runValidators: true }
+      );
+    }
+
+    // If product wasn't found in DB or ID was a seed string (e.g. "seed-1"), save as new DB product
     if (!updated) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+      updated = await Product.create({
+        name: updateFields.name || "Updated Jersey",
+        ...formattedFields,
+      });
     }
 
     global.productsCache = null;
+    global.productsCacheTime = 0;
     return Response.json(updated.toJSON());
   } catch (error) {
     console.error("PUT /api/products error:", error);
