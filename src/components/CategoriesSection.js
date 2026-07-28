@@ -34,9 +34,9 @@ export default function CategoriesSection() {
       <div className="container" style={{ maxWidth: "1200px" }}>
         <div
           className="section-header-wrap"
-          style={{ textAlign: "center", marginBottom: "24px" }}
+          style={{ textAlign: "center", marginBottom: "28px" }}
         >
-          <h2 className="section-title" style={{ fontSize: "26px", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.04em", color: "#0f172a", margin: 0 }}>
+          <h2 className="section-title" style={{ fontSize: "28px", fontWeight: "900", fontStyle: "italic", textTransform: "uppercase", letterSpacing: "0.04em", color: "#0b132a", margin: 0 }}>
             Shop By Category
           </h2>
         </div>
@@ -54,7 +54,7 @@ export default function CategoriesSection() {
                   background: "#ffffff",
                   borderRadius: "20px",
                   overflow: "hidden",
-                  border: "1px solid #e8e8e2",
+                  border: "1px solid #e2e8f0",
                   transition: "all 0.25s ease",
                   cursor: "pointer",
                   display: "flex",
@@ -68,8 +68,9 @@ export default function CategoriesSection() {
                   style={{
                     position: "relative",
                     width: "100%",
-                    height: "240px",
-                    overflow: "hidden"
+                    aspectRatio: "3 / 4",
+                    overflow: "hidden",
+                    background: "#f8fafc"
                   }}
                 >
                   <img
@@ -79,6 +80,7 @@ export default function CategoriesSection() {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      objectPosition: "center top",
                       display: "block",
                       transition: "transform 0.35s ease"
                     }}
@@ -89,7 +91,7 @@ export default function CategoriesSection() {
                 {/* Category Name Below Image */}
                 <div
                   style={{
-                    padding: "14px 16px",
+                    padding: "16px 16px",
                     textAlign: "center",
                     background: "#ffffff"
                   }}
