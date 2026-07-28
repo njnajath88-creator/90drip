@@ -291,8 +291,16 @@ export default function AdminPage() {
       }
 
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || "Server error saving product");
+        let errorMsg = "Server error saving product";
+        try {
+          const errData = await res.json();
+          if (errData.error) errorMsg = errData.error;
+        } catch (e) {
+          if (res.status === 413) {
+            errorMsg = "Total image file size exceeds server payload limits. Please choose slightly smaller image files.";
+          }
+        }
+        throw new Error(errorMsg);
       }
 
       const savedItem = await res.json();
