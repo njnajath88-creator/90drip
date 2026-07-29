@@ -18,7 +18,7 @@ export default function SearchModal({ isOpen, onClose }) {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const res = await fetch("/api/products");
+        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         setProducts(data);
       } catch (err) {

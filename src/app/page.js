@@ -36,7 +36,7 @@ export default function Home() {
 
   // Fetch products from backend on mount
   useEffect(() => {
-    fetch("/api/products")
+    fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("Failed to fetch products:", err));

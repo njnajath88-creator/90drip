@@ -72,7 +72,7 @@ export default function CategoryPage() {
     async function loadProducts() {
       try {
         setLoading(true);
-        const res = await fetch("/api/products");
+        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         setProducts(data);
       } catch (err) {

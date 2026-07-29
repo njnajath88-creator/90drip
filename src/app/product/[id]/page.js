@@ -82,9 +82,9 @@ export default function ProductDetailPage() {
   useEffect(() => {
     async function loadProduct() {
       try {
-        const res = await fetch("/api/products");
+        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
-        const found = data.find((p) => String(p.id) === String(productId));
+        const found = data.find((p) => String(p.id) === String(productId) || String(p._id) === String(productId));
         if (found) {
           setProduct(found);
           setSelectedSize(found.sizes?.[0] || "M");

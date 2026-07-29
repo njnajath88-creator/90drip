@@ -111,60 +111,41 @@ const SEED_PRODUCTS = [
   }
 ];
 
-// GET — fetch all products (with global in-memory caching & fast fallback)
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+// GET — fetch all products (always real-time, no stale cache)
 export async function GET() {
-  const CACHE_TTL_MS = 60 * 1000; // 60 seconds cache
-
-  // Check server-side memory cache first for superfast response
-  if (global.productsCache && Date.now() - (global.productsCacheTime || 0) < CACHE_TTL_MS) {
-    return Response.json(global.productsCache, {
-      headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-      },
-    });
-  }
-
   try {
-    // Add a 3-second timeout guard to prevent hanging DB connections
-    const dbPromise = (async () => {
-      await connectDB();
-      let products = await Product.find().sort({ createdAt: -1 });
+    await connectDB();
+    let products = await Product.find().sort({ createdAt: -1 });
 
-      if (products.length < 4) {
-        await Product.deleteMany({});
+    // Seed ONLY if DB collection is completely empty on initial setup
+    if (products.length === 0 && !global.hasInitializedSeed) {
+      global.hasInitializedSeed = true;
+      const count = await Product.countDocuments();
+      if (count === 0) {
         await Product.insertMany(SEED_PRODUCTS);
         products = await Product.find().sort({ createdAt: -1 });
       }
-      return products.map((p) => p.toJSON());
-    })();
-
-    const timeoutPromise = new Promise((resolve) =>
-      setTimeout(() => resolve(null), 2500)
-    );
-
-    const result = await Promise.race([dbPromise, timeoutPromise]);
-
-    if (result) {
-      global.productsCache = result;
-      global.productsCacheTime = Date.now();
-      return Response.json(result, {
-        headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-        },
-      });
     }
 
-    // If DB request timed out or returned empty, serve cached or seed data instantly
-    const fallbackData = global.productsCache || SEED_PRODUCTS.map((p, idx) => ({ ...p, id: `seed-${idx + 1}` }));
-    return Response.json(fallbackData, {
+    const formatted = products.map((p) => p.toJSON());
+
+    return Response.json(formatted, {
       headers: {
-        "Cache-Control": "no-store",
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+        "Pragma": "no-cache",
+        "Expires": "0",
       },
     });
   } catch (error) {
     console.error("GET /api/products error:", error);
-    const fallbackData = global.productsCache || SEED_PRODUCTS.map((p, idx) => ({ ...p, id: `seed-${idx + 1}` }));
-    return Response.json(fallbackData, { status: 200 });
+    return Response.json(SEED_PRODUCTS.map((p, idx) => ({ ...p, id: `seed-${idx + 1}` })), {
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    });
   }
 }
 
@@ -311,14 +292,17 @@ export async function DELETE(request) {
 
     if (mongoose.Types.ObjectId.isValid(id)) {
       await Product.findByIdAndDelete(id);
-    } else {
-      // Fallback for seed string IDs or custom string IDs
-      await Product.deleteOne({ _id: id }).catch(() => {});
     }
+    
+    // Also try deleting by _id or string ID
+    await Product.deleteOne({ _id: id }).catch(() => {});
+    await Product.deleteOne({ id: id }).catch(() => {});
 
-    global.productsCache = null;
-    global.productsCacheTime = 0;
-    return Response.json({ success: true, message: "Product deleted" });
+    return Response.json({ success: true, message: "Product deleted" }, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      },
+    });
   } catch (error) {
     console.error("DELETE /api/products error:", error);
     return Response.json({ error: error.message || "Failed to delete product" }, { status: 400 });
