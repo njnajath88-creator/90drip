@@ -109,7 +109,6 @@ export default function Footer() {
                 <li><a href="#">Shipping Info</a></li>
                 <li><a href="#">Returns & Exchange</a></li>
                 <li><a href="#">Track Order</a></li>
-                <li><Link href="/admin">Admin Portal</Link></li>
               </ul>
             </div>
 
