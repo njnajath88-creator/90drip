@@ -117,7 +117,10 @@ export default function FanGallerySection({ addToCart }) {
         
         {/* Section Header */}
         <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div
+          <a
+            href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw=="
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -132,17 +135,20 @@ export default function FanGallerySection({ addToCart }) {
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               marginBottom: "14px",
+              textDecoration: "none",
+              transition: "transform 0.2s ease"
             }}
+            title="Follow @90drip.in on Instagram"
           >
             <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444", boxShadow: "0 0 10px #ef4444", display: "inline-block" }}></span>
-            <span>LIVE COMMUNITY REELS</span>
-          </div>
+            <span>LIVE COMMUNITY REELS • @90DRIP.IN</span>
+          </a>
 
           <h2 style={{ fontSize: "36px", fontWeight: "900", color: "#0f172a", margin: "0 0 10px", letterSpacing: "-0.02em" }}>
             As Seen On Streetwear Fans
           </h2>
           <p style={{ fontSize: "15px", color: "#64748b", maxWidth: "560px", margin: "0 auto", fontWeight: "600" }}>
-            Swipe left or right to watch matchday fit reels & shop the exact kit.
+            Swipe left or right to watch matchday fit reels & follow <a href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw==" target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", textDecoration: "underline" }}>@90drip.in</a> on Instagram.
           </p>
         </div>
 
