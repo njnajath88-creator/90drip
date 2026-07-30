@@ -1,18 +1,15 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState } from "react";
 
 export default function FanGallerySection({ addToCart }) {
-  const [activeReel, setActiveReel] = useState(null);
-  const sliderRef = useRef(null);
+  const [activeStory, setActiveStory] = useState(null);
 
-  const reels = [
+  const stories = [
     {
       id: 1,
-      creator: "@kerala_drip",
-      location: "Bernabéu Stadium",
-      views: "48.2K",
-      likes: "3.4K",
-      comments: "142",
+      name: "mathewww",
+      handle: "@mathewww",
+      verified: true,
       img: "/images/jersey_product1.png",
       product: {
         id: "rm-home-2425",
@@ -20,15 +17,13 @@ export default function FanGallerySection({ addToCart }) {
         price: 2499,
         image: "/images/jersey_product1.png",
       },
-      caption: "Unboxing the 24/25 Real Madrid Home Kit! Badges and heat-press lettering are perfection 🔥 #90DRIP",
+      caption: "Classic gold details ⚡ 90DRIP kit is top tier.",
     },
     {
       id: 2,
-      creator: "@barca_vibes",
-      location: "Camp Nou Fan Zone",
-      views: "62.1K",
-      likes: "5.1K",
-      comments: "219",
+      name: "ananya_s",
+      handle: "@ananya_s",
+      verified: true,
       img: "/images/jersey_product2.png",
       product: {
         id: "fcb-home-2425",
@@ -36,31 +31,27 @@ export default function FanGallerySection({ addToCart }) {
         price: 2499,
         image: "/images/jersey_product2.png",
       },
-      caption: "Retro classic colors hit different 🔴🔵 Breathable mesh fabric is 10/10 for matchday!",
+      caption: "Retro Barca vibes for matchday 🔴🔵",
     },
     {
       id: 3,
-      creator: "@reddevils_kochi",
-      location: "Old Trafford",
-      views: "39.5K",
-      likes: "2.8K",
-      comments: "98",
+      name: "kerala_drip",
+      handle: "@kerala_drip",
+      verified: true,
       img: "/images/jersey_product3.png",
       product: {
         id: "mun-home-2425",
-        name: "Manchester United 24/25 Home Kit",
+        name: "Manchester United Kit",
         price: 2499,
         image: "/images/jersey_product3.png",
       },
-      caption: "Got my custom number 7 kit delivered in 3 days! Kerala devils representing 👹",
+      caption: "Kochi United supporters kit 🔥",
     },
     {
       id: 4,
-      creator: "@paris_drip",
-      location: "Paris Matchday",
-      views: "74.8K",
-      likes: "6.3K",
-      comments: "310",
+      name: "priya_m",
+      handle: "@priya_m",
+      verified: false,
       img: "/images/jersey_product4.png",
       product: {
         id: "psg-home-2425",
@@ -68,31 +59,27 @@ export default function FanGallerySection({ addToCart }) {
         price: 2699,
         image: "/images/jersey_product4.png",
       },
-      caption: "Jordan x PSG collab is street culture perfection. Tap to shop the exact fit! ⚡",
+      caption: "Streetwear aesthetic with Jordan x PSG ⚡",
     },
     {
       id: 5,
-      creator: "@albiceleste_drp",
-      location: "World Cup Stadium",
-      views: "52.9K",
-      likes: "4.8K",
-      comments: "180",
+      name: "rahul_fit",
+      handle: "@rahul_fit",
+      verified: true,
       img: "/images/jersey_product5.png",
       product: {
         id: "arg-home-2425",
-        name: "Argentina 3-Star Champions Kit",
+        name: "Argentina 3-Star Kit",
         price: 2599,
         image: "/images/jersey_product5.png",
       },
-      caption: "3-Star Champions badge is embroidered crisp. 10/10 quality from 90DRIP ⭐⭐⭐",
+      caption: "3-Star Champions edition ⭐⭐⭐",
     },
     {
       id: 6,
-      creator: "@gunners_uk",
-      location: "Emirates Stadium",
-      views: "41.3K",
-      likes: "3.1K",
-      comments: "115",
+      name: "sneha_r",
+      handle: "@sneha_r",
+      verified: false,
       img: "/images/jersey_product6.png",
       product: {
         id: "ars-home-2425",
@@ -100,321 +87,152 @@ export default function FanGallerySection({ addToCart }) {
         price: 2499,
         image: "/images/jersey_product6.png",
       },
-      caption: "Clean retro collar detailing is perfection 🔴⚪ Fast delivery to Kochi!",
+      caption: "Retro Gunners collar detail is perfection 🔴⚪",
+    },
+    {
+      id: 7,
+      name: "farhan_v",
+      handle: "@farhan_v",
+      verified: true,
+      img: "/images/jersey_product1.png",
+      product: {
+        id: "rm-home-2425",
+        name: "Real Madrid Kit",
+        price: 2499,
+        image: "/images/jersey_product1.png",
+      },
+      caption: "Bernabéu fit styled by 90DRIP",
+    },
+    {
+      id: 8,
+      name: "riya_drip",
+      handle: "@riya_drip",
+      verified: true,
+      img: "/images/jersey_product2.png",
+      product: {
+        id: "fcb-home-2425",
+        name: "FC Barcelona Kit",
+        price: 2499,
+        image: "/images/jersey_product2.png",
+      },
+      caption: "Matchday street style ⚽",
     },
   ];
 
-  const handleScroll = (direction) => {
-    if (sliderRef.current) {
-      const scrollAmount = direction === "left" ? -290 : 290;
-      sliderRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  };
-
   return (
-    <section style={{ padding: "80px 0", background: "#ffffff", color: "#0f172a", borderTop: "1px solid #f1f5f9" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 20px" }}>
+    <section style={{ padding: "64px 0 72px", background: "#ffffff", color: "#0f172a", borderTop: "1px solid #f1f5f9" }}>
+      <div style={{ maxWidth: "1240px", margin: "0 auto", padding: "0 20px", textAlign: "center" }}>
         
         {/* Section Header */}
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <a
-            href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw=="
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "#eff6ff",
-              color: "#2563eb",
-              border: "1px solid #bfdbfe",
-              padding: "6px 16px",
-              borderRadius: "30px",
-              fontSize: "12px",
-              fontWeight: "800",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: "14px",
-              textDecoration: "none",
-              transition: "transform 0.2s ease"
-            }}
-            title="Follow @90drip.in on Instagram"
-          >
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444", boxShadow: "0 0 10px #ef4444", display: "inline-block" }}></span>
-            <span>LIVE COMMUNITY REELS • @90DRIP.IN</span>
-          </a>
+        <h2
+          style={{
+            fontSize: "36px",
+            fontWeight: "900",
+            fontStyle: "italic",
+            color: "#0f172a",
+            margin: "0 0 36px",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          #90DripLife
+        </h2>
 
-          <h2 style={{ fontSize: "36px", fontWeight: "900", color: "#0f172a", margin: "0 0 10px", letterSpacing: "-0.02em" }}>
-            As Seen On Streetwear Fans
-          </h2>
-          <p style={{ fontSize: "15px", color: "#64748b", maxWidth: "560px", margin: "0 auto", fontWeight: "600" }}>
-            Swipe left or right to watch matchday fit reels & follow <a href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw==" target="_blank" rel="noopener noreferrer" style={{ color: "#2563eb", textDecoration: "underline" }}>@90drip.in</a> on Instagram.
-          </p>
-        </div>
-
-        {/* Carousel Slider Wrapper with Navigation Arrows */}
-        <div style={{ position: "relative" }}>
-          {/* Left Arrow Button */}
-          <button
-            onClick={() => handleScroll("left")}
-            aria-label="Previous Reels"
-            style={{
-              position: "absolute",
-              left: "-18px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: "44px",
-              height: "44px",
-              borderRadius: "50%",
-              background: "#0f172a",
-              color: "#ffffff",
-              border: "none",
-              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.25)",
-              cursor: "pointer",
-              zIndex: 15,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease",
-            }}
-            className="slider-arrow-btn"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-          </button>
-
-          {/* Horizontal Right-to-Left Scroll Slider */}
-          <div
-            ref={sliderRef}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "24px",
-              overflowX: "auto",
-              scrollSnapType: "x mandatory",
-              padding: "15px 10px 30px",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-              WebkitOverflowScrolling: "touch",
-            }}
-            className="reels-slider-track"
-          >
-            {reels.map((reel) => (
+        {/* Story Circle Avatars Row */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "22px",
+            flexWrap: "wrap",
+            marginBottom: "40px",
+          }}
+        >
+          {stories.map((story) => (
+            <button
+              key={story.id}
+              onClick={() => setActiveStory(story)}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                cursor: "pointer",
+                outline: "none",
+                transition: "transform 0.25s ease",
+              }}
+              className="story-circle-btn"
+              title={`View ${story.name}'s fit`}
+            >
               <div
-                key={reel.id}
-                onClick={() => setActiveReel(reel)}
                 style={{
-                  flex: "0 0 260px",
-                  scrollSnapAlign: "start",
-                  position: "relative",
-                  borderRadius: "46px",
-                  padding: "8px",
-                  background: "linear-gradient(145deg, #1e293b, #0f172a)",
-                  border: "2px solid #334155",
-                  boxShadow: "0 25px 50px rgba(15, 23, 42, 0.18), inset 0 0 4px rgba(255, 255, 255, 0.2)",
-                  cursor: "pointer",
-                  overflow: "hidden",
-                  transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), boxShadow 0.35s ease",
+                  width: "104px",
+                  height: "104px",
+                  borderRadius: "50%",
+                  padding: "3px",
+                  background: "linear-gradient(135deg, #f97316, #e11d48, #2563eb)",
+                  boxShadow: "0 6px 18px rgba(0, 0, 0, 0.08)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "transform 0.25s ease, boxShadow 0.25s ease",
                 }}
-                className="phone-frame"
+                className="story-ring"
               >
-                {/* Phone Inner Screen Container */}
-                <div
+                <img
+                  src={story.img}
+                  alt={story.name}
                   style={{
-                    position: "relative",
-                    borderRadius: "38px",
-                    overflow: "hidden",
-                    height: "510px",
-                    background: "#020617",
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    background: "#f8fafc",
+                    border: "3px solid #ffffff",
                   }}
-                >
-                  {/* iPhone 17 Pro Dynamic Island Notch */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "8px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      width: "88px",
-                      height: "22px",
-                      background: "#000000",
-                      borderRadius: "14px",
-                      zIndex: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "6px",
-                      boxShadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
-                    }}
-                  >
-                    <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#090d16" }}></span>
-                    <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#1d4ed8" }}></span>
-                  </div>
-
-                  {/* Reel Product / Fan Photo Image */}
-                  <div style={{ width: "100%", height: "100%", background: "linear-gradient(to bottom, #0f172a, #020617)", display: "flex", alignItems: "center", justifyContent: "center", padding: "45px 15px 95px", overflow: "hidden" }}>
-                    <img
-                      src={reel.img}
-                      alt={reel.creator}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "contain",
-                        display: "block",
-                        transition: "transform 0.5s ease",
-                        filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.6))",
-                      }}
-                      className="reel-bg-img"
-                    />
-                  </div>
-
-                  {/* Top Views Badge */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "36px",
-                      left: "14px",
-                      zIndex: 5,
-                    }}
-                  >
-                    <span
-                      style={{
-                        background: "rgba(15, 23, 42, 0.8)",
-                        backdropFilter: "blur(8px)",
-                        color: "#ffffff",
-                        fontSize: "11px",
-                        fontWeight: "800",
-                        padding: "4px 10px",
-                        borderRadius: "16px",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "5px",
-                        border: "1px solid rgba(255, 255, 255, 0.15)",
-                      }}
-                    >
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#ffffff"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                      <span>{reel.views} views</span>
-                    </span>
-                  </div>
-
-                  {/* Right Action Icons (Heart & Comment) */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      right: "12px",
-                      bottom: "115px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "14px",
-                      zIndex: 5,
-                    }}
-                  >
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(15,23,42,0.75)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                      </div>
-                      <span style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", marginTop: "2px", display: "block" }}>{reel.likes}</span>
-                    </div>
-
-                    <div style={{ textAlign: "center" }}>
-                      <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "rgba(15,23,42,0.75)", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.15)" }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                      </div>
-                      <span style={{ fontSize: "10px", fontWeight: "800", color: "#ffffff", marginTop: "2px", display: "block" }}>{reel.comments}</span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Overlay: Creator info & Shop Button */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: "20px 14px 14px",
-                      background: "linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.7) 65%, transparent 100%)",
-                      zIndex: 5,
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-                      <div style={{ width: "24px", height: "24px", borderRadius: "50%", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: "900" }}>
-                        {reel.creator.charAt(1).toUpperCase()}
-                      </div>
-                      <span style={{ fontSize: "12px", fontWeight: "800", color: "#ffffff" }}>{reel.creator}</span>
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    </div>
-
-                    <p style={{ fontSize: "11px", color: "#cbd5e1", margin: "0 0 10px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: "600" }}>
-                      {reel.product.name}
-                    </p>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToCart(reel.product);
-                      }}
-                      style={{
-                        width: "100%",
-                        padding: "10px 12px",
-                        borderRadius: "14px",
-                        background: "#2563eb",
-                        color: "#ffffff",
-                        border: "none",
-                        fontWeight: "900",
-                        fontSize: "12px",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "6px",
-                        boxShadow: "0 4px 14px rgba(37, 99, 235, 0.4)",
-                      }}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                      <span>Shop Fit — ₹{reel.product.price}</span>
-                    </button>
-                  </div>
-
-                </div>
+                />
               </div>
-            ))}
-          </div>
-
-          {/* Right Arrow Button */}
-          <button
-            onClick={() => handleScroll("right")}
-            aria-label="Next Reels"
-            style={{
-              position: "absolute",
-              right: "-18px",
-              top: "50%",
-              transform: "translateY(-50%)",
-              width: "44px",
-              height: "44px",
-              borderRadius: "50%",
-              background: "#0f172a",
-              color: "#ffffff",
-              border: "none",
-              boxShadow: "0 8px 20px rgba(15, 23, 42, 0.25)",
-              cursor: "pointer",
-              zIndex: 15,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease",
-            }}
-            className="slider-arrow-btn"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-          </button>
+            </button>
+          ))}
         </div>
+
+        {/* Follow Us Button */}
+        <a
+          href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw=="
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "13px 30px",
+            borderRadius: "10px",
+            border: "1.5px solid #0f172a",
+            background: "#ffffff",
+            color: "#0f172a",
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            textDecoration: "none",
+            transition: "all 0.25s ease",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
+          }}
+          className="follow-insta-btn"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+          <span>FOLLOW US @90DRIP.IN</span>
+        </a>
 
       </div>
 
-      {/* Reel Lightbox Modal */}
-      {activeReel && (
+      {/* Story Preview Lightbox Modal */}
+      {activeStory && (
         <div
-          onClick={() => setActiveReel(null)}
+          onClick={() => setActiveStory(null)}
           style={{
             position: "fixed",
             inset: 0,
@@ -431,98 +249,91 @@ export default function FanGallerySection({ addToCart }) {
             onClick={(e) => e.stopPropagation()}
             style={{
               background: "#ffffff",
-              borderRadius: "28px",
-              maxWidth: "420px",
+              borderRadius: "24px",
+              maxWidth: "400px",
               width: "100%",
               overflow: "hidden",
               boxShadow: "0 25px 60px rgba(0, 0, 0, 0.35)",
               position: "relative",
             }}
           >
-            {/* Close Button */}
-            <button
-              onClick={() => setActiveReel(null)}
-              style={{
-                position: "absolute",
-                top: "16px",
-                right: "16px",
-                width: "36px",
-                height: "36px",
-                borderRadius: "50%",
-                background: "#f1f5f9",
-                color: "#0f172a",
-                border: "none",
-                fontSize: "18px",
-                fontWeight: "900",
-                cursor: "pointer",
-                zIndex: 20,
-              }}
-            >
-              ✕
-            </button>
-
-            {/* Reel Header */}
+            {/* Header */}
             <div
               style={{
-                position: "absolute",
-                top: "16px",
-                left: "16px",
                 display: "flex",
                 alignItems: "center",
-                gap: "10px",
-                zIndex: 20,
-                background: "rgba(15, 23, 42, 0.75)",
-                backdropFilter: "blur(8px)",
-                padding: "6px 12px",
-                borderRadius: "20px",
+                justifyContent: "space-between",
+                padding: "14px 16px",
+                borderBottom: "1px solid #f1f5f9",
+                background: "#ffffff",
               }}
             >
-              <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "900", fontSize: "11px" }}>
-                {activeReel.creator.charAt(1).toUpperCase()}
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ fontSize: "14px", fontWeight: "900", color: "#0f172a" }}>{activeStory.name}</span>
+                {activeStory.verified && (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5">
+                    <circle cx="12" cy="12" r="10" fill="#2563eb"/>
+                    <polyline points="16 9 10 15 7 12" stroke="#ffffff" strokeWidth="2.5"/>
+                  </svg>
+                )}
               </div>
-              <span style={{ fontSize: "12px", fontWeight: "900", color: "#ffffff" }}>{activeReel.creator}</span>
+              <button
+                onClick={() => setActiveStory(null)}
+                style={{
+                  background: "#f1f5f9",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  color: "#0f172a",
+                }}
+              >
+                ✕
+              </button>
             </div>
 
-            {/* Reel Media Screen */}
-            <div style={{ height: "380px", background: "linear-gradient(to bottom, #0f172a, #020617)", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", padding: "30px" }}>
+            {/* Story Image */}
+            <div style={{ height: "360px", background: "#f8fafc", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <img
-                src={activeReel.img}
-                alt={activeReel.creator}
-                style={{ width: "100%", height: "100%", objectFit: "contain", filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.6))" }}
+                src={activeStory.img}
+                alt={activeStory.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
 
-            {/* Reel Details & Shop CTA */}
-            <div style={{ padding: "24px", background: "#ffffff" }}>
-              <p style={{ fontSize: "13px", color: "#334155", margin: "0 0 16px", lineHeight: 1.5, fontWeight: "600" }}>
-                "{activeReel.caption}"
+            {/* Caption & Shop CTA */}
+            <div style={{ padding: "18px 20px" }}>
+              <p style={{ fontSize: "13px", color: "#475569", margin: "0 0 14px", fontWeight: "600" }}>
+                "{activeStory.caption}"
               </p>
 
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", padding: "12px 16px", borderRadius: "14px", border: "1px solid #e2e8f0", marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", padding: "10px 14px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "14px" }}>
                 <div>
-                  <div style={{ fontSize: "10px", fontWeight: "900", color: "#2563eb", textTransform: "uppercase" }}>TAGGED MATCH KIT</div>
-                  <div style={{ fontSize: "14px", fontWeight: "900", color: "#0f172a" }}>{activeReel.product.name}</div>
+                  <div style={{ fontSize: "13px", fontWeight: "900", color: "#0f172a" }}>{activeStory.product.name}</div>
                 </div>
-                <div style={{ fontSize: "16px", fontWeight: "900", color: "#16a34a" }}>₹{activeReel.product.price}</div>
+                <div style={{ fontSize: "15px", fontWeight: "900", color: "#2563eb" }}>₹{activeStory.product.price}</div>
               </div>
 
               <button
                 onClick={() => {
-                  addToCart(activeReel.product);
-                  setActiveReel(null);
+                  addToCart(activeStory.product);
+                  setActiveStory(null);
                 }}
                 style={{
                   width: "100%",
-                  padding: "15px",
-                  borderRadius: "14px",
+                  padding: "13px",
+                  borderRadius: "12px",
                   background: "#0f172a",
                   color: "#ffffff",
                   border: "none",
                   fontWeight: "900",
                   fontSize: "13px",
                   cursor: "pointer",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.04em",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -531,30 +342,27 @@ export default function FanGallerySection({ addToCart }) {
                 }}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span>Add {activeReel.product.name} to Cart</span>
+                <span>Shop This Fit</span>
               </button>
             </div>
-
           </div>
         </div>
       )}
 
       <style>{`
-        .reels-slider-track::-webkit-scrollbar {
-          display: none;
-        }
-        .phone-frame:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 30px 60px rgba(15, 23, 42, 0.25) !important;
-        }
-        .phone-frame:hover .reel-bg-img {
+        .story-circle-btn:hover .story-ring {
           transform: scale(1.08);
+          box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25) !important;
         }
-        .slider-arrow-btn:hover {
-          background: #2563eb !important;
-          transform: translateY(-50%) scale(1.1) !important;
+        .follow-insta-btn:hover {
+          background: #0f172a !important;
+          color: #ffffff !important;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
         }
       `}</style>
     </section>
   );
 }
+
+
