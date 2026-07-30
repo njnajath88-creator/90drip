@@ -263,10 +263,10 @@ export default function CartPage() {
                           key={itemKey}
                           style={{
                             display: "flex",
-                            gap: "16px",
+                            gap: "14px",
                             paddingBottom: "16px",
                             borderBottom: idx === cart.length - 1 ? "none" : "1px solid #f1f5f9",
-                            alignItems: "center",
+                            alignItems: "flex-start",
                           }}
                         >
                           {/* Image */}
@@ -274,21 +274,50 @@ export default function CartPage() {
                             src={item.image || "/images/jersey_product1.png"}
                             alt={item.name}
                             style={{
-                              width: "80px",
-                              height: "96px",
+                              width: "76px",
+                              height: "90px",
                               objectFit: "cover",
                               borderRadius: "12px",
                               border: "1px solid #e2e8f0",
                               background: "#f8fafc",
+                              flexShrink: 0,
                             }}
                           />
 
-                          {/* Details */}
-                          <div style={{ flex: 1 }}>
-                            <h3 style={{ fontSize: "15px", fontWeight: "800", color: "#0f172a", margin: "0 0 4px", textTransform: "uppercase" }}>
-                              {item.name}
-                            </h3>
-                            <div style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "6px" }}>
+                          {/* Details Container */}
+                          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
+                            {/* Header: Title + Trash Button */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+                              <h3 style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a", margin: 0, textTransform: "uppercase", lineHeight: 1.3 }}>
+                                {item.name}
+                              </h3>
+                              <button
+                                onClick={() => handleRemoveItem(itemKey)}
+                                style={{
+                                  background: "#fef2f2",
+                                  border: "1px solid #fee2e2",
+                                  color: "#ef4444",
+                                  cursor: "pointer",
+                                  borderRadius: "8px",
+                                  width: "28px",
+                                  height: "28px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  flexShrink: 0,
+                                  padding: 0,
+                                }}
+                                title="Remove item"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="3 6 5 6 21 6"></polyline>
+                                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                              </button>
+                            </div>
+
+                            {/* Meta Options (Size & Custom Printing) */}
+                            <div style={{ display: "flex", gap: "6px", alignItems: "center", flexWrap: "wrap" }}>
                               <span style={{ fontSize: "11px", fontWeight: "800", background: "#f1f5f9", color: "#475569", padding: "2px 8px", borderRadius: "6px" }}>
                                 Size: {item.size || "M"}
                               </span>
@@ -298,67 +327,59 @@ export default function CartPage() {
                                 </span>
                               )}
                             </div>
-                            <div style={{ fontSize: "14px", fontWeight: "900", color: "#0f172a" }}>
-                              ₹{parseFloat(item.price).toLocaleString()}
-                            </div>
-                          </div>
 
-                          {/* Quantity Controls */}
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#f8fafc", padding: "4px 8px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
-                            <button
-                              onClick={() => handleUpdateQty(itemKey, item.quantity - 1)}
-                              style={{
-                                width: "26px",
-                                height: "26px",
-                                borderRadius: "6px",
-                                border: "none",
-                                background: "#ffffff",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                              }}
-                            >
-                              -
-                            </button>
-                            <span style={{ fontSize: "14px", fontWeight: "800", minWidth: "20px", textAlign: "center" }}>
-                              {item.quantity}
-                            </span>
-                            <button
-                              onClick={() => handleUpdateQty(itemKey, item.quantity + 1)}
-                              style={{
-                                width: "26px",
-                                height: "26px",
-                                borderRadius: "6px",
-                                border: "none",
-                                background: "#ffffff",
-                                fontWeight: "bold",
-                                cursor: "pointer",
-                                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                              }}
-                            >
-                              +
-                            </button>
-                          </div>
+                            {/* Bottom Row: Quantity Controls & Subtotal */}
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginTop: "4px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "6px", background: "#f8fafc", padding: "3px 6px", borderRadius: "10px", border: "1px solid #e2e8f0" }}>
+                                <button
+                                  onClick={() => handleUpdateQty(itemKey, item.quantity - 1)}
+                                  style={{
+                                    width: "24px",
+                                    height: "24px",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    background: "#ffffff",
+                                    fontWeight: "bold",
+                                    fontSize: "14px",
+                                    cursor: "pointer",
+                                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  -
+                                </button>
+                                <span style={{ fontSize: "13px", fontWeight: "800", minWidth: "18px", textAlign: "center" }}>
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => handleUpdateQty(itemKey, item.quantity + 1)}
+                                  style={{
+                                    width: "24px",
+                                    height: "24px",
+                                    borderRadius: "6px",
+                                    border: "none",
+                                    background: "#ffffff",
+                                    fontWeight: "bold",
+                                    fontSize: "14px",
+                                    cursor: "pointer",
+                                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  +
+                                </button>
+                              </div>
 
-                          {/* Item Subtotal */}
-                          <div style={{ textAlign: "right", minWidth: "80px" }}>
-                            <div style={{ fontSize: "15px", fontWeight: "900", color: "#0f172a" }}>
-                              ₹{(parseFloat(item.price) * item.quantity).toLocaleString()}
+                              <div style={{ textAlign: "right" }}>
+                                <div style={{ fontSize: "15px", fontWeight: "900", color: "#0f172a" }}>
+                                  ₹{(parseFloat(item.price) * item.quantity).toLocaleString()}
+                                </div>
+                              </div>
                             </div>
-                            <button
-                              onClick={() => handleRemoveItem(itemKey)}
-                              style={{
-                                background: "none",
-                                border: "none",
-                                color: "#94a3b8",
-                                cursor: "pointer",
-                                fontSize: "14px",
-                                marginTop: "4px",
-                              }}
-                              title="Remove item"
-                            >
-                              🗑️
-                            </button>
                           </div>
                         </div>
                       );
@@ -603,6 +624,19 @@ export default function CartPage() {
         @media (min-width: 900px) {
           .cart-grid-layout {
             grid-template-columns: 1fr 380px !important;
+          }
+        }
+
+        @media (max-width: 768px) {
+          main {
+            padding-top: 80px !important;
+            padding-bottom: 60px !important;
+          }
+          h1 {
+            font-size: 22px !important;
+          }
+          .cart-grid-layout {
+            gap: 20px !important;
           }
         }
       `}</style>
