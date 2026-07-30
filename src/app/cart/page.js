@@ -27,7 +27,6 @@ export default function CartPage() {
   const [promoInput, setPromoInput] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoError, setPromoError] = useState("");
-  const [orderNotes, setOrderNotes] = useState("");
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   // Sync cart from cartStore
@@ -389,35 +388,6 @@ export default function CartPage() {
                       );
                     })}
                   </div>
-                </div>
-
-                {/* Jersey Printing & Order Notes Box */}
-                <div
-                  style={{
-                    background: "#ffffff",
-                    borderRadius: "20px",
-                    padding: "20px",
-                    border: "1px solid #e2e8f0",
-                  }}
-                >
-                  <label style={{ display: "block", fontSize: "13px", fontWeight: "800", color: "#0f172a", marginBottom: "6px" }}>
-                    ✍️ Jersey Back Printing / Special Instructions
-                  </label>
-                  <textarea
-                    rows={2}
-                    placeholder="e.g. Please print 'RONALDO 7' on the back, or leave instructions for delivery..."
-                    value={orderNotes}
-                    onChange={(e) => setOrderNotes(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: "12px 14px",
-                      borderRadius: "10px",
-                      border: "1px solid #cbd5e1",
-                      fontSize: "13px",
-                      outline: "none",
-                      fontFamily: "inherit",
-                    }}
-                  />
                 </div>
               </div>
 

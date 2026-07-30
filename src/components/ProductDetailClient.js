@@ -173,7 +173,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
               </Link>
             </div>
             <Link href="/" className="nav-logo">
-              <Image src="/images/90driplogo.png" alt="90DRIP" width={110} height={28} priority className="nav-logo-img" style={{ maxHeight: "28px", width: "auto" }} />
+              <Image src="/images/90driplogo.png" alt="90DRIP" width={240} height={64} priority className="nav-logo-img" style={{ height: "54px", maxHeight: "60px", width: "auto", objectFit: "contain" }} />
             </Link>
             <div className="nav-actions">
               <button className="nav-icon-btn" onClick={() => setIsCartOpen(true)} aria-label="Cart">
@@ -418,9 +418,6 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#475569" }}>
                   <span>🔄</span> Easy 7-Day Returns
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#475569" }}>
-                  <span>✨</span> Custom Name Printing Available
                 </div>
               </div>
             </div>

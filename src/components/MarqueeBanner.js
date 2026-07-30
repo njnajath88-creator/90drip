@@ -7,7 +7,7 @@ export default function MarqueeBanner() {
     "Only This Week",
     "100% Authentic Match Kits",
     "Express Shipping Across India",
-    "Custom Name & Number Printing",
+    "Premium Embroidery & Badges",
   ];
 
   return (

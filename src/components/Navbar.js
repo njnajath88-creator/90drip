@@ -131,11 +131,11 @@ export default function Navbar({
               <Image
                 src="/images/90driplogo.png"
                 alt="90DRIP"
-                width={110}
-                height={28}
+                width={240}
+                height={64}
                 priority
                 className="nav-logo-img"
-                style={{ width: "auto", height: "auto", maxHeight: "28px" }}
+                style={{ width: "auto", height: "54px", maxHeight: "60px", objectFit: "contain" }}
               />
             </a>
 
