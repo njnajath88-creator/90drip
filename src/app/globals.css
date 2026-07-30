@@ -2656,10 +2656,35 @@ button {
   }
 }
 
+/* ==========================================
+   PRODUCT DETAIL PAGE LAYOUT
+   ========================================== */
+.product-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
 
+.gallery-wrapper {
+  position: sticky;
+  top: 90px;
+  width: 100%;
+}
 
+.product-info-wrapper {
+  width: 100%;
+}
 
+@media (max-width: 900px) {
+  .product-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
 
-
-
-
+  .gallery-wrapper {
+    position: static;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+}
