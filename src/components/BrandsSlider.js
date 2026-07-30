@@ -1,3 +1,6 @@
+"use client";
+import Image from "next/image";
+
 export default function BrandsSlider() {
   const brands = [
     {
@@ -39,13 +42,15 @@ export default function BrandsSlider() {
       <div className="brands-track">
         {[...Array(2)].map((_, i) => (
           <div key={i} style={{ display: "contents" }}>
-            {brands.map((brand) => (
-              <img
-                key={brand.alt}
+            {brands.map((brand, idx) => (
+              <Image
+                key={`${brand.alt}-${idx}`}
                 src={brand.src}
                 alt={brand.alt}
+                width={50}
+                height={50}
                 loading="lazy"
-                decoding="async"
+                unoptimized
                 className="brand-logo"
               />
             ))}

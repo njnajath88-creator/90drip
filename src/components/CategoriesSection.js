@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CategoriesSection() {
   const categories = [
@@ -73,11 +74,13 @@ export default function CategoriesSection() {
                     background: "#f8fafc"
                   }}
                 >
-                  <img
+                  <Image
                     src={cat.image}
                     alt={cat.alt}
+                    width={600}
+                    height={750}
                     loading="lazy"
-                    decoding="async"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     style={{
                       width: "100%",
                       height: "100%",

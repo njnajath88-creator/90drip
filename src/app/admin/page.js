@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import AdminHeader from "@/components/admin/AdminHeader";
@@ -128,7 +129,7 @@ export default function AdminPage() {
     return (
       <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px" }}>
         <div style={{ background: "#ffffff", borderRadius: "20px", border: "1px solid #e2e8f0", padding: "36px 28px", maxWidth: "380px", width: "100%", textAlign: "center", boxShadow: "0 10px 30px rgba(0,0,0,0.06)" }}>
-          <img src="/images/90driplogo.png" alt="90DRIP" style={{ height: "30px", marginBottom: "16px" }} />
+          <Image src="/images/90driplogo.png" alt="90DRIP" width={110} height={30} loading="lazy" style={{ height: "30px", width: "auto", marginBottom: "16px" }} />
           
           <h2 style={{ fontSize: "20px", fontWeight: "900", color: "#0f172a", margin: "0 0 6px", textTransform: "uppercase" }}>
             Admin Login

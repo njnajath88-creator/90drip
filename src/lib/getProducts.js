@@ -116,18 +116,22 @@ export async function getProductsServer() {
 
   try {
     await connectDB();
-    let products = await Product.find().sort({ createdAt: -1 });
+    let products = await Product.find().sort({ createdAt: -1 }).lean();
 
     if (products.length === 0 && !global.hasInitializedSeed) {
       global.hasInitializedSeed = true;
       const count = await Product.countDocuments();
       if (count === 0) {
         await Product.insertMany(SEED_PRODUCTS);
-        products = await Product.find().sort({ createdAt: -1 });
+        products = await Product.find().sort({ createdAt: -1 }).lean();
       }
     }
 
-    const formatted = products.map((p) => p.toJSON());
+    const formatted = products.map((p) => ({
+      ...p,
+      id: p._id ? String(p._id) : p.id,
+      _id: p._id ? String(p._id) : p.id,
+    }));
     global.productsCache = formatted;
     return formatted;
   } catch (error) {

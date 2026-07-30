@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminHeader() {
   return (
@@ -9,10 +10,13 @@ export default function AdminHeader() {
           {/* Brand Logo & Portal Tag */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <Link href="/" style={{ display: "flex", alignItems: "center" }}>
-              <img
+              <Image
                 src="/images/90driplogo.png"
                 alt="90DRIP"
-                style={{ height: "26px", objectFit: "contain" }}
+                width={100}
+                height={26}
+                loading="lazy"
+                style={{ height: "26px", width: "auto", objectFit: "contain" }}
               />
             </Link>
             <span

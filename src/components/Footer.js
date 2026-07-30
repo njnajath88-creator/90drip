@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -50,9 +51,12 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="footer-brand-col">
             <Link href="/" className="footer-logo" aria-label="90DRIP Home">
-              <img
+              <Image
                 src="/images/90driplogo.png"
                 alt="90DRIP"
+                width={130}
+                height={44}
+                loading="lazy"
                 style={{
                   height: "44px",
                   width: "auto",

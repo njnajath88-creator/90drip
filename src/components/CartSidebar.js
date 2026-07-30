@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CartSidebar({
   isOpen,
@@ -48,10 +49,14 @@ export default function CartSidebar({
               const itemKey = item.cartItemId || item.id || idx;
               return (
                 <div key={itemKey} className="cart-item">
-                  <img
+                  <Image
                     src={item.image || "/images/jersey_product1.png"}
                     alt={item.name}
+                    width={70}
+                    height={84}
+                    loading="lazy"
                     className="cart-item-img"
+                    style={{ objectFit: "cover" }}
                   />
                   <div className="cart-item-details">
                     <div className="cart-item-title">{item.name}</div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getOrders } from "@/lib/orderStore";
@@ -340,9 +341,12 @@ export default function OrdersPage() {
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                       {selectedOrder.cartItems.map((item, idx) => (
                         <div key={idx} style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                          <img
+                          <Image
                             src={item.image || "/images/jersey_product1.png"}
                             alt={item.name}
+                            width={56}
+                            height={68}
+                            loading="lazy"
                             style={{ width: "56px", height: "68px", objectFit: "cover", borderRadius: "10px", border: "1px solid #e2e8f0" }}
                           />
                           <div style={{ flex: 1 }}>

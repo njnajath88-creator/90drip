@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import AuthModal from "./AuthModal";
 
 import ProfileDetailsModal from "./ProfileDetailsModal";
@@ -127,7 +128,15 @@ export default function Navbar({
 
             {/* Center Logo */}
             <a href="/" className="nav-logo" aria-label="90Drip Home">
-              <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" />
+              <Image
+                src="/images/90driplogo.png"
+                alt="90DRIP"
+                width={110}
+                height={28}
+                priority
+                className="nav-logo-img"
+                style={{ width: "auto", height: "auto", maxHeight: "28px" }}
+              />
             </a>
 
             {/* Right Standalone Circle Buttons */}

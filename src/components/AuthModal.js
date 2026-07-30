@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 export default function AuthModal({ isOpen, onClose, onLogin }) {
   const [email, setEmail] = useState("");
@@ -99,7 +100,7 @@ export default function AuthModal({ isOpen, onClose, onLogin }) {
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: "22px" }}>
-          <img src="/images/90driplogo.png" alt="90DRIP" style={{ height: "26px", marginBottom: "12px" }} />
+          <Image src="/images/90driplogo.png" alt="90DRIP" width={100} height={26} loading="lazy" style={{ height: "26px", width: "auto", marginBottom: "12px" }} />
           <h2 style={{ fontSize: "18px", fontWeight: "900", color: "#0f172a", margin: "0 0 4px", textTransform: "uppercase" }}>
             {isSignUp ? "Create Account" : "Sign In to 90Drip"}
           </h2>

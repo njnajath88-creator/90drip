@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function ProductsTab({
   products,
@@ -112,9 +113,12 @@ export default function ProductsTab({
                   filteredProducts.map((product) => (
                     <tr key={product.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "10px 16px" }}>
-                        <img
-                          src={product.image}
+                        <Image
+                          src={product.image || "/images/jersey_product1.png"}
                           alt={product.name}
+                          width={44}
+                          height={52}
+                          loading="lazy"
                           style={{ width: "44px", height: "52px", objectFit: "contain", borderRadius: "8px", background: "#f4f4f0", padding: "4px" }}
                         />
                       </td>

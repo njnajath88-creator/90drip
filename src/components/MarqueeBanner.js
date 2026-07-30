@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 export default function MarqueeBanner() {
   const marqueeItems = [
@@ -16,9 +17,12 @@ export default function MarqueeBanner() {
         <div className="marquee-track-bg">
           {marqueeItems.concat(marqueeItems).concat(marqueeItems).map((text, idx) => (
             <div key={idx} className="marquee-item-bg">
-              <img
+              <Image
                 src="/images/90driplogo.png"
                 alt="90DRIP"
+                width={70}
+                height={20}
+                loading="lazy"
                 className="marquee-logo-bg"
               />
               <span>{text}</span>
@@ -38,9 +42,12 @@ export default function MarqueeBanner() {
         <div className="marquee-track-fg">
           {marqueeItems.concat(marqueeItems).concat(marqueeItems).map((text, idx) => (
             <div key={idx} className="marquee-item-fg">
-              <img
+              <Image
                 src="/images/90driplogo.png"
                 alt="90DRIP"
+                width={70}
+                height={20}
+                loading="lazy"
                 className="marquee-logo-fg"
               />
               <span>{text}</span>

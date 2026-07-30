@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function SearchModal({ isOpen, onClose }) {
   const [query, setQuery] = useState("");
@@ -182,9 +183,12 @@ export default function SearchModal({ isOpen, onClose }) {
                   }}
                   className="search-item-hover"
                 >
-                  <img
+                  <Image
                     src={p.image || "/images/jersey_product1.png"}
                     alt={p.name}
+                    width={48}
+                    height={58}
+                    loading="lazy"
                     style={{
                       width: "48px",
                       height: "58px",

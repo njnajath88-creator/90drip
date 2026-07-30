@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function FanGallerySection({ addToCart }) {
   const [activeStory, setActiveStory] = useState(null);
@@ -178,9 +179,12 @@ export default function FanGallerySection({ addToCart }) {
                 }}
                 className="story-ring"
               >
-                <img
+                <Image
                   src={story.img}
                   alt={story.name}
+                  width={104}
+                  height={104}
+                  loading="lazy"
                   style={{
                     width: "100%",
                     height: "100%",
@@ -299,9 +303,12 @@ export default function FanGallerySection({ addToCart }) {
 
             {/* Story Image */}
             <div style={{ height: "360px", background: "#f8fafc", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <img
+              <Image
                 src={activeStory.img}
                 alt={activeStory.name}
+                width={400}
+                height={360}
+                loading="lazy"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -270,9 +271,12 @@ export default function CartPage() {
                           }}
                         >
                           {/* Image */}
-                          <img
+                          <Image
                             src={item.image || "/images/jersey_product1.png"}
                             alt={item.name}
+                            width={76}
+                            height={90}
+                            loading="lazy"
                             style={{
                               width: "76px",
                               height: "90px",

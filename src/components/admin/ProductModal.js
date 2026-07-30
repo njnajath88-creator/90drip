@@ -1,4 +1,6 @@
 "use client";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { compressAndReadImage } from "@/lib/imageUtils";
 
 const IMAGE_FIELDS = [
@@ -257,9 +259,12 @@ export default function ProductModal({
                     {/* Image Preview or Dropzone */}
                     {hasImage ? (
                       <div style={{ position: "relative", borderRadius: "10px", overflow: "hidden", border: "1px solid #e2e8f0", background: "#f8fafc", aspectRatio: "4 / 3", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <img
+                        <Image
                           src={formData[field.key]}
                           alt={field.title}
+                          width={300}
+                          height={225}
+                          loading="lazy"
                           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                         />
                         <div style={{ position: "absolute", top: 6, left: 6, background: "rgba(15, 23, 42, 0.8)", color: "#ffffff", fontSize: "10px", fontWeight: "800", padding: "2px 7px", borderRadius: "20px", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", gap: "4px" }}>

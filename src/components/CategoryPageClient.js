@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import CartSidebar from "@/components/CartSidebar";
@@ -203,9 +204,12 @@ export default function CategoryPageClient({ slug = "", initialProducts = [] }) 
                 flexShrink: 0,
               }}
             >
-              <img
+              <Image
                 src={categoryInfo.image}
                 alt={categoryInfo.name}
+                width={120}
+                height={120}
+                loading="lazy"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>

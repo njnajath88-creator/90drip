@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import CartSidebar from "@/components/CartSidebar";
 import {
   getCart,
@@ -172,7 +173,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
               </Link>
             </div>
             <Link href="/" className="nav-logo">
-              <img src="/images/90driplogo.png" alt="90DRIP" className="nav-logo-img" style={{ maxHeight: "28px" }} />
+              <Image src="/images/90driplogo.png" alt="90DRIP" width={110} height={28} priority className="nav-logo-img" style={{ maxHeight: "28px", width: "auto" }} />
             </Link>
             <div className="nav-actions">
               <button className="nav-icon-btn" onClick={() => setIsCartOpen(true)} aria-label="Cart">
@@ -229,9 +230,13 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                   onMouseLeave={() => setIsZoomed(false)}
                   onMouseMove={handleMouseMove}
                 >
-                  <img
-                    src={photos[activePhotoIdx]?.src}
+                  <Image
+                    src={photos[activePhotoIdx]?.src || "/images/jersey_product1.png"}
                     alt={`${product.name} - ${photos[activePhotoIdx]?.label}`}
+                    width={800}
+                    height={800}
+                    priority
+                    sizes="(max-width: 900px) 100vw, 50vw"
                     style={{
                       width: "100%",
                       height: "100%",
@@ -293,7 +298,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                         transition: "all 0.2s"
                       }}
                     >
-                      <img src={p.src} alt={p.label} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
+                      <Image src={p.src} alt={p.label} width={64} height={64} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
                     </button>
                   ))}
                 </div>
