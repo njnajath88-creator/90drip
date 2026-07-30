@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -20,6 +20,37 @@ export default function Navbar({
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const profileContainerRef = useRef(null);
+
+  // Close profile dropdown on outside click or ESC key
+  useEffect(() => {
+    if (!isProfileOpen) return;
+
+    const handleOutsideClick = (e) => {
+      if (profileContainerRef.current && !profileContainerRef.current.contains(e.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setIsProfileOpen(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      document.addEventListener("click", handleOutsideClick);
+      document.addEventListener("touchstart", handleOutsideClick);
+      document.addEventListener("keydown", handleKeyDown);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("click", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isProfileOpen]);
 
   // Load user from localStorage on mount
   useEffect(() => {
@@ -165,111 +196,113 @@ export default function Navbar({
                 )}
               </button>
 
-              {/* User Profile Button */}
-              <button
-                className={`nav-glass-circle nav-icon-desktop ${isProfileOpen ? "active" : ""}`}
-                aria-label="User Account"
-                onClick={handleProfileClick}
-                title={user ? `Logged in as ${user.email}` : "Sign In"}
-              >
-                {user ? (
-                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {userInitials}
-                  </div>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                )}
-              </button>
-
-              {/* Advanced Profile Dropdown Menu */}
-              {user && isProfileOpen && (
-                <>
-                  <div
-                    className="profile-dropdown-overlay"
-                    onClick={() => setIsProfileOpen(false)}
-                  />
-                  <div className="profile-dropdown-menu">
-                    {/* Header with Avatar & Online Dot */}
-                    <div className="profile-dropdown-header">
-                      <div className="profile-avatar-wrapper">
-                        <div className="profile-avatar" style={{ background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a" }}>
-                          {userInitials}
-                        </div>
-                        <div className="profile-online-dot" title="Active Session" />
-                      </div>
-                      <div className="profile-user-info">
-                        <div className="profile-name">{user.name || "User Account"}</div>
-                        <div className="profile-email">{user.email}</div>
-                        <div className={`profile-role-badge ${isAdmin ? "admin" : "customer"}`}>
-                          {isAdmin ? "Administrator" : "VIP Member"}
-                        </div>
-                      </div>
+              {/* User Profile Container */}
+              <div ref={profileContainerRef} style={{ position: "relative", display: "inline-block" }}>
+                <button
+                  className={`nav-glass-circle nav-icon-desktop ${isProfileOpen ? "active" : ""}`}
+                  aria-label="User Account"
+                  onClick={handleProfileClick}
+                  title={user ? `Logged in as ${user.email}` : "Sign In"}
+                >
+                  {user ? (
+                    <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {userInitials}
                     </div>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  )}
+                </button>
 
-                    {/* Quick Stats Bar */}
-                    <div className="profile-stats-row">
-                      <div className="profile-stat-chip">
-                        Cart
-                        <span>{cartCount} Items</span>
+                {/* Advanced Profile Dropdown Menu */}
+                {user && isProfileOpen && (
+                  <>
+                    <div
+                      className="profile-dropdown-overlay"
+                      onClick={() => setIsProfileOpen(false)}
+                    />
+                    <div className="profile-dropdown-menu">
+                      {/* Header with Avatar & Online Dot */}
+                      <div className="profile-dropdown-header">
+                        <div className="profile-avatar-wrapper">
+                          <div className="profile-avatar" style={{ background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a" }}>
+                            {userInitials}
+                          </div>
+                          <div className="profile-online-dot" title="Active Session" />
+                        </div>
+                        <div className="profile-user-info">
+                          <div className="profile-name">{user.name || "User Account"}</div>
+                          <div className="profile-email">{user.email}</div>
+                          <div className={`profile-role-badge ${isAdmin ? "admin" : "customer"}`}>
+                            {isAdmin ? "Administrator" : "VIP Member"}
+                          </div>
+                        </div>
                       </div>
-                      <div style={{ width: "1px", background: "#cbd5e1" }} />
-                      <div className="profile-stat-chip">
-                        Status
-                        <span style={{ color: "#16a34a" }}>Active</span>
+
+                      {/* Quick Stats Bar */}
+                      <div className="profile-stats-row">
+                        <div className="profile-stat-chip">
+                          Cart
+                          <span>{cartCount} Items</span>
+                        </div>
+                        <div style={{ width: "1px", background: "#cbd5e1" }} />
+                        <div className="profile-stat-chip">
+                          Status
+                          <span style={{ color: "#16a34a" }}>Active</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="profile-divider"></div>
+                      <div className="profile-divider"></div>
 
-                    {/* Action Items List */}
-                    <ul className="profile-menu-list">
-                      {isAdmin && (
+                      {/* Action Items List */}
+                      <ul className="profile-menu-list">
+                        {isAdmin && (
+                          <li>
+                            <a href="/admin" className="profile-menu-item admin-link">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                              <span>Admin Dashboard</span>
+                              <span className="badge-admin-pill">ADMIN</span>
+                            </a>
+                          </li>
+                        )}
                         <li>
-                          <a href="/admin" className="profile-menu-item admin-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-                            <span>Admin Dashboard</span>
-                            <span className="badge-admin-pill">ADMIN</span>
+                          <a href="/orders" className="profile-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            <span>My Orders & Tracking</span>
                           </a>
                         </li>
-                      )}
-                      <li>
-                        <a href="/orders" className="profile-menu-item">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                          <span>My Orders & Tracking</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/wishlist" className="profile-menu-item">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                          <span>My Saved Wishlist</span>
-                        </a>
-                      </li>
-                      <li>
-                        <button
-                          className="profile-menu-item"
-                          onClick={() => {
-                            setIsProfileOpen(false);
-                            setIsProfileModalOpen(true);
-                          }}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                          <span>My Profile & Details</span>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="profile-menu-item"
-                          onClick={handleLogout}
-                          style={{ color: "#ef4444" }}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                          <span>Sign Out</span>
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </>
-              )}
+                        <li>
+                          <a href="/wishlist" className="profile-menu-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <span>My Saved Wishlist</span>
+                          </a>
+                        </li>
+                        <li>
+                          <button
+                            className="profile-menu-item"
+                            onClick={() => {
+                              setIsProfileOpen(false);
+                              setIsProfileModalOpen(true);
+                            }}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <span>My Profile & Details</span>
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="profile-menu-item"
+                            onClick={handleLogout}
+                            style={{ color: "#ef4444" }}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <span>Sign Out</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
           </div>
