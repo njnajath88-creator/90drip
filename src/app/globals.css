@@ -2687,4 +2687,14 @@ button {
     max-width: 480px;
     margin: 0 auto;
   }
+
+  .product-main-card {
+    cursor: default !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .product-main-card {
+    cursor: default !important;
+  }
 }

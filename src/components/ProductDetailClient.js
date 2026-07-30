@@ -136,7 +136,17 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
     setTimeout(() => setAddedToast(false), 3000);
   };
 
+  const handleMouseEnter = () => {
+    if (typeof window !== "undefined" && (window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768)) {
+      return;
+    }
+    setIsZoomed(true);
+  };
+
   const handleMouseMove = (e) => {
+    if (typeof window !== "undefined" && (window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768)) {
+      return;
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -214,7 +224,8 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                     alignItems: "center",
                     justifyContent: "center"
                   }}
-                  onMouseEnter={() => setIsZoomed(true)}
+                  onTouchStart={() => setIsZoomed(false)}
+                  onMouseEnter={handleMouseEnter}
                   onMouseLeave={() => setIsZoomed(false)}
                   onMouseMove={handleMouseMove}
                 >
