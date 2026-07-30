@@ -76,6 +76,8 @@ export default function CategoriesSection() {
                   <img
                     src={cat.image}
                     alt={cat.alt}
+                    loading="lazy"
+                    decoding="async"
                     style={{
                       width: "100%",
                       height: "100%",

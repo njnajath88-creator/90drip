@@ -44,6 +44,8 @@ export default function BrandsSlider() {
                 key={brand.alt}
                 src={brand.src}
                 alt={brand.alt}
+                loading="lazy"
+                decoding="async"
                 className="brand-logo"
               />
             ))}

@@ -121,6 +121,8 @@ export default function ProductCard({ product, index = 0 }) {
           <img
             src={displaySrc}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             style={{
               width: "100%",
               height: "100%",
