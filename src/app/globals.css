@@ -1,9 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:ital,wght@1,700;1,800;1,900&family=Chakra+Petch:ital,wght@1,700;1,800;1,900&family=Kanit:ital,wght@1,800;1,900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 /* ==========================================
    90DRIP — Minimalist Theme (Thayyilsports Style)
    ========================================== */
 
 /* ---- CSS Custom Properties ---- */
 :root {
+  /* Brand Typography - Wide Extended Techno Italic matching 90DRIP logo */
+  --font-logo: 'Orbitron', 'Chakra Petch', sans-serif;
+
   /* Colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
@@ -76,13 +81,14 @@ button {
 }
 
 .section-title {
+  font-family: var(--font-logo, 'Barlow Condensed', 'Chakra Petch', sans-serif);
   font-size: clamp(28px, 4vw, 42px);
-  font-weight: 800;
+  font-weight: 900;
   font-style: italic;
-  text-transform: lowercase;
+  text-transform: uppercase;
   text-align: center;
   margin-bottom: 40px;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.04em;
 }
 
 /* ==========================================
