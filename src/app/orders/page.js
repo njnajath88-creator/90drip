@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getOrders } from "@/lib/orderStore";
+import { getOrders, fetchOrdersServer } from "@/lib/orderStore";
 import { addToCart } from "@/lib/cartStore";
 
 export default function OrdersPage() {
@@ -25,6 +25,12 @@ export default function OrdersPage() {
       }
     };
     syncOrders();
+    fetchOrdersServer().then((stored) => {
+      if (stored && Array.isArray(stored) && stored.length > 0) {
+        setOrders(stored);
+        setSelectedOrder((prev) => (prev ? stored.find((o) => o.id === prev.id) || stored[0] : stored[0]));
+      }
+    });
     window.addEventListener("90drip_orders_updated", syncOrders);
     return () => window.removeEventListener("90drip_orders_updated", syncOrders);
   }, []);

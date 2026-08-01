@@ -17,7 +17,28 @@ export function getOrders() {
 }
 
 /**
- * Add a new placed order
+ * Fetch orders from server API and sync with localStorage
+ */
+export async function fetchOrdersServer() {
+  if (typeof window === "undefined") return [];
+  try {
+    const res = await fetch(`/api/orders?t=${Date.now()}`, { cache: "no-store" });
+    if (res.ok) {
+      const serverOrders = await res.json();
+      if (Array.isArray(serverOrders) && serverOrders.length > 0) {
+        localStorage.setItem(ORDERS_KEY, JSON.stringify(serverOrders));
+        window.dispatchEvent(new Event("90drip_orders_updated"));
+        return serverOrders;
+      }
+    }
+  } catch (e) {
+    console.error("Failed to fetch orders from server:", e);
+  }
+  return getOrders();
+}
+
+/**
+ * Add a new placed order (saves to local & syncs to API)
  */
 export function addOrder(orderData) {
   if (typeof window === "undefined") return;
@@ -26,7 +47,7 @@ export function addOrder(orderData) {
     const newOrder = {
       ...orderData,
       id: orderData.id || `90D-${Math.floor(100000 + Math.random() * 900000)}`,
-      date: new Date().toISOString().split("T")[0],
+      date: orderData.date || new Date().toISOString().split("T")[0],
       createdAt: new Date().toISOString(),
       status: orderData.status || "Processing",
       trackingSteps: [
@@ -36,12 +57,20 @@ export function addOrder(orderData) {
         { title: "Out for Delivery", date: "Expected in 3 days", completed: false },
       ],
     };
-    const updated = [newOrder, ...current];
+    const updated = [newOrder, ...current.filter(o => o.id !== newOrder.id)];
     localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event("90drip_orders_updated"));
+
+    // POST to server API
+    fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newOrder),
+    }).catch((err) => console.error("Error syncing order to API:", err));
+
     return newOrder;
   } catch (e) {
-    console.error("Failed to save order to localStorage:", e);
+    console.error("Failed to save order:", e);
   }
 }
 
@@ -55,6 +84,14 @@ export function updateOrderStatus(orderId, newStatus) {
     const updated = current.map((ord) => (ord.id === orderId ? { ...ord, status: newStatus } : ord));
     localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event("90drip_orders_updated"));
+
+    // PUT to server API
+    fetch("/api/orders", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: orderId, status: newStatus }),
+    }).catch((err) => console.error("Error updating order status on API:", err));
+
     return updated;
   } catch (e) {
     console.error("Failed to update order status:", e);
@@ -72,6 +109,12 @@ export function deleteOrder(orderId) {
     const updated = current.filter((ord) => ord.id !== orderId);
     localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event("90drip_orders_updated"));
+
+    // DELETE on server API
+    fetch(`/api/orders?id=${orderId}`, { method: "DELETE" }).catch((err) =>
+      console.error("Error deleting order from API:", err)
+    );
+
     return updated;
   } catch (e) {
     console.error("Failed to delete order:", e);
@@ -87,6 +130,11 @@ export function clearOrders() {
   try {
     localStorage.removeItem(ORDERS_KEY);
     window.dispatchEvent(new Event("90drip_orders_updated"));
+
+    fetch("/api/orders?all=true", { method: "DELETE" }).catch((err) =>
+      console.error("Error clearing orders on API:", err)
+    );
+
     return [];
   } catch (e) {
     console.error("Failed to clear orders:", e);

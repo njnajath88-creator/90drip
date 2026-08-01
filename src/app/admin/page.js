@@ -10,7 +10,7 @@ import ProductsTab from "@/components/admin/ProductsTab";
 import OrdersTab from "@/components/admin/OrdersTab";
 import SettingsTab from "@/components/admin/SettingsTab";
 import ProductModal, { DEFAULT_FORM } from "@/components/admin/ProductModal";
-import { getOrders, updateOrderStatus, deleteOrder, clearOrders } from "@/lib/orderStore";
+import { getOrders, fetchOrdersServer, updateOrderStatus, deleteOrder, clearOrders } from "@/lib/orderStore";
 
 export default function AdminPage() {
   const [user, setUser] = useState(null);
@@ -67,6 +67,9 @@ export default function AdminPage() {
       setOrders(getOrders());
     };
     syncOrders();
+    fetchOrdersServer().then((res) => {
+      if (res && Array.isArray(res)) setOrders(res);
+    });
     window.addEventListener("90drip_orders_updated", syncOrders);
     return () => window.removeEventListener("90drip_orders_updated", syncOrders);
   }, []);
