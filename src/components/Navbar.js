@@ -64,6 +64,15 @@ export default function Navbar({
     }
   }, [setUser]);
 
+  // Listen for global open auth modal request (e.g. unauthenticated add to cart/wishlist)
+  useEffect(() => {
+    const handleOpenAuth = () => {
+      setIsAuthModalOpen(true);
+    };
+    window.addEventListener("90drip_open_auth_modal", handleOpenAuth);
+    return () => window.removeEventListener("90drip_open_auth_modal", handleOpenAuth);
+  }, []);
+
   // Navbar scroll behavior
   useEffect(() => {
     const navbar = document.getElementById("navbar");
@@ -132,29 +141,12 @@ export default function Navbar({
                 <Link href="/wishlist" className={`nav-pill-item ${isWishlistActive ? "active" : ""}`}>
                   Wishlist
                 </Link>
-                <a href="/#shop" className="nav-pill-item">
-                  Drops
-                </a>
                 <a href="/#categories" className="nav-pill-item">
                   <span>Fresh In</span>
                   <span className="nav-pill-badge">New</span>
                 </a>
               </div>
 
-              {/* Mobile Profile Icon */}
-              <button
-                className="nav-icon-btn nav-icon-mobile"
-                aria-label="User Account"
-                onClick={handleProfileClick}
-              >
-                {user ? (
-                  <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "#2563eb" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {userInitials}
-                  </div>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                )}
-              </button>
             </div>
 
             {/* Center Logo */}

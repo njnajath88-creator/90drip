@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import { getWishlist, removeFromWishlist, clearWishlist } from "@/lib/wishlistStore";
 import { addToCart } from "@/lib/cartStore";
+import { requireAuth } from "@/lib/authUtils";
 
 export default function WishlistPage() {
   const [wishlist, setWishlist] = useState([]);
@@ -23,6 +24,7 @@ export default function WishlistPage() {
   }, []);
 
   const handleMoveToCart = (product) => {
+    if (!requireAuth()) return;
     addToCart(product, "M");
     removeFromWishlist(product.id);
     setToastMsg(`Moved ${product.name} to Cart!`);

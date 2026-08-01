@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import AuthModal from "@/components/AuthModal";
 import CartSidebar from "@/components/CartSidebar";
 import {
   getCart,
@@ -10,6 +11,7 @@ import {
   updateCartQuantity as updateCartStoreQty,
   removeFromCart as removeFromCartStore,
 } from "@/lib/cartStore";
+import { requireAuth } from "@/lib/authUtils";
 
 export default function ProductDetailClient({ productId, initialProduct = null, allProducts = [] }) {
   const [product, setProduct] = useState(initialProduct);
@@ -22,6 +24,39 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
   const [addedToast, setAddedToast] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+
+  const [user, setUser] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  // Load user from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem("90drip_user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (e) {
+      console.error("Failed to load user state:", e);
+    }
+  }, []);
+
+  // Listen for global open auth modal request
+  useEffect(() => {
+    const handleOpenAuth = () => {
+      setIsAuthModalOpen(true);
+    };
+    window.addEventListener("90drip_open_auth_modal", handleOpenAuth);
+    return () => window.removeEventListener("90drip_open_auth_modal", handleOpenAuth);
+  }, []);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    try {
+      localStorage.setItem("90drip_user", JSON.stringify(userData));
+    } catch (e) {
+      console.error("Failed to save user state:", e);
+    }
+  };
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [newReview, setNewReview] = useState({ name: "", rating: 5, title: "", comment: "" });
@@ -130,6 +165,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
   const cartCount = cart.reduce((t, i) => t + i.quantity, 0);
 
   const handleAddToCart = () => {
+    if (!requireAuth()) return;
     for (let i = 0; i < qty; i++) {
       addToCartStore(product, selectedSize);
     }
@@ -510,6 +546,12 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
         cart={cart}
         updateQuantity={(id, q) => updateCartStoreQty(id, q)}
         removeFromCart={(id) => removeFromCartStore(id)}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onLogin={handleLogin}
       />
     </div>
   );
