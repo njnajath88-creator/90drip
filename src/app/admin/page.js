@@ -10,52 +10,14 @@ import ProductsTab from "@/components/admin/ProductsTab";
 import OrdersTab from "@/components/admin/OrdersTab";
 import SettingsTab from "@/components/admin/SettingsTab";
 import ProductModal, { DEFAULT_FORM } from "@/components/admin/ProductModal";
-
-const INITIAL_ORDERS = [
-  {
-    id: "ORD-9081",
-    customer: "Alex Morgan",
-    email: "alex@example.com",
-    items: "FC Barcelona #10 Home (x1)",
-    total: 1999,
-    date: "2026-07-24",
-    status: "Processing",
-  },
-  {
-    id: "ORD-9080",
-    customer: "David Beckham",
-    email: "david@example.com",
-    items: "Classic #7 Red (x2)",
-    total: 2998,
-    date: "2026-07-23",
-    status: "Shipped",
-  },
-  {
-    id: "ORD-9079",
-    customer: "Kylian M.",
-    email: "kylian@example.com",
-    items: "City FC #9 Blue (x1)",
-    total: 1799,
-    date: "2026-07-22",
-    status: "Delivered",
-  },
-  {
-    id: "ORD-9078",
-    customer: "Marcus R.",
-    email: "marcus@example.com",
-    items: "Green Eagle #11 (x1)",
-    total: 1299,
-    date: "2026-07-21",
-    status: "Pending",
-  },
-];
+import { getOrders, updateOrderStatus, deleteOrder, clearOrders } from "@/lib/orderStore";
 
 export default function AdminPage() {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
+  const [orders, setOrders] = useState([]);
 
   // Admin LoginForm State
   const [adminEmail, setAdminEmail] = useState("");
@@ -347,10 +309,29 @@ export default function AdminPage() {
     }
   };
 
+  // Sync real orders on mount and listen to changes
+  useEffect(() => {
+    const syncOrders = () => {
+      setOrders(getOrders());
+    };
+    syncOrders();
+    window.addEventListener("90drip_orders_updated", syncOrders);
+    return () => window.removeEventListener("90drip_orders_updated", syncOrders);
+  }, []);
+
   const handleUpdateOrderStatus = (orderId, newStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
-    );
+    const updated = updateOrderStatus(orderId, newStatus);
+    setOrders(updated || getOrders());
+  };
+
+  const handleDeleteOrder = (orderId) => {
+    const updated = deleteOrder(orderId);
+    setOrders(updated || getOrders());
+  };
+
+  const handleClearOrders = () => {
+    const updated = clearOrders();
+    setOrders(updated || []);
   };
 
   return (
@@ -386,7 +367,12 @@ export default function AdminPage() {
         )}
 
         {activeTab === "orders" && (
-          <OrdersTab orders={orders} onUpdateStatus={handleUpdateOrderStatus} />
+          <OrdersTab
+            orders={orders}
+            onUpdateStatus={handleUpdateOrderStatus}
+            onDeleteOrder={handleDeleteOrder}
+            onClearOrders={handleClearOrders}
+          />
         )}
 
         {activeTab === "settings" && <SettingsTab />}

@@ -8,46 +8,6 @@ import Footer from "@/components/Footer";
 import { getOrders } from "@/lib/orderStore";
 import { addToCart } from "@/lib/cartStore";
 
-const INITIAL_DEMO_ORDERS = [
-  {
-    id: "90D-849201",
-    date: "2026-07-24",
-    status: "Processing",
-    total: 1999,
-    paymentMethod: "cod",
-    customer: "Alex Morgan",
-    address: "B-402 Horizon Heights, Bandra West, Mumbai - 400050",
-    cartItems: [
-      { id: "1", name: "FC Barcelona #10 Home", price: 1999, size: "L", quantity: 1, image: "/images/cat_full_sleeve.png" }
-    ],
-    trackingSteps: [
-      { title: "Order Placed", date: "Jul 24, 02:30 PM", completed: true },
-      { title: "Quality Checked & Packed", date: "Jul 25, 10:00 AM", completed: true },
-      { title: "Handed to Courier (Bluedart)", date: "Jul 26, 08:00 AM", completed: true },
-      { title: "Out for Delivery", date: "Expected Today", completed: false, current: true },
-    ]
-  },
-  {
-    id: "90D-712049",
-    date: "2026-07-18",
-    status: "Delivered",
-    total: 3298,
-    paymentMethod: "upi",
-    customer: "Alex Morgan",
-    address: "B-402 Horizon Heights, Bandra West, Mumbai - 400050",
-    cartItems: [
-      { id: "2", name: "Classic #7 Red", price: 1499, size: "M", quantity: 1, image: "/images/cat_half_sleeve.png" },
-      { id: "3", name: "City FC #9 Blue", price: 1799, size: "M", quantity: 1, image: "/images/cat_5_sleeve.png" }
-    ],
-    trackingSteps: [
-      { title: "Order Placed", date: "Jul 18", completed: true },
-      { title: "Quality Checked & Packed", date: "Jul 19", completed: true },
-      { title: "Handed to Courier", date: "Jul 20", completed: true },
-      { title: "Delivered Successfully", date: "Jul 22", completed: true },
-    ]
-  }
-];
-
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
   const [user, setUser] = useState(null);
@@ -57,12 +17,11 @@ export default function OrdersPage() {
   useEffect(() => {
     const syncOrders = () => {
       const stored = getOrders();
+      setOrders(stored);
       if (stored.length > 0) {
-        setOrders(stored);
-        setSelectedOrder(stored[0]);
+        setSelectedOrder((prev) => (prev ? stored.find((o) => o.id === prev.id) || stored[0] : stored[0]));
       } else {
-        setOrders(INITIAL_DEMO_ORDERS);
-        setSelectedOrder(INITIAL_DEMO_ORDERS[0]);
+        setSelectedOrder(null);
       }
     };
     syncOrders();
@@ -154,12 +113,37 @@ export default function OrdersPage() {
             </div>
           )}
 
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr", gap: "28px" }}
-            className="orders-grid-layout"
-          >
-            {/* Left Column: Orders List */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {orders.length === 0 ? (
+            <div
+              style={{
+                background: "#ffffff",
+                borderRadius: "24px",
+                padding: "60px 24px",
+                textAlign: "center",
+                border: "1px solid #e2e8f0",
+                maxWidth: "500px",
+                margin: "40px auto",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.03)",
+              }}
+            >
+              <div style={{ fontSize: "48px", marginBottom: "16px" }}>🛍️</div>
+              <h2 style={{ fontSize: "22px", fontWeight: "900", color: "#0f172a", margin: "0 0 8px", textTransform: "uppercase" }}>
+                No Orders Placed Yet
+              </h2>
+              <p style={{ fontSize: "14px", color: "#64748b", margin: "0 0 24px" }}>
+                When you place an order, your items and real-time tracking will appear right here!
+              </p>
+              <Link href="/" className="btn-primary" style={{ textDecoration: "none", display: "inline-block", padding: "14px 28px" }}>
+                Explore Jerseys Catalog →
+              </Link>
+            </div>
+          ) : (
+            <div
+              style={{ display: "grid", gridTemplateColumns: "1fr", gap: "28px" }}
+              className="orders-grid-layout"
+            >
+              {/* Left Column: Orders List */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <div style={{ fontSize: "14px", fontWeight: "800", color: "#475569", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                 Select Order to Track
               </div>
@@ -366,9 +350,10 @@ export default function OrdersPage() {
             )}
 
           </div>
+        )}
 
-        </div>
-      </main>
+      </div>
+    </main>
 
       <Footer />
 

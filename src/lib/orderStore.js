@@ -44,3 +44,52 @@ export function addOrder(orderData) {
     console.error("Failed to save order to localStorage:", e);
   }
 }
+
+/**
+ * Update an order's fulfillment status
+ */
+export function updateOrderStatus(orderId, newStatus) {
+  if (typeof window === "undefined") return [];
+  try {
+    const current = getOrders();
+    const updated = current.map((ord) => (ord.id === orderId ? { ...ord, status: newStatus } : ord));
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event("90drip_orders_updated"));
+    return updated;
+  } catch (e) {
+    console.error("Failed to update order status:", e);
+    return getOrders();
+  }
+}
+
+/**
+ * Delete a single order
+ */
+export function deleteOrder(orderId) {
+  if (typeof window === "undefined") return [];
+  try {
+    const current = getOrders();
+    const updated = current.filter((ord) => ord.id !== orderId);
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event("90drip_orders_updated"));
+    return updated;
+  } catch (e) {
+    console.error("Failed to delete order:", e);
+    return getOrders();
+  }
+}
+
+/**
+ * Clear all orders
+ */
+export function clearOrders() {
+  if (typeof window === "undefined") return [];
+  try {
+    localStorage.removeItem(ORDERS_KEY);
+    window.dispatchEvent(new Event("90drip_orders_updated"));
+    return [];
+  } catch (e) {
+    console.error("Failed to clear orders:", e);
+    return [];
+  }
+}
