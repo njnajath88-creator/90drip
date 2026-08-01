@@ -61,6 +61,16 @@ export default function AdminPage() {
     fetchProducts();
   }, []);
 
+  // Sync real orders on mount and listen to changes
+  useEffect(() => {
+    const syncOrders = () => {
+      setOrders(getOrders());
+    };
+    syncOrders();
+    window.addEventListener("90drip_orders_updated", syncOrders);
+    return () => window.removeEventListener("90drip_orders_updated", syncOrders);
+  }, []);
+
   const handleAdminFormSubmit = (e) => {
     e.preventDefault();
     setAuthError("");
@@ -308,16 +318,6 @@ export default function AdminPage() {
       setDeletingId(null);
     }
   };
-
-  // Sync real orders on mount and listen to changes
-  useEffect(() => {
-    const syncOrders = () => {
-      setOrders(getOrders());
-    };
-    syncOrders();
-    window.addEventListener("90drip_orders_updated", syncOrders);
-    return () => window.removeEventListener("90drip_orders_updated", syncOrders);
-  }, []);
 
   const handleUpdateOrderStatus = (orderId, newStatus) => {
     const updated = updateOrderStatus(orderId, newStatus);
