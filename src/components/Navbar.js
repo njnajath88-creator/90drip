@@ -132,7 +132,7 @@ export default function Navbar({
         <div className="container">
           <div className="navbar-inner">
 
-            {/* Left Glass Floating Pill Links Bar */}
+            {/* Left Glass Floating Pill Links Bar & Mobile Profile Button */}
             <div className="nav-left">
               <div className="nav-pill-container" role="list">
                 <Link href="/" className={`nav-pill-item ${isHomeActive ? "active" : ""}`}>
@@ -147,6 +147,23 @@ export default function Navbar({
                 </a>
               </div>
 
+              {/* Mobile Profile Icon Button on Top-Left */}
+              <div className="nav-icon-mobile" style={{ position: "relative" }}>
+                <button
+                  className={`nav-glass-circle ${isProfileOpen ? "active" : ""}`}
+                  aria-label="User Account"
+                  onClick={handleProfileClick}
+                  title={user ? `Logged in as ${user.email}` : "Sign In"}
+                >
+                  {user ? (
+                    <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: isAdmin ? "linear-gradient(135deg, #2563eb, #1d4ed8)" : "#0f172a", color: "#fff", fontSize: "10px", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {userInitials}
+                    </div>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Center Logo */}
@@ -188,7 +205,7 @@ export default function Navbar({
                 )}
               </button>
 
-              {/* User Profile Container */}
+              {/* User Profile Container (Desktop) */}
               <div ref={profileContainerRef} style={{ position: "relative", display: "inline-block" }}>
                 <button
                   className={`nav-glass-circle nav-icon-desktop ${isProfileOpen ? "active" : ""}`}
