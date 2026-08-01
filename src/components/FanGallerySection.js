@@ -204,26 +204,9 @@ export default function FanGallerySection({ addToCart }) {
           href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw=="
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "13px 30px",
-            borderRadius: "10px",
-            border: "1.5px solid #0f172a",
-            background: "#ffffff",
-            color: "#0f172a",
-            fontSize: "12px",
-            fontWeight: "800",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            textDecoration: "none",
-            transition: "all 0.25s ease",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.04)",
-          }}
           className="follow-insta-btn"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg className="insta-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -252,104 +235,91 @@ export default function FanGallerySection({ addToCart }) {
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: "#ffffff",
-              borderRadius: "24px",
+              position: "relative",
               maxWidth: "400px",
               width: "100%",
+              borderRadius: "20px",
               overflow: "hidden",
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.35)",
-              position: "relative",
+              background: "#0f172a",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
-            {/* Header */}
             <div
               style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                padding: "14px 16px",
-                borderBottom: "1px solid #f1f5f9",
-                background: "#ffffff",
+                position: "relative",
+                width: "100%",
+                paddingTop: "140%",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontSize: "14px", fontWeight: "900", color: "#0f172a" }}>{activeStory.name}</span>
-                {activeStory.verified && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5">
-                    <circle cx="12" cy="12" r="10" fill="#2563eb"/>
-                    <polyline points="16 9 10 15 7 12" stroke="#ffffff" strokeWidth="2.5"/>
-                  </svg>
-                )}
-              </div>
+              <img
+                src={activeStory.img}
+                alt={activeStory.name}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
               <button
                 onClick={() => setActiveStory(null)}
                 style={{
-                  background: "#f1f5f9",
-                  border: "none",
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  width: "36px",
+                  height: "36px",
                   borderRadius: "50%",
-                  width: "30px",
-                  height: "30px",
+                  background: "rgba(15, 23, 42, 0.7)",
+                  backdropFilter: "blur(8px)",
+                  color: "#ffffff",
+                  border: "none",
+                  fontSize: "18px",
+                  cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  color: "#0f172a",
                 }}
               >
                 ✕
               </button>
             </div>
-
-            {/* Story Image */}
-            <div style={{ height: "360px", background: "#f8fafc", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Image
-                src={activeStory.img}
-                alt={activeStory.name}
-                width={400}
-                height={360}
-                loading="lazy"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
-            </div>
-
-            {/* Caption & Shop CTA */}
-            <div style={{ padding: "18px 20px" }}>
-              <p style={{ fontSize: "13px", color: "#475569", margin: "0 0 14px", fontWeight: "600" }}>
-                "{activeStory.caption}"
-              </p>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", padding: "10px 14px", borderRadius: "12px", border: "1px solid #e2e8f0", marginBottom: "14px" }}>
-                <div>
-                  <div style={{ fontSize: "13px", fontWeight: "900", color: "#0f172a" }}>{activeStory.product.name}</div>
-                </div>
-                <div style={{ fontSize: "15px", fontWeight: "900", color: "#2563eb" }}>₹{activeStory.product.price}</div>
+            <div
+              style={{
+                padding: "20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                background: "#0f172a",
+              }}
+            >
+              <div>
+                <h4 style={{ margin: 0, color: "#ffffff", fontSize: "16px", fontWeight: "700" }}>
+                  {activeStory.name}
+                </h4>
+                <p style={{ margin: "2px 0 0", color: "#94a3b8", fontSize: "12px" }}>
+                  Wearing {activeStory.product.name}
+                </p>
               </div>
-
               <button
                 onClick={() => {
                   addToCart(activeStory.product);
                   setActiveStory(null);
                 }}
                 style={{
-                  width: "100%",
-                  padding: "13px",
-                  borderRadius: "12px",
-                  background: "#0f172a",
+                  padding: "10px 18px",
+                  borderRadius: "10px",
+                  background: "linear-gradient(135deg, #2563eb, #1d4ed8)",
                   color: "#ffffff",
                   border: "none",
                   fontWeight: "900",
                   fontSize: "13px",
                   cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "8px",
-                  boxShadow: "0 4px 14px rgba(15, 23, 42, 0.2)",
                 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span>Shop This Fit</span>
+                Shop Now
               </button>
             </div>
           </div>
@@ -361,15 +331,89 @@ export default function FanGallerySection({ addToCart }) {
           transform: scale(1.08);
           box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25) !important;
         }
+
+        .follow-insta-btn {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 32px;
+          border-radius: 12px;
+          background: #0f172a;
+          color: #ffffff;
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          text-decoration: none;
+          overflow: hidden;
+          z-index: 1;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+          transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+
+        .follow-insta-btn::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+          opacity: 0;
+          z-index: -1;
+          transition: opacity 0.35s ease;
+          border-radius: 12px;
+        }
+
+        .follow-insta-btn::after {
+          content: "";
+          position: absolute;
+          top: -50%;
+          left: -60%;
+          width: 50%;
+          height: 200%;
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          transform: rotate(25deg);
+          transition: all 0.6s ease;
+          z-index: 2;
+          pointer-events: none;
+        }
+
         .follow-insta-btn:hover {
-          background: #0f172a !important;
-          color: #ffffff !important;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+          color: #ffffff;
+          transform: translateY(-4px) scale(1.03);
+          box-shadow: 0 12px 28px -4px rgba(220, 39, 67, 0.5), 0 8px 16px -4px rgba(188, 24, 136, 0.4);
+          border-color: transparent;
+        }
+
+        .follow-insta-btn:hover::before {
+          opacity: 1;
+        }
+
+        .follow-insta-btn:hover::after {
+          left: 130%;
+        }
+
+        .follow-insta-btn .insta-icon {
+          transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .follow-insta-btn:hover .insta-icon {
+          transform: scale(1.22) rotate(-10deg);
+        }
+
+        .follow-insta-btn span {
+          transition: letter-spacing 0.3s ease;
+        }
+
+        .follow-insta-btn:hover span {
+          letter-spacing: 0.11em;
         }
       `}</style>
     </section>
   );
 }
-
-
