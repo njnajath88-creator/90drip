@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { clearCart } from "@/lib/cartStore";
 import { addOrder } from "@/lib/orderStore";
@@ -18,6 +18,25 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
   });
   const [orderId, setOrderId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Automatically fetch signed in user's email and name on open
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const saved = localStorage.getItem("90drip_user");
+        if (saved) {
+          const user = JSON.parse(saved);
+          setFormData((prev) => ({
+            ...prev,
+            name: prev.name || user.name || "",
+            email: prev.email || user.email || "",
+          }));
+        }
+      } catch (e) {
+        console.error("Failed to load signed in user in checkout:", e);
+      }
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
