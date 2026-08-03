@@ -7,7 +7,6 @@ import { addToCart as addToCartStore } from "@/lib/cartStore";
 import { requireAuth } from "@/lib/authUtils";
 
 export default function ProductCard({ product, index = 0, addToCart: addToCartProp }) {
-  const [hovered, setHovered] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [lastAddedSize, setLastAddedSize] = useState("");
@@ -104,6 +103,7 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
             alignItems: "center",
             justifyContent: "center",
             position: "relative",
+            overflow: "hidden",
           }}
         >
           {/* Wishlist Heart Icon Button (Top Right) */}
