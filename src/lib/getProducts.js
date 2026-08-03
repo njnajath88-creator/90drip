@@ -12,18 +12,27 @@ const DUMMY_NAMES = [
   "Milan #3 Legendary 1994",
 ];
 
+// In-memory cache with TTL (30 seconds) to avoid hitting MongoDB on every request
+const CACHE_TTL_MS = 30_000;
+
 export async function getProductsServer() {
-  // Clear memory cache if dummy cleaning hasn't run yet
-  if (!global.hasCleanedDummyData) {
-    global.productsCache = null;
-  } else if (global.productsCache && Array.isArray(global.productsCache)) {
+  const now = Date.now();
+
+  // Return cached data if still fresh
+  if (
+    global.productsCache &&
+    Array.isArray(global.productsCache) &&
+    global.productsCacheTime &&
+    now - global.productsCacheTime < CACHE_TTL_MS &&
+    global.hasCleanedDummyData
+  ) {
     return global.productsCache;
   }
 
   try {
     await connectDB();
 
-    // Automatically remove any dummy seed data from database
+    // One-time dummy data cleanup
     if (!global.hasCleanedDummyData) {
       global.hasCleanedDummyData = true;
       await Product.deleteMany({ name: { $in: DUMMY_NAMES } }).catch(() => {});
@@ -37,7 +46,10 @@ export async function getProductsServer() {
       _id: p._id ? String(p._id) : p.id,
     }));
 
+    // Store with timestamp
     global.productsCache = formatted;
+    global.productsCacheTime = now;
+
     return formatted;
   } catch (error) {
     console.error("getProductsServer error:", error);
