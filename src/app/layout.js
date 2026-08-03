@@ -12,6 +12,13 @@ export const metadata = {
   description: "90Drip — Premium sports jerseys from top clubs worldwide.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.className}>
@@ -19,4 +26,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-

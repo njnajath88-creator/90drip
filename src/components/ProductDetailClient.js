@@ -261,9 +261,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                     justifyContent: "center"
                   }}
                   onTouchStart={() => setIsZoomed(false)}
-                  onMouseEnter={handleMouseEnter}
                   onMouseLeave={() => setIsZoomed(false)}
-                  onMouseMove={handleMouseMove}
                 >
                   <Image
                     src={photos[activePhotoIdx]?.src || "/images/jersey_product1.png"}

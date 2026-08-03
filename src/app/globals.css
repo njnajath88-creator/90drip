@@ -38,6 +38,8 @@
 
 html {
   scroll-behavior: smooth;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -46,6 +48,7 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
 }
 
 a {
