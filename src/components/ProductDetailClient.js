@@ -23,7 +23,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [addedToast, setAddedToast] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [isTouchDevice, setIsTouchDevice] = useState(true);
 
   const [user, setUser] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -38,6 +38,11 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
     } catch (e) {
       console.error("Failed to load user state:", e);
     }
+  }, []);
+
+  // Detect touch device to disable image zoom on mobile
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
 
   // Listen for global open auth modal request
@@ -275,9 +280,8 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                       height: "100%",
                       objectFit: "cover",
                       objectPosition: "top center",
-                      transition: isZoomed ? "none" : "opacity 0.3s, transform 0.3s ease-out",
-                      transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-                      transform: isZoomed ? "scale(1.8)" : "scale(1)",
+                      transition: "opacity 0.3s",
+                      transform: (isZoomed && !isTouchDevice) ? "scale(1.8)" : "scale(1)",
                       display: "block"
                     }}
                   />
