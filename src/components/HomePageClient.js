@@ -39,7 +39,7 @@ export default function HomePageClient({ initialProducts = [] }) {
     fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setProducts(data);
         }
       })

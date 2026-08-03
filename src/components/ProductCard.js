@@ -85,21 +85,18 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
         color: "inherit",
         display: "block",
         opacity: isVisible ? 1 : 0,
-        transform: isVisible
-          ? (hovered ? "translateY(0) scale(1.01)" : "translateY(0)")
-          : "translateY(28px)",
-        transition: `opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${staggerDelay}ms, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${staggerDelay}ms, box-shadow 0.25s ease`,
+        transform: isVisible ? "translateY(0)" : "translateY(28px)",
+        transition: `opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${staggerDelay}ms, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${staggerDelay}ms`,
         willChange: "opacity, transform",
       }}
-      onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
-        setHovered(false);
         setShowSizePicker(false);
       }}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {/* Edge-to-Edge Clean Image Container */}
         <div
+          className="product-card-box"
           style={{
             background: "#ffffff",
             borderRadius: "20px",
@@ -109,9 +106,6 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
             alignItems: "center",
             justifyContent: "center",
             position: "relative",
-            transition: "transform 0.25s ease, box-shadow 0.25s ease",
-            transform: hovered ? "scale(1.02)" : "scale(1)",
-            boxShadow: hovered ? "0 10px 25px rgba(0,0,0,0.08)" : "none"
           }}
         >
           {/* Wishlist Heart Icon Button (Top Right) */}
@@ -274,14 +268,13 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
               height={500}
               loading={index < 4 ? "eager" : "lazy"}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="product-card-image"
               style={{
                 width: "100%",
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "top center",
                 display: "block",
-                transition: "transform 0.35s ease",
-                transform: hovered ? "scale(1.06)" : "scale(1)"
               }}
             />
           </div>

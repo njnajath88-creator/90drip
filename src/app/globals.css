@@ -3047,3 +3047,21 @@ button {
   }
 }
 
+/* Enable hover scaling ONLY on desktop devices with a mouse pointer */
+@media (hover: hover) {
+  .product-card-box {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .product-card-box:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  }
+  .product-card-image {
+    transition: transform 0.35s ease;
+  }
+  .product-card-box:hover .product-card-image {
+    transform: scale(1.06);
+  }
+}
+
+
