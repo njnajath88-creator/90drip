@@ -56,6 +56,18 @@ a {
   color: inherit;
 }
 
+/* ---- iOS Safari Auto-Zoom Fix ----
+   iOS Safari zooms the ENTIRE PAGE when any input/select/textarea
+   has font-size < 16px. Force 16px on mobile to prevent this.
+   Visual size is controlled separately via transform or padding. */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
 ul {
   list-style: none;
 }
