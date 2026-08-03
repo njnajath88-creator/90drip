@@ -171,12 +171,6 @@ export default function CategoriesSection() {
           position: relative;
         }
 
-        .category-card-link:hover .category-card {
-          transform: translateY(-8px);
-          border-color: #cbd5e1;
-          box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12);
-        }
-
         .category-img-wrapper {
           position: relative;
           width: 100%;
@@ -192,10 +186,6 @@ export default function CategoriesSection() {
           object-position: center top;
           display: block;
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .category-card-link:hover .category-img {
-          transform: scale(1.08);
         }
 
         .category-tag-badge {
@@ -221,10 +211,6 @@ export default function CategoriesSection() {
           opacity: 0;
           transition: opacity 0.35s ease;
           pointer-events: none;
-        }
-
-        .category-card-link:hover .category-img-overlay {
-          opacity: 1;
         }
 
         .category-content {
@@ -273,12 +259,28 @@ export default function CategoriesSection() {
           flex-shrink: 0;
         }
 
-        .category-card-link:hover .category-arrow-btn {
-          background: #2563eb;
-          color: #ffffff;
-          border-color: #2563eb;
-          transform: translateX(3px);
-          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        @media (hover: hover) and (pointer: fine) {
+          .category-card-link:hover .category-card {
+            transform: translateY(-8px);
+            border-color: #cbd5e1;
+            box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.12);
+          }
+
+          .category-card-link:hover .category-img {
+            transform: scale(1.08);
+          }
+
+          .category-card-link:hover .category-img-overlay {
+            opacity: 1;
+          }
+
+          .category-card-link:hover .category-arrow-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+          }
         }
 
         @media (max-width: 1024px) {

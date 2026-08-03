@@ -85,9 +85,7 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
         color: "inherit",
         display: "block",
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? "translateY(0)" : "translateY(28px)",
-        transition: `opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${staggerDelay}ms, transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) ${staggerDelay}ms`,
-        willChange: "opacity, transform",
+        transition: `opacity 0.35s ease ${staggerDelay}ms`,
       }}
       onMouseLeave={() => {
         setShowSizePicker(false);
