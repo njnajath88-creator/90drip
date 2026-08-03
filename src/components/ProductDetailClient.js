@@ -254,7 +254,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                     position: "relative",
                     cursor: isZoomed ? "zoom-out" : "zoom-in",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-                    aspectRatio: "1 / 1",
+                    aspectRatio: "4 / 5",
                     border: "1px solid #e8e8e2",
                     padding: 0,
                     display: "flex",
@@ -270,16 +270,17 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                     src={photos[activePhotoIdx]?.src || "/images/jersey_product1.png"}
                     alt={`${product.name} - ${photos[activePhotoIdx]?.label}`}
                     width={800}
-                    height={800}
+                    height={1000}
                     priority
                     sizes="(max-width: 900px) 100vw, 50vw"
                     style={{
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
+                      objectPosition: "top center",
                       transition: isZoomed ? "none" : "opacity 0.3s, transform 0.3s ease-out",
                       transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
-                      transform: isZoomed ? "scale(1.8)" : "scale(1.05)",
+                      transform: isZoomed ? "scale(1.8)" : "scale(1)",
                       display: "block"
                     }}
                   />
@@ -334,7 +335,7 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                         transition: "all 0.2s"
                       }}
                     >
-                      <Image src={p.src} alt={p.label} width={64} height={64} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
+                      <Image src={p.src} alt={p.label} width={64} height={64} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top center", borderRadius: 8 }} />
                     </button>
                   ))}
                 </div>

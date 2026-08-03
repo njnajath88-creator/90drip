@@ -108,138 +108,113 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            overflow: "hidden",
             position: "relative",
             transition: "transform 0.25s ease, box-shadow 0.25s ease",
             transform: hovered ? "scale(1.02)" : "scale(1)",
             boxShadow: hovered ? "0 10px 25px rgba(0,0,0,0.08)" : "none"
           }}
         >
-          {/* Floating Action Buttons & Anchored Size Dropdown Menu */}
-          <div
-            style={{
-              position: "absolute",
-              top: "12px",
-              right: "12px",
-              zIndex: 20,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-              gap: "6px",
-            }}
-          >
-            {/* Top Buttons Row */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              {/* Quick Add to Cart Icon Button */}
-              <button
-                onClick={handleToggleSizePicker}
-                title={addedToCart ? `Added (${lastAddedSize})` : "Select Size & Add to Cart"}
-                aria-label="Add to Cart Options"
-                style={{
-                  background: addedToCart ? "#2563eb" : showSizePicker ? "#0f172a" : "rgba(255, 255, 255, 0.95)",
-                  backdropFilter: "blur(6px)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "36px",
-                  height: "36px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                  transition: "all 0.2s ease",
-                  color: (addedToCart || showSizePicker) ? "#ffffff" : "#475569",
-                  transform: (addedToCart || showSizePicker) ? "scale(1.08)" : "scale(1)",
-                }}
+          {/* Wishlist Heart Icon Button (Top Right) */}
+          <div className="product-card-wishlist-wrap">
+            <button
+              onClick={handleWishlistToggle}
+              title={isSaved ? "Remove from Wishlist" : "Save to Wishlist"}
+              aria-label={isSaved ? "Remove from Wishlist" : "Save to Wishlist"}
+              style={{
+                background: "rgba(255, 255, 255, 0.95)",
+                backdropFilter: "blur(6px)",
+                border: "none",
+                borderRadius: "50%",
+                width: "36px",
+                height: "36px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                transition: "transform 0.2s ease, background 0.2s ease",
+                transform: isSaved ? "scale(1.08)" : "scale(1)",
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill={isSaved ? "#ef4444" : "none"}
+                stroke={isSaved ? "#ef4444" : "#475569"}
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                {addedToCart ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <path d="M16 10a4 4 0 0 1-8 0" />
-                  </svg>
-                )}
-              </button>
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </button>
+          </div>
 
-              {/* Wishlist Heart Icon Button */}
-              <button
-                onClick={handleWishlistToggle}
-                title={isSaved ? "Remove from Wishlist" : "Save to Wishlist"}
-                aria-label={isSaved ? "Remove from Wishlist" : "Save to Wishlist"}
-                style={{
-                  background: "rgba(255, 255, 255, 0.95)",
-                  backdropFilter: "blur(6px)",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: "36px",
-                  height: "36px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-                  transition: "transform 0.2s ease, background 0.2s ease",
-                  transform: isSaved ? "scale(1.08)" : "scale(1)",
-                }}
-              >
+          {/* Quick Add to Cart Button & Dropdown (Bottom Right on mobile, Top Right on desktop) */}
+          <div className="product-card-cart-wrap">
+            <button
+              onClick={handleToggleSizePicker}
+              title={addedToCart ? `Added (${lastAddedSize})` : "Select Size & Add to Cart"}
+              aria-label="Add to Cart Options"
+              style={{
+                background: addedToCart ? "#2563eb" : showSizePicker ? "#0f172a" : "rgba(255, 255, 255, 0.95)",
+                backdropFilter: "blur(6px)",
+                border: "none",
+                borderRadius: "50%",
+                width: "36px",
+                height: "36px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                transition: "all 0.2s ease",
+                color: (addedToCart || showSizePicker) ? "#ffffff" : "#475569",
+                transform: (addedToCart || showSizePicker) ? "scale(1.08)" : "scale(1)",
+              }}
+            >
+              {addedToCart ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="18"
                   height="18"
                   viewBox="0 0 24 24"
-                  fill={isSaved ? "#ef4444" : "none"}
-                  stroke={isSaved ? "#ef4444" : "#475569"}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
                   strokeWidth="2.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 0 1-8 0" />
                 </svg>
-              </button>
-            </div>
+              )}
+            </button>
 
             {/* Anchored Size Dropdown Menu */}
             {showSizePicker && (
               <div
+                className="product-card-size-picker"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                }}
-                style={{
-                  minWidth: "135px",
-                  background: "#ffffff",
-                  borderRadius: "14px",
-                  border: "1px solid #e2e8f0",
-                  boxShadow: "0 12px 28px -4px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(0, 0, 0, 0.08)",
-                  padding: "6px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "2px",
-                  zIndex: 30,
                 }}
               >
                 <div style={{ padding: "4px 8px 6px", fontSize: "10px", fontWeight: "900", color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid #f1f5f9" }}>
@@ -282,22 +257,34 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
             )}
           </div>
 
-          <Image
-            src={displaySrc}
-            alt={product.name}
-            width={400}
-            height={500}
-            loading={index < 4 ? "eager" : "lazy"}
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          {/* Inner Image Wrapper */}
+          <div
             style={{
               width: "100%",
               height: "100%",
-              objectFit: "cover",
-              display: "block",
-              transition: "transform 0.35s ease",
-              transform: hovered ? "scale(1.06)" : "scale(1)"
+              borderRadius: "20px",
+              overflow: "hidden",
+              position: "relative",
             }}
-          />
+          >
+            <Image
+              src={displaySrc}
+              alt={product.name}
+              width={400}
+              height={500}
+              loading={index < 4 ? "eager" : "lazy"}
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "top center",
+                display: "block",
+                transition: "transform 0.35s ease",
+                transform: hovered ? "scale(1.06)" : "scale(1)"
+              }}
+            />
+          </div>
         </div>
 
         {/* Minimalist Details Below Image */}
