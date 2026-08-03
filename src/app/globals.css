@@ -3080,4 +3080,30 @@ button {
   }
 }
 
+/* HARD BLOCK: Force zero transforms on all touch/mobile screens.
+   Overrides any incorrectly-reported hover states on Android devices. */
+@media (max-width: 768px) {
+  .product-card-image,
+  .product-card-box:hover .product-card-image,
+  .category-img,
+  .category-card-link:hover .category-img,
+  .category-card-item:hover .category-card-img-wrap img,
+  .product-card:hover .product-img {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .product-card:hover .product-actions-overlay {
+    opacity: 0 !important;
+    transform: none !important;
+  }
+
+  .category-card-item:hover,
+  .category-card-link:hover .category-card {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+    border-color: #e2e8f0 !important;
+  }
+}
+
 
