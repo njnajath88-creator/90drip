@@ -2541,7 +2541,12 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carousel-main-img {
+    transition: transform 0.3s ease;
+  }
 }
 
 .slider-arrow {
@@ -3012,12 +3017,14 @@ button {
 
   .product-main-card {
     cursor: default !important;
+    overflow: hidden !important;
   }
 }
 
 @media (pointer: coarse) {
   .product-main-card {
     cursor: default !important;
+    overflow: hidden !important;
   }
 }
 

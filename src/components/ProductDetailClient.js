@@ -257,13 +257,13 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                     height: "100%",
                     background: "#ffffff",
                     position: "relative",
-                    cursor: isZoomed ? "zoom-out" : "zoom-in",
+                    cursor: isTouchDevice ? "default" : (isZoomed ? "zoom-out" : "zoom-in"),
                     boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-                    aspectRatio: "4 / 5",
                     padding: 0,
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    overflow: "hidden",
                   }}
                   onTouchStart={() => setIsZoomed(false)}
                   onMouseLeave={() => setIsZoomed(false)}
