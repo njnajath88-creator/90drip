@@ -344,64 +344,57 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
             </div>
 
             {/* ─── RIGHT: Product Info ─── */}
-            <div className="product-info-wrapper" style={{ background: "#ffffff", padding: 28, borderRadius: 22, border: "1px solid #e8e8e2", boxShadow: "0 4px 20px rgba(0,0,0,0.04)" }}>
-              {/* Badges */}
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
-                {product.badges?.map((b, i) => (
-                  <span key={i} style={{ background: b.toLowerCase() === "sale" ? "#fef2f2" : "#eff6ff", color: b.toLowerCase() === "sale" ? "#ef4444" : "#2563eb", fontSize: 11, fontWeight: 900, padding: "3px 10px", borderRadius: 20, textTransform: "uppercase" }}>
-                    {b}
-                  </span>
-                ))}
-                {product.sport && (
-                  <span style={{ background: "#f1f5f9", color: "#475569", fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 20, textTransform: "uppercase" }}>
-                    {product.sport}
-                  </span>
-                )}
-              </div>
+            <div className="product-info-wrapper" style={{ padding: "4px 0" }}>
 
-              <h1 style={{ fontSize: 26, fontWeight: 900, color: "#0f172a", margin: "0 0 12px", textTransform: "uppercase", letterSpacing: "0.02em" }}>
+              {/* Badges */}
+              {(product.badges?.length > 0 || product.sport) && (
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+                  {product.badges?.map((b, i) => (
+                    <span key={i} style={{ background: b.toLowerCase() === "sale" ? "#fef2f2" : "#f1f5f9", color: b.toLowerCase() === "sale" ? "#ef4444" : "#475569", fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      {b}
+                    </span>
+                  ))}
+                  {product.sport && (
+                    <span style={{ background: "#f1f5f9", color: "#475569", fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      {product.sport}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Name */}
+              <h1 style={{ fontSize: 22, fontWeight: 900, color: "#0f172a", margin: "0 0 16px", textTransform: "uppercase", letterSpacing: "0.02em", lineHeight: 1.2 }}>
                 {product.name}
               </h1>
 
-              {/* Price & Rating */}
-              <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                  <span style={{ fontSize: 28, fontWeight: 900, color: "#0f172a" }}>₹{product.price.toLocaleString()}</span>
-                  {product.originalPrice && (
-                    <>
-                      <span style={{ fontSize: 16, color: "#94a3b8", textDecoration: "line-through", fontWeight: 600 }}>₹{product.originalPrice.toLocaleString()}</span>
-                      <span style={{ fontSize: 12, fontWeight: 900, color: "#16a34a", background: "#f0fdf4", padding: "2px 8px", borderRadius: 6 }}>{discountPct}% OFF</span>
-                    </>
-                  )}
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#f8fafc", padding: "4px 10px", borderRadius: 20, fontSize: 12, fontWeight: 800, color: "#0f172a" }}>
-                  <span style={{ color: "#f59e0b" }}>★</span>
-                  <span>4.9</span>
-                  <span style={{ color: "#94a3b8", fontWeight: 600 }}>(142 reviews)</span>
-                </div>
+              {/* Price */}
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 28 }}>
+                <span style={{ fontSize: 26, fontWeight: 900, color: "#0f172a" }}>₹{product.price.toLocaleString()}</span>
+                {product.originalPrice && (
+                  <>
+                    <span style={{ fontSize: 15, color: "#94a3b8", textDecoration: "line-through", fontWeight: 600 }}>₹{product.originalPrice.toLocaleString()}</span>
+                    <span style={{ fontSize: 12, fontWeight: 900, color: "#16a34a" }}>{discountPct}% off</span>
+                  </>
+                )}
               </div>
 
               {/* Size Selector */}
-              <div style={{ marginBottom: 22 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <label style={{ fontSize: 12, fontWeight: 900, color: "#0f172a", textTransform: "uppercase" }}>Select Size</label>
-                  <span style={{ fontSize: 11, color: "#2563eb", fontWeight: 700, cursor: "pointer" }}>Size Chart</span>
-                </div>
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ fontSize: 11, fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 10 }}>Size</label>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {(product.sizes || ["S", "M", "L", "XL"]).map((sz) => (
                     <button
                       key={sz}
                       onClick={() => setSelectedSize(sz)}
                       style={{
-                        padding: "10px 18px",
-                        borderRadius: 10,
+                        padding: "9px 18px",
+                        borderRadius: 8,
                         border: selectedSize === sz ? "2px solid #0f172a" : "1.5px solid #e2e8f0",
                         background: selectedSize === sz ? "#0f172a" : "#ffffff",
-                        color: selectedSize === sz ? "#ffffff" : "#0f172a",
-                        fontWeight: 900,
+                        color: selectedSize === sz ? "#ffffff" : "#475569",
+                        fontWeight: 800,
                         fontSize: 13,
                         cursor: "pointer",
-                        transition: "all 0.2s"
                       }}
                     >
                       {sz}
@@ -411,19 +404,19 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
               </div>
 
               {/* Quantity & Add to Cart */}
-              <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
-                <div style={{ display: "flex", alignItems: "center", border: "1.5px solid #e2e8f0", borderRadius: 12, overflow: "hidden", background: "#f8fafc" }}>
-                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ width: 36, height: 44, border: "none", background: "transparent", fontWeight: 900, fontSize: 16, cursor: "pointer" }}>-</button>
-                  <span style={{ padding: "0 12px", fontWeight: 900, fontSize: 14 }}>{qty}</span>
-                  <button onClick={() => setQty((q) => q + 1)} style={{ width: 36, height: 44, border: "none", background: "transparent", fontWeight: 900, fontSize: 16, cursor: "pointer" }}>+</button>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", border: "1.5px solid #e2e8f0", borderRadius: 10, overflow: "hidden" }}>
+                  <button onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ width: 38, height: 46, border: "none", background: "transparent", fontWeight: 900, fontSize: 18, cursor: "pointer", color: "#0f172a" }}>−</button>
+                  <span style={{ padding: "0 14px", fontWeight: 900, fontSize: 14, color: "#0f172a" }}>{qty}</span>
+                  <button onClick={() => setQty((q) => q + 1)} style={{ width: 38, height: 46, border: "none", background: "transparent", fontWeight: 900, fontSize: 18, cursor: "pointer", color: "#0f172a" }}>+</button>
                 </div>
                 <button
                   onClick={handleAddToCart}
                   style={{
                     flex: 1,
-                    minWidth: 180,
-                    padding: "14px 24px",
-                    borderRadius: 12,
+                    minWidth: 160,
+                    padding: "14px 20px",
+                    borderRadius: 10,
                     border: "none",
                     background: "#0f172a",
                     color: "#ffffff",
@@ -432,33 +425,20 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
                     cursor: "pointer",
                     textTransform: "uppercase",
                     letterSpacing: "0.04em",
-                    boxShadow: "0 4px 14px rgba(15,23,42,0.2)",
-                    transition: "transform 0.2s, background 0.2s"
                   }}
                 >
-                  Add To Cart • ₹{(product.price * qty).toLocaleString()}
+                  Add to Cart · ₹{(product.price * qty).toLocaleString()}
                 </button>
               </div>
 
               {addedToast && (
-                <div style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0", padding: "10px 14px", borderRadius: 10, fontSize: 13, fontWeight: 800, marginBottom: 20 }}>
-                  ✓ Added {qty} {product.name} ({selectedSize}) to cart!
+                <div style={{ background: "#f0fdf4", color: "#16a34a", border: "1px solid #bbf7d0", padding: "10px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700, marginTop: 14 }}>
+                  ✓ Added to cart!
                 </div>
               )}
 
-              {/* Features List */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, paddingTop: 20, borderTop: "1px solid #f1f5f9" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#475569" }}>
-                  <span>🚚</span> Express Shipping across India
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#475569" }}>
-                  <span>🛡️</span> 100% Authentic Match Quality
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontWeight: 700, color: "#475569" }}>
-                  <span>🔄</span> Easy 7-Day Returns
-                </div>
-              </div>
             </div>
+
 
           </div>
 
