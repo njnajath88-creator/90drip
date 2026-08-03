@@ -2310,7 +2310,7 @@ button {
 .main-image-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   background: #f8fafc;
   border-radius: 12px;
   overflow: hidden;
@@ -2509,7 +2509,7 @@ button {
 .main-carousel-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   background: #f1f5f9;
   border-radius: 14px;
   overflow: hidden;

@@ -244,18 +244,17 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
             <div className="gallery-wrapper">
 
               {/* Main Image Display Container */}
-              <div className="main-image-container">
+              <div className="main-image-container" style={{ aspectRatio: "4 / 5", width: "100%", borderRadius: 22, overflow: "hidden", border: "1px solid #e8e8e2" }}>
                 <div
                   className="product-main-card"
                   style={{
+                    width: "100%",
+                    height: "100%",
                     background: "#ffffff",
-                    borderRadius: 22,
-                    overflow: "hidden",
                     position: "relative",
                     cursor: isZoomed ? "zoom-out" : "zoom-in",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
                     aspectRatio: "4 / 5",
-                    border: "1px solid #e8e8e2",
                     padding: 0,
                     display: "flex",
                     alignItems: "center",
