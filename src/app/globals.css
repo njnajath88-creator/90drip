@@ -332,9 +332,11 @@ button {
   transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
-.nav-icon-btn:hover {
-  opacity: 0.8;
-  transform: scale(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .nav-icon-btn:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
 }
 
 .cart-badge {
@@ -602,9 +604,11 @@ button {
   transition: all var(--transition-smooth);
 }
 
-.product-card:hover .product-actions-overlay {
-  opacity: 1;
-  transform: translateY(0);
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .product-actions-overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .btn-quick-add {
@@ -2875,10 +2879,16 @@ button {
   flex-direction: column;
 }
 
-.category-card-item:hover {
-  transform: translateY(-6px);
-  border-color: #2563eb;
-  box-shadow: 0 12px 25px -5px rgba(37, 99, 235, 0.15);
+@media (hover: hover) and (pointer: fine) {
+  .category-card-item:hover {
+    transform: translateY(-6px);
+    border-color: #2563eb;
+    box-shadow: 0 12px 25px -5px rgba(37, 99, 235, 0.15);
+  }
+
+  .category-card-item:hover .category-card-img-wrap img {
+    transform: scale(1.06);
+  }
 }
 
 .category-card-item.active {
@@ -2900,10 +2910,6 @@ button {
   height: 100%;
   object-fit: cover;
   transition: transform 0.4s ease;
-}
-
-.category-card-item:hover .category-card-img-wrap img {
-  transform: scale(1.06);
 }
 
 .category-badge-pill {
@@ -3053,14 +3059,7 @@ button {
 }
 
 /* Enable hover scaling ONLY on desktop devices with a mouse pointer */
-@media (hover: hover) {
-  .product-card-box {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-  }
-  .product-card-box:hover {
-    transform: scale(1.02);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  }
+@media (hover: hover) and (pointer: fine) {
   .product-card-image {
     transition: transform 0.35s ease;
   }

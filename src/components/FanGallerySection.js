@@ -327,9 +327,34 @@ export default function FanGallerySection({ addToCart }) {
       )}
 
       <style>{`
-        .story-circle-btn:hover .story-ring {
-          transform: scale(1.08);
-          box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25) !important;
+        @media (hover: hover) and (pointer: fine) {
+          .story-circle-btn:hover .story-ring {
+            transform: scale(1.08);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25) !important;
+          }
+
+          .follow-insta-btn:hover {
+            color: #ffffff;
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 12px 28px -4px rgba(220, 39, 67, 0.5), 0 8px 16px -4px rgba(188, 24, 136, 0.4);
+            border-color: transparent;
+          }
+
+          .follow-insta-btn:hover::before {
+            opacity: 1;
+          }
+
+          .follow-insta-btn:hover::after {
+            left: 130%;
+          }
+
+          .follow-insta-btn:hover .insta-icon {
+            transform: scale(1.22) rotate(-10deg);
+          }
+
+          .follow-insta-btn:hover span {
+            letter-spacing: 0.11em;
+          }
         }
 
         .follow-insta-btn {
@@ -383,35 +408,12 @@ export default function FanGallerySection({ addToCart }) {
           pointer-events: none;
         }
 
-        .follow-insta-btn:hover {
-          color: #ffffff;
-          transform: translateY(-4px) scale(1.03);
-          box-shadow: 0 12px 28px -4px rgba(220, 39, 67, 0.5), 0 8px 16px -4px rgba(188, 24, 136, 0.4);
-          border-color: transparent;
-        }
-
-        .follow-insta-btn:hover::before {
-          opacity: 1;
-        }
-
-        .follow-insta-btn:hover::after {
-          left: 130%;
-        }
-
         .follow-insta-btn .insta-icon {
           transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .follow-insta-btn:hover .insta-icon {
-          transform: scale(1.22) rotate(-10deg);
-        }
-
         .follow-insta-btn span {
           transition: letter-spacing 0.3s ease;
-        }
-
-        .follow-insta-btn:hover span {
-          letter-spacing: 0.11em;
         }
       `}</style>
     </section>
