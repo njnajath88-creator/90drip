@@ -11,8 +11,8 @@ export const metadata = {
   title: "90Drip | Premium Sports Jerseys",
   description: "90Drip — Premium sports jerseys from top clubs worldwide.",
   icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
+    icon: "/images/favicon.png",
+    apple: "/images/favicon.png",
   },
 };
 
