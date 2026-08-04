@@ -34,17 +34,7 @@ export default function HomePageClient({ initialProducts = [] }) {
     return () => window.removeEventListener("90drip_cart_updated", syncCart);
   }, []);
 
-  // Soft background sync to keep products fresh without blocking UI
-  useEffect(() => {
-    fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setProducts(data);
-        }
-      })
-      .catch((err) => console.error("Background products sync error:", err));
-  }, []);
+  // Products are pre-loaded from server (SSR), no need for a redundant client fetch
 
   const handleAddToCart = (product, selectedSize = "M") => {
     addToCartStore(product, selectedSize);
