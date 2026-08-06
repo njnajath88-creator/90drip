@@ -15,12 +15,9 @@ import webpush from "web-push";
 import { connectDB } from "@/lib/db";
 import { PushSubscription } from "@/lib/models/PushSubscription";
 
-// Configure VAPID — these env vars must be set in .env.local AND Vercel dashboard
-webpush.setVapidDetails(
-  `mailto:${process.env.VAPID_CONTACT_EMAIL || "admin@90drip.com"}`,
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
+// We will initialize VAPID details lazily inside sendPushToAll to prevent build crashes
+// when environment variables are missing during Next.js build-time prerendering.
+let isVapidInitialized = false;
 
 /**
  * Sends a push notification to all stored device subscriptions.
@@ -32,6 +29,21 @@ export async function sendPushToAll(title, body, url = "/admin") {
   if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
     console.warn("VAPID keys not configured — skipping push notifications");
     return;
+  }
+
+  // Lazily configure VAPID on first push request
+  if (!isVapidInitialized) {
+    try {
+      webpush.setVapidDetails(
+        `mailto:${process.env.VAPID_CONTACT_EMAIL || "admin@90drip.com"}`,
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+      );
+      isVapidInitialized = true;
+    } catch (err) {
+      console.error("Failed to initialize VAPID details:", err);
+      return;
+    }
   }
 
   try {
