@@ -32,6 +32,12 @@ const CATEGORY_MAP = {
     description: "Iconic vintage & classic heritage football kits celebrating legendary eras of the game.",
     image: "/images/cat_retro.png",
     badgeColor: "#f59e0b"
+  },
+  "embroidery": {
+    name: "Embroidery",
+    description: "Premium embroidered details, custom patches, and high-quality threadwork on premium jersey fabrics.",
+    image: "/images/cat_embroidery.png",
+    badgeColor: "#8b5cf6"
   }
 };
 

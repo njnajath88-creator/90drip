@@ -130,6 +130,7 @@ export default function SearchModal({ isOpen, onClose }) {
             { id: "half sleeve", label: "Half Sleeve" },
             { id: "5 sleeve", label: "Five Sleeve" },
             { id: "retro", label: "Retro Vintage" },
+            { id: "embroidery", label: "Embroidery" },
           ].map((cat) => (
             <button
               key={cat.id}

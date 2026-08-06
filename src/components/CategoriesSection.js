@@ -36,6 +36,14 @@ export default function CategoriesSection() {
       alt: "Retro Category",
       tag: "HERITAGE"
     },
+    {
+      key: "Embroidery",
+      slug: "embroidery",
+      subtitle: "Premium Stitched Details",
+      image: "/images/cat_embroidery.png",
+      alt: "Embroidery Category",
+      tag: "PREMIUM"
+    },
   ];
 
   return (

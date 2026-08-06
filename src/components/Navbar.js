@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import AuthModal from "./AuthModal";
-
 import ProfileDetailsModal from "./ProfileDetailsModal";
 import SearchModal from "./SearchModal";
+import AdminNotificationPanel from "./AdminNotificationPanel";
 
 export default function Navbar({
   cartCount,
@@ -181,6 +181,9 @@ export default function Navbar({
 
             {/* Right Standalone Circle Buttons */}
             <div className="nav-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "10px" }}>
+              {/* Admin Notification Bell — only visible to admin users */}
+              <AdminNotificationPanel isAdmin={isAdmin} />
+
               {/* Search Button */}
               <button
                 className="nav-glass-circle"

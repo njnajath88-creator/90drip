@@ -111,6 +111,7 @@ export default function ProductModal({
                 <option value="Half Sleeve">Half Sleeve</option>
                 <option value="5 Sleeve">5 Sleeve</option>
                 <option value="Retro">Retro</option>
+                <option value="Embroidery">Embroidery</option>
               </select>
             </div>
           </div>
