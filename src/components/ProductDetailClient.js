@@ -100,12 +100,35 @@ export default function ProductDetailClient({ productId, initialProduct = null, 
     return () => window.removeEventListener("90drip_cart_updated", syncCart);
   }, []);
 
-  // Background fallback if initialProduct was null
+  // Instant load from sessionStorage (set by HomePageClient when homepage loads).
+  // This is the CleanCuts pattern — data is already in memory, 0 network calls.
+  // Only falls back to the API if user deep-linked directly to the product URL.
   useEffect(() => {
-    if (product) return;
+    if (product) return; // initialProduct was already passed from server — nothing to do
     async function loadProduct() {
       try {
         setLoading(true);
+
+        // 1️⃣ Try sessionStorage first (instant, set by homepage)
+        try {
+          const cached = sessionStorage.getItem("90drip_products_cache");
+          const cachedTime = sessionStorage.getItem("90drip_products_cache_time");
+          const isFresh = cachedTime && Date.now() - parseInt(cachedTime) < 5 * 60_000; // 5 min
+          if (cached && isFresh) {
+            const parsed = JSON.parse(cached);
+            const found = parsed.find(
+              (p) => String(p.id) === String(productId) || String(p._id) === String(productId)
+            );
+            if (found) {
+              setProduct(found);
+              setSelectedSize(found.sizes?.[0] || "M");
+              setLoading(false);
+              return; // Done — no API call needed ✔️
+            }
+          }
+        } catch (_) {}
+
+        // 2️⃣ Fallback: fetch from API (direct URL / deep link / stale cache)
         const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         const found = data.find((p) => String(p.id) === String(productId) || String(p._id) === String(productId));

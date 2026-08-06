@@ -34,6 +34,20 @@ export default function HomePageClient({ initialProducts = [] }) {
     return () => window.removeEventListener("90drip_cart_updated", syncCart);
   }, []);
 
+  // Cache products in sessionStorage as soon as they arrive from the server.
+  // The product detail page reads this first — making product navigation
+  // instant (0 network calls), exactly like CleanCuts uses its static data.
+  useEffect(() => {
+    if (initialProducts && initialProducts.length > 0) {
+      try {
+        sessionStorage.setItem("90drip_products_cache", JSON.stringify(initialProducts));
+        sessionStorage.setItem("90drip_products_cache_time", Date.now().toString());
+      } catch (e) {
+        // sessionStorage might be full — not a blocking issue
+      }
+    }
+  }, [initialProducts]);
+
   // Products are pre-loaded from server (SSR), no need for a redundant client fetch
 
   const handleAddToCart = (product, selectedSize = "M") => {
