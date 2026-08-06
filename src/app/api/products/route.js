@@ -5,7 +5,9 @@ import mongoose from "mongoose";
 import { getProductsServer } from "@/lib/getProducts";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// NOTE: revalidate = 0 removed — force-dynamic is sufficient to prevent caching
+// and does not trigger ISR writes. revalidate = 0 + force-dynamic was causing
+// an ISR write event on every single API request, burning through the 200K limit.
 
 // GET — fetch all products (instant 0ms response via server memory cache)
 export async function GET() {

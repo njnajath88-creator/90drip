@@ -12,8 +12,9 @@ const DUMMY_NAMES = [
   "Milan #3 Legendary 1994",
 ];
 
-// In-memory cache with TTL (30 seconds) to avoid hitting MongoDB on every request
-const CACHE_TTL_MS = 30_000;
+// Cache for 5 minutes — products change rarely, no need to hit MongoDB every 30s.
+// Reduces origin transfer and MongoDB connections significantly.
+const CACHE_TTL_MS = 5 * 60_000; // 5 minutes
 
 export async function getProductsServer() {
   const now = Date.now();

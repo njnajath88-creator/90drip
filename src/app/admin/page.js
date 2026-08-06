@@ -83,14 +83,13 @@ export default function AdminPage() {
       if (res && Array.isArray(res)) setOrders(res);
     });
 
-    // Auto-refresh every 20 seconds so the admin always sees fresh orders
-    // without needing to manually reload. This bridges the gap between tabs
-    // since the 90drip_orders_updated event only fires in the same tab.
+    // Auto-refresh every 60 seconds — reduced from 20s to cut origin transfer costs.
+    // The notification panel still polls every 30s for fast new-order detection.
     const pollInterval = setInterval(() => {
       fetchOrdersServer().then((res) => {
         if (res && Array.isArray(res)) setOrders(res);
       });
-    }, 20_000);
+    }, 60_000);
 
     window.addEventListener("90drip_orders_updated", syncOrders);
     return () => {

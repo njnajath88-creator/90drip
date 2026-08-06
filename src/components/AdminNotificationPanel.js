@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 
 const SEEN_KEY = "90drip_admin_seen_orders";
-const POLL_INTERVAL_MS = 10000;
+const POLL_INTERVAL_MS = 30000;
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";

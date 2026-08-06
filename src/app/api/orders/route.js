@@ -3,7 +3,9 @@ import { connectDB } from "@/lib/db";
 import { Order } from "@/lib/models/Order";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// NOTE: revalidate = 0 intentionally removed — combined with force-dynamic it
+// triggers an ISR write on every single request, rapidly burning the 200K/mo
+// free-tier limit. force-dynamic alone opts out of caching without ISR writes.
 
 if (!global.ordersCache) {
   global.ordersCache = [];
