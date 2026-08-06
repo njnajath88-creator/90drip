@@ -251,37 +251,96 @@ export default function AdminNotificationPanel({ isAdmin }) {
     }
   }, [permissionState, showInAppToast]);
 
-  const enableNotifications = () => {
+  /**
+   * enableNotifications — full VAPID push subscription flow.
+   * 1. Request browser permission
+   * 2. Subscribe via pushManager with VAPID public key
+   * 3. Save subscription to MongoDB via /api/push/subscribe
+   *
+   * After this, the SERVER sends push messages directly to Apple/Google
+   * push servers — which wake up the device even when screen is off.
+   */
+  const enableNotifications = async () => {
     if (typeof window === "undefined") return;
+
+    // iOS: must be installed as PWA first
     if (isIOS() && !isStandalone()) {
       setShowIOSGuide(true);
       return;
     }
+
     if (!("Notification" in window)) {
-      alert("Notifications are not supported in this browser.");
+      alert("Push notifications are not supported in this browser.");
       return;
     }
-    // Must be called synchronously in the click handler (iOS requirement)
-    Notification.requestPermission().then((permission) => {
-      setPermissionState(permission);
-      if (permission === "granted") {
-        // Fire a test notification immediately so they know it works
-        showNativeNotification("Notifications Enabled! 🔔", "You'll now get alerts when orders arrive.");
-        showInAppToast("Notifications Enabled! 🔔", "In-app alerts are always active. Native alerts work when app is open.", null);
+
+    // Step 1: Request OS permission (must be in user gesture handler)
+    const permission = await Notification.requestPermission();
+    setPermissionState(permission);
+
+    if (permission !== "granted") {
+      showInAppToast("Permission Denied", "Enable notifications in your device settings.", null);
+      return;
+    }
+
+    // Step 2: Subscribe via Service Worker pushManager with VAPID public key
+    try {
+      const reg = await navigator.serviceWorker.ready;
+
+      // Convert VAPID public key from base64 to Uint8Array
+      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+      if (!vapidPublicKey) {
+        throw new Error("NEXT_PUBLIC_VAPID_PUBLIC_KEY not set");
       }
-    });
+      const base64 = vapidPublicKey.replace(/-/g, "+").replace(/_/g, "/");
+      const rawData = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+
+      // Check for existing subscription first
+      let subscription = await reg.pushManager.getSubscription();
+
+      if (!subscription) {
+        subscription = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: rawData,
+        });
+      }
+
+      // Step 3: Save subscription to server (MongoDB)
+      const res = await fetch("/api/push/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subscription.toJSON()),
+      });
+
+      if (res.ok) {
+        showInAppToast(
+          "Push Notifications Active! 🔔",
+          "You'll now get lock-screen alerts even when your phone is off.",
+          null
+        );
+      } else {
+        throw new Error("Server failed to save subscription");
+      }
+    } catch (err) {
+      console.error("Push subscription error:", err);
+      showInAppToast("Setup Failed", "Could not enable push. Try again or check browser support.", null);
+    }
   };
 
-  // Test notification — lets admin verify the pipeline works right now
-  const sendTestNotification = () => {
-    showInAppToast(
-      "Test Alert ✓",
-      "In-app notifications are working! Native push works on desktop & Android automatically.",
-      null
-    );
-    if (permissionState === "granted") {
-      showNativeNotification("Test Alert ✓", "Native notifications are working!");
-    }
+  // Test notification — sends via server so it tests the full VAPID pipeline
+  const sendTestNotification = async () => {
+    showInAppToast("Test Alert ✓", "In-app notifications are working!", null);
+    // Test native notification via SW
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      reg.showNotification("Test Push ✓", {
+        body: "VAPID push pipeline is working! You\'ll get this on your lock screen.",
+        icon: "/icon.png",
+        badge: "/icon.png",
+        tag: "test-push",
+        renotify: true,
+      });
+    } catch {}
   };
 
   const getSeenIds = () => {

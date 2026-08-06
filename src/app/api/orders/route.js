@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Order } from "@/lib/models/Order";
+import { sendPushToAll } from "@/lib/sendPushNotification";
 
 export const dynamic = "force-dynamic";
 // NOTE: revalidate = 0 intentionally removed — combined with force-dynamic it
@@ -89,14 +90,19 @@ export async function POST(request) {
     global.ordersCache = [newOrder, ...global.ordersCache.filter(o => o.id !== newOrder.id)];
 
     // Persist to MongoDB — awaited so the record is confirmed before we respond.
-    // This ensures the admin page sees the order on its very next poll.
     try {
       await connectDB();
       await Order.create(newOrder);
     } catch (dbErr) {
       console.error("MongoDB Order creation error:", dbErr);
-      // Order is still in ordersCache — admin will see it even if DB write failed.
     }
+
+    // Send VAPID push to all subscribed admin devices.
+    // Runs in background — does not delay the response to the customer.
+    // This is what wakes up the iPhone even when the screen is off.
+    const pushTitle = "New Order Placed! 📦";
+    const pushBody = `${newOrder.customer || "A customer"} just ordered ₹${newOrder.total} · ID: ${newOrder.id}`;
+    sendPushToAll(pushTitle, pushBody, "/admin").catch(() => {});
 
     return Response.json(newOrder, { status: 201 });
   } catch (error) {
