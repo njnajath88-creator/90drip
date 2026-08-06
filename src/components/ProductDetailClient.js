@@ -13,7 +13,7 @@ import {
 } from "@/lib/cartStore";
 import { requireAuth } from "@/lib/authUtils";
 
-export default function ProductDetailClient({ productId, initialProduct = null, allProducts = [] }) {
+export default function ProductDetailClient({ productId, initialProduct = null }) {
   const [product, setProduct] = useState(initialProduct);
   const [loading, setLoading] = useState(!initialProduct);
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);

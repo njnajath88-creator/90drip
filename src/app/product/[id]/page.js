@@ -17,7 +17,6 @@ export default async function ProductDetailPage({ params }) {
     <ProductDetailClient
       productId={productId}
       initialProduct={product || null}
-      allProducts={allProducts}
     />
   );
 }
