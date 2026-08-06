@@ -287,12 +287,15 @@ export default function AdminNotificationPanel({ isAdmin }) {
     try {
       const reg = await navigator.serviceWorker.ready;
 
-      // Convert VAPID public key from base64 to Uint8Array
+      // Convert VAPID public key from base64 to Uint8Array.
+      // We must add '=' padding characters; otherwise, iOS Safari throws a
+      // DOMException in atob(), causing the subscription to fail silently.
       const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       if (!vapidPublicKey) {
         throw new Error("NEXT_PUBLIC_VAPID_PUBLIC_KEY not set");
       }
-      const base64 = vapidPublicKey.replace(/-/g, "+").replace(/_/g, "/");
+      const padding = "=".repeat((4 - (vapidPublicKey.length % 4)) % 4);
+      const base64 = (vapidPublicKey + padding).replace(/-/g, "+").replace(/_/g, "/");
       const rawData = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
       // Check for existing subscription first
