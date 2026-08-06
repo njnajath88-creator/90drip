@@ -59,6 +59,32 @@ export default function AdminNotificationPanel({ isAdmin }) {
           const seenIds = getSeenIds();
           const newUnseen = data.filter((o) => !seenIds.includes(o.id));
           setUnreadCount(newUnseen.length);
+
+          // Trigger native notification for new orders during background polling
+          if (silent && newUnseen.length > 0 && "Notification" in window && Notification.permission === "granted") {
+            const freshOrders = newUnseen.filter(o => {
+              if (typeof window !== "undefined") {
+                if (!window._notifiedOrderIds) window._notifiedOrderIds = [];
+                if (window._notifiedOrderIds.includes(o.id)) return false;
+                window._notifiedOrderIds.push(o.id);
+                return true;
+              }
+              return false;
+            });
+
+            if (freshOrders.length > 0) {
+              const bodyText = freshOrders.length === 1 
+                ? `Order ID: ${freshOrders[0].id} placed by ${freshOrders[0].customer || "Guest"} for ₹${freshOrders[0].total}`
+                : `You have ${freshOrders.length} new customer orders.`;
+              
+              new Notification("New Order Placed! 📦", {
+                body: bodyText,
+                icon: "/icon.png",
+                badge: "/icon.png",
+                tag: "new-order"
+              });
+            }
+          }
         }
       }
     } catch (e) {
@@ -67,6 +93,14 @@ export default function AdminNotificationPanel({ isAdmin }) {
       if (!silent) setIsLoading(false);
     }
   };
+
+  // Request native notification permissions
+  useEffect(() => {
+    if (!isAdmin) return;
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, [isAdmin]);
 
   // Poll for new orders while admin is logged in
   useEffect(() => {

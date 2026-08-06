@@ -381,10 +381,17 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                               fontSize: "12px",
                               cursor: "pointer",
                               padding: "4px 8px",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px"
                             }}
                             title="Delete Order"
                           >
-                            🗑 Delete
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            <span>Delete</span>
                           </button>
                         )}
                       </td>
@@ -432,11 +439,11 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                   {/* Row 2: Customer Box */}
                   <div style={{ background: "#f8fafc", padding: "10px 12px", borderRadius: "10px", border: "1px solid #f1f5f9" }}>
                     <div style={{ fontSize: "13px", fontWeight: "800", color: "#0f172a" }}>
-                      👤 {order.customer || order.name || "Guest Customer"}
+                      {order.customer || order.name || "Guest Customer"}
                     </div>
                     {(order.email || order.phone) && (
                       <div style={{ fontSize: "11px", color: "#64748b", marginTop: "3px" }}>
-                        ✉️ {order.email || order.phone}
+                        {order.email || order.phone}
                       </div>
                     )}
                   </div>
@@ -462,7 +469,7 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                         ₹{(order.total || 0).toLocaleString()}
                       </div>
                       <div style={{ fontSize: "10px", color: "#94a3b8", fontWeight: "700" }}>
-                        📅 {order.date || order.createdAt?.split("T")[0] || "Today"}
+                        Date: {order.date || order.createdAt?.split("T")[0] || "Today"}
                       </div>
                     </div>
 
@@ -478,9 +485,16 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                           fontSize: "11px",
                           fontWeight: "800",
                           cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px"
                         }}
                       >
-                        🏷️ Label
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                          <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span>Label</span>
                       </button>
                       {onDeleteOrder && (
                         <button
@@ -494,9 +508,16 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                             fontSize: "11px",
                             fontWeight: "800",
                             cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px"
                           }}
                         >
-                          🗑 Delete
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                          <span>Delete</span>
                         </button>
                       )}
                     </div>
@@ -585,15 +606,15 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <div style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a" }}>
-                      👤 {selectedOrder.customer || selectedOrder.name || "Guest Customer"}
+                      {selectedOrder.customer || selectedOrder.name || "Guest Customer"}
                     </div>
                     {(selectedOrder.email || selectedOrder.phone) && (
                       <div style={{ fontSize: "12px", color: "#475569", fontWeight: "600" }}>
-                        ✉️ {selectedOrder.email || "N/A"} • 📞 {selectedOrder.phone || "N/A"}
+                        <strong>Email:</strong> {selectedOrder.email || "N/A"} • <strong>Phone:</strong> {selectedOrder.phone || "N/A"}
                       </div>
                     )}
                     <div style={{ fontSize: "12px", color: "#475569", fontWeight: "600", marginTop: "4px" }}>
-                      📍 {selectedOrder.address || "No address details provided"}
+                      <strong>Address:</strong> {selectedOrder.address || "No address details provided"}
                     </div>
                   </div>
                 </div>
@@ -605,17 +626,17 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                     {itemsList.map((item, idx) => (
-                      <div key={idx} style={{ display: "flex", gap: "14px", alignItems: "center", background: "#ffffff", padding: "12px", borderRadius: "16px", border: "1.5px solid #f1f5f9" }}>
+                      <div key={idx} style={{ display: "flex", gap: "16px", alignItems: "center", background: "#ffffff", padding: "16px", borderRadius: "20px", border: "1.5px solid #f1f5f9" }}>
                         <img
                           src={item.image || "/images/jersey_product1.png"}
                           alt={item.name}
-                          style={{ width: "56px", height: "68px", objectFit: "cover", borderRadius: "10px", border: "1px solid #e2e8f0" }}
+                          style={{ width: "96px", height: "116px", objectFit: "cover", borderRadius: "12px", border: "1px solid #e2e8f0" }}
                         />
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: "13px", fontWeight: "800", color: "#0f172a" }}>
+                          <div style={{ fontSize: "14px", fontWeight: "800", color: "#0f172a" }}>
                             {item.name}
                           </div>
-                          <div style={{ fontSize: "11px", color: "#64748b", marginTop: "2px", fontWeight: "600" }}>
+                          <div style={{ fontSize: "12px", color: "#64748b", marginTop: "4px", fontWeight: "600" }}>
                             Size: <span style={{ color: "#0f172a", fontWeight: "800" }}>{item.size || "M"}</span> • Qty: <span style={{ color: "#0f172a", fontWeight: "800" }}>{item.quantity}</span>
                           </div>
                         </div>
@@ -634,7 +655,7 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                       Payment Method
                     </div>
                     <div style={{ fontSize: "13px", fontWeight: "800", color: "#0f172a", marginTop: "2px" }}>
-                      💳 {selectedOrder.paymentMethod?.toUpperCase() || "COD"}
+                      {selectedOrder.paymentMethod?.toUpperCase() || "COD"}
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
@@ -690,7 +711,12 @@ export default function OrdersTab({ orders = [], onUpdateStatus, onDeleteOrder, 
                     gap: "6px"
                   }}
                 >
-                  🖨️ Print Shipping Label
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg>
+                  <span>Print Shipping Label</span>
                 </button>
               </div>
 

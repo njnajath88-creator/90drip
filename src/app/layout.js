@@ -10,6 +10,7 @@ const inter = Inter({
 export const metadata = {
   title: "90Drip | Premium Sports Jerseys",
   description: "90Drip — Premium sports jerseys from top clubs worldwide.",
+  manifest: "/manifest.json",
   icons: {
     icon: "/images/favicon.jpeg",
     apple: "/images/favicon.jpeg",
