@@ -19,13 +19,16 @@ export function getOrders() {
 /**
  * Fetch orders from server API and sync with localStorage
  */
-export async function fetchOrdersServer() {
+export async function fetchOrdersServer(email) {
   if (typeof window === "undefined") return [];
   try {
-    const res = await fetch(`/api/orders?t=${Date.now()}`, { cache: "no-store" });
+    const url = email
+      ? `/api/orders?email=${encodeURIComponent(email)}&t=${Date.now()}`
+      : `/api/orders?t=${Date.now()}`;
+    const res = await fetch(url, { cache: "no-store" });
     if (res.ok) {
       const serverOrders = await res.json();
-      if (Array.isArray(serverOrders) && serverOrders.length > 0) {
+      if (Array.isArray(serverOrders)) {
         localStorage.setItem(ORDERS_KEY, JSON.stringify(serverOrders));
         window.dispatchEvent(new Event("90drip_orders_updated"));
         return serverOrders;

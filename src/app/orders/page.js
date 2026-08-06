@@ -14,26 +14,53 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [reorderSuccess, setReorderSuccess] = useState("");
 
+  // Load user from localStorage on mount
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem("90drip_user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (e) {
+      console.error("Failed to load user state:", e);
+    }
+  }, []);
+
+  // Sync and fetch orders when user changes
   useEffect(() => {
     const syncOrders = () => {
       const stored = getOrders();
-      setOrders(stored);
-      if (stored.length > 0) {
-        setSelectedOrder((prev) => (prev ? stored.find((o) => o.id === prev.id) || stored[0] : stored[0]));
+      const userEmail = user?.email;
+      const filtered = userEmail
+        ? stored.filter((o) => o.email?.toLowerCase() === userEmail.toLowerCase())
+        : stored; // fallback to showing local guest orders if not logged in
+
+      setOrders(filtered);
+      if (filtered.length > 0) {
+        setSelectedOrder((prev) => (prev ? filtered.find((o) => o.id === prev.id) || filtered[0] : filtered[0]));
       } else {
         setSelectedOrder(null);
       }
     };
+
     syncOrders();
-    fetchOrdersServer().then((stored) => {
-      if (stored && Array.isArray(stored) && stored.length > 0) {
-        setOrders(stored);
-        setSelectedOrder((prev) => (prev ? stored.find((o) => o.id === prev.id) || stored[0] : stored[0]));
-      }
-    });
+
+    // Fetch from server only if user is logged in
+    if (user?.email) {
+      fetchOrdersServer(user.email).then((stored) => {
+        if (stored && Array.isArray(stored)) {
+          const filtered = stored.filter((o) => o.email?.toLowerCase() === user.email.toLowerCase());
+          setOrders(filtered);
+          if (filtered.length > 0) {
+            setSelectedOrder((prev) => (prev ? filtered.find((o) => o.id === prev.id) || filtered[0] : filtered[0]));
+          }
+        }
+      });
+    }
+
     window.addEventListener("90drip_orders_updated", syncOrders);
     return () => window.removeEventListener("90drip_orders_updated", syncOrders);
-  }, []);
+  }, [user?.email]);
 
   const handleReorder = (order) => {
     if (order.cartItems && order.cartItems.length > 0) {

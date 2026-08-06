@@ -9,12 +9,21 @@ if (!global.ordersCache) {
   global.ordersCache = [];
 }
 
-// GET — Fetch all orders
-export async function GET() {
+// GET — Fetch all orders (supports optional email filtering)
+export async function GET(request) {
   try {
+    const url = new URL(request.url, "http://localhost:3000");
+    const email = url.searchParams.get("email");
+
+    const filterCache = (cache) => {
+      if (!email) return cache;
+      return cache.filter((o) => o.email?.toLowerCase() === email.toLowerCase());
+    };
+
     const fetchPromise = (async () => {
       await connectDB();
-      const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
+      const filter = email ? { email: new RegExp("^" + email + "$", "i") } : {};
+      const orders = await Order.find(filter).sort({ createdAt: -1 }).lean();
       return orders.map((o) => ({ ...o, id: o.id || o._id.toString() }));
     })();
 
@@ -25,18 +34,27 @@ export async function GET() {
     const result = await Promise.race([fetchPromise, timeoutPromise]);
 
     if (result && Array.isArray(result) && result.length > 0) {
-      global.ordersCache = result;
+      if (!email) {
+        global.ordersCache = result; // update main cache only if fetching all orders
+      }
       return Response.json(result, {
         headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
       });
     }
 
-    return Response.json(global.ordersCache || [], {
+    const fallbackResult = filterCache(global.ordersCache || []);
+    return Response.json(fallbackResult, {
       headers: { "Cache-Control": "no-store, no-cache, must-revalidate" },
     });
   } catch (error) {
     console.error("GET /api/orders error:", error);
-    return Response.json(global.ordersCache || []);
+    const url = new URL(request.url, "http://localhost:3000");
+    const email = url.searchParams.get("email");
+    const filterCache = (cache) => {
+      if (!email) return cache;
+      return cache.filter((o) => o.email?.toLowerCase() === email.toLowerCase());
+    };
+    return Response.json(filterCache(global.ordersCache || []));
   }
 }
 
