@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 
 const SEEN_KEY = "90drip_admin_seen_orders";
-const POLL_INTERVAL_MS = 10000; // Reduced from 15s to 10s for faster detection
+const POLL_INTERVAL_MS = 10000;
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -25,13 +25,11 @@ const STATUS_COLORS = {
   Cancelled:  { bg: "#fee2e2", text: "#991b1b", dot: "#ef4444" },
 };
 
-// Detect if running on iOS (iPhone / iPad)
 function isIOS() {
   if (typeof window === "undefined") return false;
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-// Detect if already installed as a PWA (standalone mode)
 function isStandalone() {
   if (typeof window === "undefined") return false;
   return (
@@ -40,6 +38,119 @@ function isStandalone() {
   );
 }
 
+// ── In-App Toast ──────────────────────────────────────────────────────────────
+// A floating banner that slides in from the top. This is the PRIMARY notification
+// mechanism — it works 100% on all devices including iPhone, with zero OS/browser
+// permission requirements. It fires whenever the admin has the app open.
+function InAppToast({ toasts, onDismiss }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: "80px",
+        right: "16px",
+        zIndex: 999999,
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        pointerEvents: "none",
+        maxWidth: "340px",
+        width: "calc(100vw - 32px)",
+      }}
+    >
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          style={{
+            background: "linear-gradient(135deg, #0f172a, #1e3a8a)",
+            color: "#fff",
+            borderRadius: "16px",
+            padding: "14px 16px",
+            boxShadow: "0 12px 40px rgba(15,23,42,0.45)",
+            display: "flex",
+            gap: "12px",
+            alignItems: "flex-start",
+            animation: "toastSlideIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both",
+            pointerEvents: "auto",
+            border: "1px solid rgba(255,255,255,0.12)",
+            backdropFilter: "blur(12px)",
+          }}
+        >
+          <div
+            style={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "10px",
+              background: "rgba(255,255,255,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              flexShrink: 0,
+            }}
+          >
+            📦
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: "13px", fontWeight: "800", marginBottom: "2px" }}>
+              {t.title}
+            </div>
+            <div style={{ fontSize: "11px", opacity: 0.8, lineHeight: "1.4", wordBreak: "break-word" }}>
+              {t.body}
+            </div>
+            {t.orderId && (
+              <Link
+                href="/admin"
+                style={{
+                  display: "inline-block",
+                  marginTop: "6px",
+                  fontSize: "10px",
+                  fontWeight: "800",
+                  color: "#93c5fd",
+                  textDecoration: "none",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                }}
+              >
+                View in Dashboard →
+              </Link>
+            )}
+          </div>
+          <button
+            onClick={() => onDismiss(t.id)}
+            style={{
+              background: "rgba(255,255,255,0.15)",
+              border: "none",
+              color: "#fff",
+              cursor: "pointer",
+              borderRadius: "6px",
+              width: "22px",
+              height: "22px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              fontSize: "12px",
+              lineHeight: 1,
+            }}
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+
+      <style>{`
+        @keyframes toastSlideIn {
+          from { opacity: 0; transform: translateX(60px) scale(0.92); }
+          to   { opacity: 1; transform: translateX(0)   scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function AdminNotificationPanel({ isAdmin }) {
   const [orders, setOrders] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -47,108 +158,144 @@ export default function AdminNotificationPanel({ isAdmin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [permissionState, setPermissionState] = useState("default");
   const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const [toasts, setToasts] = useState([]);
   const drawerRef = useRef(null);
   const pollRef = useRef(null);
+  const toastTimers = useRef({});
 
-  // Read current permission state on mount and detect iOS context
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       setPermissionState(Notification.permission);
     }
-    // Show iOS install guide if on iOS but not in standalone mode
     if (isIOS() && !isStandalone()) {
       setShowIOSGuide(true);
     }
   }, []);
 
-  /**
-   * Show a native notification via the Service Worker.
-   *
-   * KEY iOS NOTES:
-   * - vibrate is omitted — iOS doesn't support it and it can silently
-   *   prevent showNotification() from working on some iOS versions.
-   * - renotify: true — forces iOS to show the notification even if one
-   *   with the same `tag` is already displayed.
-   * - This ONLY works on iOS 16.4+ when the PWA is installed to the
-   *   homescreen. In a regular Safari tab it will be silently ignored.
-   */
-  const showOrderNotification = (title, body) => {
-    if (typeof window === "undefined") return;
+  // ── In-App Toast (works on ALL devices, no OS permission needed) ──────────
+  const showInAppToast = useCallback((title, body, orderId) => {
+    const id = `toast-${Date.now()}-${Math.random()}`;
+    setToasts((prev) => [...prev, { id, title, body, orderId }]);
+    // Auto-dismiss after 8 seconds
+    toastTimers.current[id] = setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+      delete toastTimers.current[id];
+    }, 8000);
+  }, []);
 
-    const notifOptions = {
+  const dismissToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+    if (toastTimers.current[id]) {
+      clearTimeout(toastTimers.current[id]);
+      delete toastTimers.current[id];
+    }
+  }, []);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(toastTimers.current).forEach(clearTimeout);
+    };
+  }, []);
+
+  // ── Native OS Notification (via Service Worker) ───────────────────────────
+  // This works on:
+  //   • Desktop browsers (Chrome, Edge, Firefox, Safari 16+)
+  //   • Android Chrome (background too)
+  //   • iOS 16.4+ ONLY when installed as PWA to homescreen
+  // It is SILENTLY IGNORED on iOS Safari (tab mode) — that's an Apple limit.
+  const showNativeNotification = (title, body) => {
+    if (typeof window === "undefined") return;
+    const opts = {
       body,
       icon: "/icon.png",
       badge: "/icon.png",
       tag: "new-order",
-      renotify: true,           // show even if same tag is already on screen
+      renotify: true,
       requireInteraction: false,
-      // vibrate intentionally omitted — breaks iOS silent-mode notifications
+      // vibrate intentionally omitted — breaks iOS
     };
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.ready
-        .then((reg) => reg.showNotification(title, notifOptions))
+        .then((reg) => reg.showNotification(title, opts))
         .catch(() => {
-          // Fallback: try the Notification constructor (desktop / Android)
+          // Service worker not ready — try direct Notification API
           if ("Notification" in window && Notification.permission === "granted") {
-            new Notification(title, { body, icon: "/icon.png" });
+            try { new Notification(title, { body, icon: "/icon.png" }); } catch {}
           }
         });
     } else if ("Notification" in window && Notification.permission === "granted") {
-      new Notification(title, { body, icon: "/icon.png" });
+      try { new Notification(title, { body, icon: "/icon.png" }); } catch {}
     }
   };
 
-  /**
-   * Request notification permission.
-   * MUST be called directly in a user-gesture handler (onClick) — iOS
-   * requires the call to originate from a real tap, not a setTimeout or
-   * Promise callback. This function is designed to be called inside onClick.
-   */
+  // Fires both in-app toast AND native notification for every new order
+  const alertNewOrders = useCallback((freshOrders) => {
+    if (freshOrders.length === 0) return;
+
+    const title = "New Order Placed! 📦";
+    const body =
+      freshOrders.length === 1
+        ? `${freshOrders[0].customer || "A customer"} ordered ₹${freshOrders[0].total} · ID: ${freshOrders[0].id}`
+        : `${freshOrders.length} new orders just placed!`;
+    const orderId = freshOrders.length === 1 ? freshOrders[0].id : null;
+
+    // In-app toast — always works
+    showInAppToast(title, body, orderId);
+
+    // Native OS notification — works on desktop & Android freely,
+    // iOS needs PWA installed + iOS 16.4+
+    if (permissionState === "granted") {
+      showNativeNotification(title, body);
+    }
+  }, [permissionState, showInAppToast]);
+
   const enableNotifications = () => {
     if (typeof window === "undefined") return;
-
-    // iOS: if not in standalone mode, the browser won't grant permission.
-    // Show the install guide instead.
     if (isIOS() && !isStandalone()) {
       setShowIOSGuide(true);
       return;
     }
-
     if (!("Notification" in window)) {
-      alert("Your browser does not support notifications.");
+      alert("Notifications are not supported in this browser.");
       return;
     }
-
-    // requestPermission() called directly — iOS requires the Promise to
-    // start synchronously within the gesture handler.
+    // Must be called synchronously in the click handler (iOS requirement)
     Notification.requestPermission().then((permission) => {
       setPermissionState(permission);
       if (permission === "granted") {
-        showOrderNotification(
-          "Notifications Enabled! 🔔",
-          "You will now receive real-time alerts for customer orders."
-        );
+        // Fire a test notification immediately so they know it works
+        showNativeNotification("Notifications Enabled! 🔔", "You'll now get alerts when orders arrive.");
+        showInAppToast("Notifications Enabled! 🔔", "In-app alerts are always active. Native alerts work when app is open.", null);
       }
     });
+  };
+
+  // Test notification — lets admin verify the pipeline works right now
+  const sendTestNotification = () => {
+    showInAppToast(
+      "Test Alert ✓",
+      "In-app notifications are working! Native push works on desktop & Android automatically.",
+      null
+    );
+    if (permissionState === "granted") {
+      showNativeNotification("Test Alert ✓", "Native notifications are working!");
+    }
   };
 
   const getSeenIds = () => {
     try {
       const raw = localStorage.getItem(SEEN_KEY);
       return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   };
 
   const saveSeenIds = (ids) => {
-    try {
-      localStorage.setItem(SEEN_KEY, JSON.stringify(ids));
-    } catch {}
+    try { localStorage.setItem(SEEN_KEY, JSON.stringify(ids)); } catch {}
   };
 
-  const fetchOrders = async (silent = false) => {
+  const fetchOrders = useCallback(async (silent = false) => {
     if (!silent) setIsLoading(true);
     try {
       const res = await fetch(`/api/orders?t=${Date.now()}`, { cache: "no-store" });
@@ -160,71 +307,57 @@ export default function AdminNotificationPanel({ isAdmin }) {
           const newUnseen = data.filter((o) => !seenIds.includes(o.id));
           setUnreadCount(newUnseen.length);
 
-          // Fire native notification for truly new orders during background polling
-          if (silent && newUnseen.length > 0 && permissionState === "granted") {
+          if (silent && newUnseen.length > 0) {
             const freshOrders = newUnseen.filter((o) => {
               if (!window._notifiedOrderIds) window._notifiedOrderIds = [];
               if (window._notifiedOrderIds.includes(o.id)) return false;
               window._notifiedOrderIds.push(o.id);
               return true;
             });
-
-            if (freshOrders.length > 0) {
-              const bodyText =
-                freshOrders.length === 1
-                  ? `Order ${freshOrders[0].id} from ${freshOrders[0].customer || "Guest"} — ₹${freshOrders[0].total}`
-                  : `You have ${freshOrders.length} new customer orders!`;
-              showOrderNotification("New Order Placed! 📦", bodyText);
-            }
+            alertNewOrders(freshOrders);
           }
         }
       }
     } catch {
-      // silent fail — network might be momentarily unavailable
+      // silent fail
     } finally {
       if (!silent) setIsLoading(false);
     }
-  };
+  }, [alertNewOrders]);
 
-  // Poll for new orders every 10s while admin is logged in
+  // Poll every 10s while admin is open
   useEffect(() => {
     if (!isAdmin) return;
     fetchOrders();
     pollRef.current = setInterval(() => fetchOrders(true), POLL_INTERVAL_MS);
     return () => clearInterval(pollRef.current);
-  }, [isAdmin]);
+  }, [isAdmin, fetchOrders]);
 
-  // Also react to same-tab order placement events
+  // Same-tab event listener
   useEffect(() => {
     if (!isAdmin) return;
     const onUpdate = () => fetchOrders(true);
     window.addEventListener("90drip_orders_updated", onUpdate);
     return () => window.removeEventListener("90drip_orders_updated", onUpdate);
-  }, [isAdmin]);
+  }, [isAdmin, fetchOrders]);
 
   // Close drawer on outside click
   useEffect(() => {
     if (!isOpen) return;
     const handleClick = (e) => {
-      if (drawerRef.current && !drawerRef.current.contains(e.target)) {
-        setIsOpen(false);
-      }
+      if (drawerRef.current && !drawerRef.current.contains(e.target)) setIsOpen(false);
     };
     const timer = setTimeout(() => document.addEventListener("mousedown", handleClick), 0);
-    return () => {
-      clearTimeout(timer);
-      document.removeEventListener("mousedown", handleClick);
-    };
+    return () => { clearTimeout(timer); document.removeEventListener("mousedown", handleClick); };
   }, [isOpen]);
 
-  // Close on ESC key
+  // Close on ESC
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") setIsOpen(false); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  // Mark all as read when opening
   const handleOpen = () => {
     setIsOpen((prev) => {
       const next = !prev;
@@ -243,7 +376,10 @@ export default function AdminNotificationPanel({ isAdmin }) {
 
   return (
     <>
-      {/* Bell Icon Button */}
+      {/* ── In-App Toast Container ───────────────────────────────────────── */}
+      <InAppToast toasts={toasts} onDismiss={dismissToast} />
+
+      {/* ── Bell Icon Button ─────────────────────────────────────────────── */}
       <button
         className="admin-notif-bell"
         onClick={handleOpen}
@@ -262,12 +398,10 @@ export default function AdminNotificationPanel({ isAdmin }) {
         )}
       </button>
 
-      {/* Backdrop Overlay */}
-      {isOpen && (
-        <div className="admin-notif-backdrop" onClick={() => setIsOpen(false)} />
-      )}
+      {/* ── Backdrop ─────────────────────────────────────────────────────── */}
+      {isOpen && <div className="admin-notif-backdrop" onClick={() => setIsOpen(false)} />}
 
-      {/* Slide-in Drawer */}
+      {/* ── Slide-in Drawer ───────────────────────────────────────────────── */}
       <div
         ref={drawerRef}
         className={`admin-notif-drawer ${isOpen ? "open" : ""}`}
@@ -286,7 +420,7 @@ export default function AdminNotificationPanel({ isAdmin }) {
             <div>
               <div className="admin-notif-drawer-heading">Order Notifications</div>
               <div className="admin-notif-drawer-subtext">
-                {isLoading ? "Refreshing…" : `${orders.length} total · refreshes every 10s`}
+                {isLoading ? "Refreshing…" : `${orders.length} total · live every 10s`}
               </div>
             </div>
           </div>
@@ -302,83 +436,108 @@ export default function AdminNotificationPanel({ isAdmin }) {
           </button>
         </div>
 
-        {/* ── iOS Install-to-Homescreen Guide ─────────────────────────────── */}
+        {/* ── iOS Guide (not installed as PWA) ──────────────────────────── */}
         {showIOSGuide && (
           <div style={{
             background: "linear-gradient(135deg, #fff7ed, #fef3c7)",
             border: "1.5px solid #fcd34d",
             padding: "12px 16px",
             borderRadius: "14px",
-            margin: "0 16px 12px 16px",
+            margin: "0 16px 10px 16px",
             position: "relative",
           }}>
             <button
               onClick={() => setShowIOSGuide(false)}
-              style={{ position: "absolute", top: "8px", right: "10px", background: "none", border: "none", fontSize: "14px", color: "#92400e", cursor: "pointer", lineHeight: 1 }}
+              style={{ position: "absolute", top: "8px", right: "10px", background: "none", border: "none", fontSize: "14px", color: "#92400e", cursor: "pointer" }}
               aria-label="Dismiss"
             >✕</button>
-            <div style={{ fontSize: "12px", fontWeight: "800", color: "#92400e", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <span>📱</span> iPhone: Install for Push Alerts
+            <div style={{ fontSize: "12px", fontWeight: "800", color: "#92400e", marginBottom: "4px" }}>
+              📱 iPhone: Install for Lock-Screen Alerts
             </div>
-            <div style={{ fontSize: "11px", color: "#78350f", lineHeight: "1.5" }}>
-              iOS only shows push notifications when the app is added to your homescreen. In Safari:
+            <div style={{ fontSize: "11px", color: "#78350f", lineHeight: "1.5", marginBottom: "6px" }}>
+              <strong>In-app alerts already work</strong> (banner appears when you have the page open). For lock-screen alerts, install as a PWA:
             </div>
-            <ol style={{ fontSize: "11px", color: "#78350f", lineHeight: "1.7", margin: "6px 0 0 0", paddingLeft: "16px" }}>
-              <li>Tap the <strong>Share</strong> button <span style={{ fontSize: "13px" }}>⎋</span> at the bottom of Safari</li>
-              <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-              <li>Tap <strong>Add</strong> — then open the app from your homescreen</li>
-              <li>Tap <strong>Allow Notifications</strong> in the panel</li>
+            <ol style={{ fontSize: "11px", color: "#78350f", lineHeight: "1.8", margin: 0, paddingLeft: "16px" }}>
+              <li>Tap <strong>Share ⎋</strong> in Safari → <strong>"Add to Home Screen"</strong></li>
+              <li>Open the app from your homescreen icon</li>
+              <li>Tap <strong>Allow Notifications</strong> in this panel</li>
             </ol>
+            <div style={{ marginTop: "8px", fontSize: "10px", color: "#92400e", fontWeight: "600", background: "rgba(255,255,255,0.5)", padding: "4px 8px", borderRadius: "6px" }}>
+              ✅ Requires iOS 16.4 or later
+            </div>
           </div>
         )}
 
-        {/* ── Notification Permission Request ──────────────────────────────── */}
+        {/* ── Notification Permission Section ───────────────────────────── */}
         {!showIOSGuide && permissionState !== "granted" && (
           <div style={{
             background: "#eff6ff",
             border: "1.5px solid #bfdbfe",
             padding: "12px 16px",
             borderRadius: "14px",
-            margin: "0 16px 12px 16px",
+            margin: "0 16px 10px 16px",
             display: "flex",
             flexDirection: "column",
-            gap: "8px"
+            gap: "8px",
           }}>
             <div style={{ fontSize: "12px", fontWeight: "700", color: "#1e3a8a" }}>
-              Enable Order Alerts
+              Enable Lock-Screen Alerts
             </div>
-            <div style={{ fontSize: "11px", color: "#1e40af", lineHeight: "1.4" }}>
+            <div style={{ fontSize: "11px", color: "#1e40af", lineHeight: "1.5" }}>
               {permissionState === "denied"
-                ? "Notifications are blocked. Please enable them in your browser/device settings."
-                : "Get instant alerts on your lock screen when a customer places an order."}
+                ? "🚫 Notifications are blocked. Go to Settings → Safari / Browser → Notifications and allow this site."
+                : "In-app alerts are already active. Enable this for lock-screen notifications too."}
             </div>
             {permissionState !== "denied" && (
               <button
                 onClick={enableNotifications}
                 style={{
-                  background: "#2563eb",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "8px",
-                  padding: "8px 12px",
-                  fontSize: "11px",
-                  fontWeight: "800",
-                  cursor: "pointer",
-                  textAlign: "center"
+                  background: "#2563eb", color: "#fff", border: "none",
+                  borderRadius: "8px", padding: "9px 12px",
+                  fontSize: "11px", fontWeight: "800", cursor: "pointer",
                 }}
               >
-                🔔 Allow Notifications
+                🔔 Allow Lock-Screen Notifications
               </button>
             )}
+          </div>
+        )}
+
+        {/* ── Granted: show test button ─────────────────────────────────── */}
+        {permissionState === "granted" && (
+          <div style={{
+            margin: "0 16px 10px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "#f0fdf4",
+            border: "1px solid #bbf7d0",
+            borderRadius: "12px",
+            padding: "10px 14px",
+            gap: "10px",
+          }}>
+            <div style={{ fontSize: "11px", color: "#166534", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span>✅</span> Alerts active
+            </div>
+            <button
+              onClick={sendTestNotification}
+              style={{
+                background: "#16a34a", color: "#fff", border: "none",
+                borderRadius: "7px", padding: "6px 12px",
+                fontSize: "10px", fontWeight: "800", cursor: "pointer",
+              }}
+            >
+              Test Alert
+            </button>
           </div>
         )}
 
         {/* Stats Row */}
         <div className="admin-notif-stats-row">
           {[
-            { label: "Total",      value: orders.length,                                         color: "#6366f1" },
-            { label: "Processing", value: orders.filter(o => o.status === "Processing").length,  color: "#f59e0b" },
-            { label: "Delivered",  value: orders.filter(o => o.status === "Delivered").length,   color: "#22c55e" },
+            { label: "Total",      value: orders.length,                                        color: "#6366f1" },
+            { label: "Processing", value: orders.filter(o => o.status === "Processing").length, color: "#f59e0b" },
+            { label: "Delivered",  value: orders.filter(o => o.status === "Delivered").length,  color: "#22c55e" },
           ].map((s) => (
             <div key={s.label} className="admin-notif-stat-chip">
               <span className="admin-notif-stat-value" style={{ color: s.color }}>{s.value}</span>
