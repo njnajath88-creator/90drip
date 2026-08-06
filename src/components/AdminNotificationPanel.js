@@ -287,13 +287,21 @@ export default function AdminNotificationPanel({ isAdmin }) {
     try {
       const reg = await navigator.serviceWorker.ready;
 
+      // Fetch VAPID public key dynamically from the server at runtime.
+      // This guarantees the key is loaded correctly even if Vercel did not
+      // inject the env var at compilation/build time.
+      const keyRes = await fetch("/api/push/key");
+      if (!keyRes.ok) {
+        throw new Error("Failed to load VAPID public key from server");
+      }
+      const { publicKey: vapidPublicKey } = await keyRes.json();
+      if (!vapidPublicKey) {
+        throw new Error("VAPID public key is empty");
+      }
+
       // Convert VAPID public key from base64 to Uint8Array.
       // We must add '=' padding characters; otherwise, iOS Safari throws a
       // DOMException in atob(), causing the subscription to fail silently.
-      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidPublicKey) {
-        throw new Error("NEXT_PUBLIC_VAPID_PUBLIC_KEY not set");
-      }
       const padding = "=".repeat((4 - (vapidPublicKey.length % 4)) % 4);
       const base64 = (vapidPublicKey + padding).replace(/-/g, "+").replace(/_/g, "/");
       const rawData = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
