@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
 const SEEN_KEY = "90drip_admin_seen_orders";
-const POLL_INTERVAL_MS = 15000;
+const POLL_INTERVAL_MS = 10000; // Reduced from 15s to 10s for faster detection
 
 function timeAgo(dateStr) {
   if (!dateStr) return "";
@@ -25,56 +25,112 @@ const STATUS_COLORS = {
   Cancelled:  { bg: "#fee2e2", text: "#991b1b", dot: "#ef4444" },
 };
 
+// Detect if running on iOS (iPhone / iPad)
+function isIOS() {
+  if (typeof window === "undefined") return false;
+  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+}
+
+// Detect if already installed as a PWA (standalone mode)
+function isStandalone() {
+  if (typeof window === "undefined") return false;
+  return (
+    window.navigator.standalone === true ||
+    window.matchMedia("(display-mode: standalone)").matches
+  );
+}
+
 export default function AdminNotificationPanel({ isAdmin }) {
   const [orders, setOrders] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [permissionState, setPermissionState] = useState("default");
+  const [showIOSGuide, setShowIOSGuide] = useState(false);
   const drawerRef = useRef(null);
   const pollRef = useRef(null);
 
-  // Read current permission state on mount
+  // Read current permission state on mount and detect iOS context
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       setPermissionState(Notification.permission);
     }
+    // Show iOS install guide if on iOS but not in standalone mode
+    if (isIOS() && !isStandalone()) {
+      setShowIOSGuide(true);
+    }
   }, []);
 
+  /**
+   * Show a native notification via the Service Worker.
+   *
+   * KEY iOS NOTES:
+   * - vibrate is omitted — iOS doesn't support it and it can silently
+   *   prevent showNotification() from working on some iOS versions.
+   * - renotify: true — forces iOS to show the notification even if one
+   *   with the same `tag` is already displayed.
+   * - This ONLY works on iOS 16.4+ when the PWA is installed to the
+   *   homescreen. In a regular Safari tab it will be silently ignored.
+   */
   const showOrderNotification = (title, body) => {
-    if (typeof window !== "undefined") {
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.ready.then((reg) => {
-          reg.showNotification(title, {
-            body: body,
-            icon: "/icon.png",
-            badge: "/icon.png",
-            tag: "new-order",
-            vibrate: [200, 100, 200]
-          });
-        }).catch(() => {
+    if (typeof window === "undefined") return;
+
+    const notifOptions = {
+      body,
+      icon: "/icon.png",
+      badge: "/icon.png",
+      tag: "new-order",
+      renotify: true,           // show even if same tag is already on screen
+      requireInteraction: false,
+      // vibrate intentionally omitted — breaks iOS silent-mode notifications
+    };
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.ready
+        .then((reg) => reg.showNotification(title, notifOptions))
+        .catch(() => {
+          // Fallback: try the Notification constructor (desktop / Android)
           if ("Notification" in window && Notification.permission === "granted") {
             new Notification(title, { body, icon: "/icon.png" });
           }
         });
-      } else if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(title, { body, icon: "/icon.png" });
-      }
+    } else if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, { body, icon: "/icon.png" });
     }
   };
 
+  /**
+   * Request notification permission.
+   * MUST be called directly in a user-gesture handler (onClick) — iOS
+   * requires the call to originate from a real tap, not a setTimeout or
+   * Promise callback. This function is designed to be called inside onClick.
+   */
   const enableNotifications = () => {
-    if (typeof window !== "undefined" && "Notification" in window) {
-      Notification.requestPermission().then((permission) => {
-        setPermissionState(permission);
-        if (permission === "granted") {
-          showOrderNotification(
-            "Notifications Enabled! 🔔",
-            "You will now receive real-time alerts for customer orders."
-          );
-        }
-      });
+    if (typeof window === "undefined") return;
+
+    // iOS: if not in standalone mode, the browser won't grant permission.
+    // Show the install guide instead.
+    if (isIOS() && !isStandalone()) {
+      setShowIOSGuide(true);
+      return;
     }
+
+    if (!("Notification" in window)) {
+      alert("Your browser does not support notifications.");
+      return;
+    }
+
+    // requestPermission() called directly — iOS requires the Promise to
+    // start synchronously within the gesture handler.
+    Notification.requestPermission().then((permission) => {
+      setPermissionState(permission);
+      if (permission === "granted") {
+        showOrderNotification(
+          "Notifications Enabled! 🔔",
+          "You will now receive real-time alerts for customer orders."
+        );
+      }
+    });
   };
 
   const getSeenIds = () => {
@@ -104,36 +160,33 @@ export default function AdminNotificationPanel({ isAdmin }) {
           const newUnseen = data.filter((o) => !seenIds.includes(o.id));
           setUnreadCount(newUnseen.length);
 
-          // Trigger native notification for new orders during background polling
-          if (silent && newUnseen.length > 0) {
-            const freshOrders = newUnseen.filter(o => {
-              if (typeof window !== "undefined") {
-                if (!window._notifiedOrderIds) window._notifiedOrderIds = [];
-                if (window._notifiedOrderIds.includes(o.id)) return false;
-                window._notifiedOrderIds.push(o.id);
-                return true;
-              }
-              return false;
+          // Fire native notification for truly new orders during background polling
+          if (silent && newUnseen.length > 0 && permissionState === "granted") {
+            const freshOrders = newUnseen.filter((o) => {
+              if (!window._notifiedOrderIds) window._notifiedOrderIds = [];
+              if (window._notifiedOrderIds.includes(o.id)) return false;
+              window._notifiedOrderIds.push(o.id);
+              return true;
             });
 
-            if (freshOrders.length > 0 && permissionState === "granted") {
-              const bodyText = freshOrders.length === 1 
-                ? `Order ID: ${freshOrders[0].id} placed by ${freshOrders[0].customer || "Guest"} for ₹${freshOrders[0].total}`
-                : `You have ${freshOrders.length} new customer orders.`;
-              
+            if (freshOrders.length > 0) {
+              const bodyText =
+                freshOrders.length === 1
+                  ? `Order ${freshOrders[0].id} from ${freshOrders[0].customer || "Guest"} — ₹${freshOrders[0].total}`
+                  : `You have ${freshOrders.length} new customer orders!`;
               showOrderNotification("New Order Placed! 📦", bodyText);
             }
           }
         }
       }
-    } catch (e) {
-      // silent fail
+    } catch {
+      // silent fail — network might be momentarily unavailable
     } finally {
       if (!silent) setIsLoading(false);
     }
   };
 
-  // Poll for new orders while admin is logged in
+  // Poll for new orders every 10s while admin is logged in
   useEffect(() => {
     if (!isAdmin) return;
     fetchOrders();
@@ -141,7 +194,7 @@ export default function AdminNotificationPanel({ isAdmin }) {
     return () => clearInterval(pollRef.current);
   }, [isAdmin]);
 
-  // Also react to same-tab order events
+  // Also react to same-tab order placement events
   useEffect(() => {
     if (!isAdmin) return;
     const onUpdate = () => fetchOrders(true);
@@ -149,7 +202,7 @@ export default function AdminNotificationPanel({ isAdmin }) {
     return () => window.removeEventListener("90drip_orders_updated", onUpdate);
   }, [isAdmin]);
 
-  // Close on outside click
+  // Close drawer on outside click
   useEffect(() => {
     if (!isOpen) return;
     const handleClick = (e) => {
@@ -164,7 +217,7 @@ export default function AdminNotificationPanel({ isAdmin }) {
     };
   }, [isOpen]);
 
-  // Close on ESC
+  // Close on ESC key
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") setIsOpen(false); };
     document.addEventListener("keydown", onKey);
@@ -233,7 +286,7 @@ export default function AdminNotificationPanel({ isAdmin }) {
             <div>
               <div className="admin-notif-drawer-heading">Order Notifications</div>
               <div className="admin-notif-drawer-subtext">
-                {isLoading ? "Refreshing…" : `${orders.length} total · refreshes every 15s`}
+                {isLoading ? "Refreshing…" : `${orders.length} total · refreshes every 10s`}
               </div>
             </div>
           </div>
@@ -249,8 +302,38 @@ export default function AdminNotificationPanel({ isAdmin }) {
           </button>
         </div>
 
-        {/* Permission Request Alert */}
-        {permissionState !== "granted" && (
+        {/* ── iOS Install-to-Homescreen Guide ─────────────────────────────── */}
+        {showIOSGuide && (
+          <div style={{
+            background: "linear-gradient(135deg, #fff7ed, #fef3c7)",
+            border: "1.5px solid #fcd34d",
+            padding: "12px 16px",
+            borderRadius: "14px",
+            margin: "0 16px 12px 16px",
+            position: "relative",
+          }}>
+            <button
+              onClick={() => setShowIOSGuide(false)}
+              style={{ position: "absolute", top: "8px", right: "10px", background: "none", border: "none", fontSize: "14px", color: "#92400e", cursor: "pointer", lineHeight: 1 }}
+              aria-label="Dismiss"
+            >✕</button>
+            <div style={{ fontSize: "12px", fontWeight: "800", color: "#92400e", marginBottom: "4px", display: "flex", alignItems: "center", gap: "6px" }}>
+              <span>📱</span> iPhone: Install for Push Alerts
+            </div>
+            <div style={{ fontSize: "11px", color: "#78350f", lineHeight: "1.5" }}>
+              iOS only shows push notifications when the app is added to your homescreen. In Safari:
+            </div>
+            <ol style={{ fontSize: "11px", color: "#78350f", lineHeight: "1.7", margin: "6px 0 0 0", paddingLeft: "16px" }}>
+              <li>Tap the <strong>Share</strong> button <span style={{ fontSize: "13px" }}>⎋</span> at the bottom of Safari</li>
+              <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+              <li>Tap <strong>Add</strong> — then open the app from your homescreen</li>
+              <li>Tap <strong>Allow Notifications</strong> in the panel</li>
+            </ol>
+          </div>
+        )}
+
+        {/* ── Notification Permission Request ──────────────────────────────── */}
+        {!showIOSGuide && permissionState !== "granted" && (
           <div style={{
             background: "#eff6ff",
             border: "1.5px solid #bfdbfe",
@@ -265,24 +348,28 @@ export default function AdminNotificationPanel({ isAdmin }) {
               Enable Order Alerts
             </div>
             <div style={{ fontSize: "11px", color: "#1e40af", lineHeight: "1.4" }}>
-              Get instant alerts on your phone's lock screen when a customer places an order.
+              {permissionState === "denied"
+                ? "Notifications are blocked. Please enable them in your browser/device settings."
+                : "Get instant alerts on your lock screen when a customer places an order."}
             </div>
-            <button
-              onClick={enableNotifications}
-              style={{
-                background: "#2563eb",
-                color: "#ffffff",
-                border: "none",
-                borderRadius: "8px",
-                padding: "8px 12px",
-                fontSize: "11px",
-                fontWeight: "800",
-                cursor: "pointer",
-                textAlign: "center"
-              }}
-            >
-              Allow Notifications
-            </button>
+            {permissionState !== "denied" && (
+              <button
+                onClick={enableNotifications}
+                style={{
+                  background: "#2563eb",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "8px 12px",
+                  fontSize: "11px",
+                  fontWeight: "800",
+                  cursor: "pointer",
+                  textAlign: "center"
+                }}
+              >
+                🔔 Allow Notifications
+              </button>
+            )}
           </div>
         )}
 

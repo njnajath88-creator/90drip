@@ -28,7 +28,7 @@ export async function GET(request) {
     })();
 
     const timeoutPromise = new Promise((resolve) =>
-      setTimeout(() => resolve(null), 3000)
+      setTimeout(() => resolve(null), 6000)
     );
 
     const result = await Promise.race([fetchPromise, timeoutPromise]);
@@ -86,15 +86,15 @@ export async function POST(request) {
     // Update server memory cache immediately
     global.ordersCache = [newOrder, ...global.ordersCache.filter(o => o.id !== newOrder.id)];
 
-    // Persist to MongoDB
-    (async () => {
-      try {
-        await connectDB();
-        await Order.create(newOrder);
-      } catch (dbErr) {
-        console.error("MongoDB Order creation error:", dbErr);
-      }
-    })();
+    // Persist to MongoDB — awaited so the record is confirmed before we respond.
+    // This ensures the admin page sees the order on its very next poll.
+    try {
+      await connectDB();
+      await Order.create(newOrder);
+    } catch (dbErr) {
+      console.error("MongoDB Order creation error:", dbErr);
+      // Order is still in ordersCache — admin will see it even if DB write failed.
+    }
 
     return Response.json(newOrder, { status: 201 });
   } catch (error) {

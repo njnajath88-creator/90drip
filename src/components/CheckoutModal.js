@@ -44,12 +44,12 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
 
-    setTimeout(() => {
-      const placed = addOrder({
+    setTimeout(async () => {
+      const placed = await addOrder({
         customer: formData.name,
         email: formData.email,
         phone: formData.phone,

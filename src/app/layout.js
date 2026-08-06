@@ -13,7 +13,27 @@ export const metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: "/images/favicon.jpeg",
-    apple: "/images/favicon.jpeg",
+    // apple-touch-icon: used by iOS when adding to homescreen
+    apple: [
+      { url: "/icon.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  // iOS-specific PWA meta tags
+  // apple-mobile-web-app-capable: enables standalone mode on iPhone
+  // Without this, iOS won't activate the PWA shell needed for Web Push.
+  appleWebApp: {
+    capable: true,
+    title: "90Drip",
+    statusBarStyle: "black-translucent",
+  },
+  other: {
+    // Explicit fallback for older iOS versions that don't read appleWebApp
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-title": "90Drip",
+    // Prevent iOS from auto-detecting phone numbers as links
+    "format-detection": "telephone=no",
   },
 };
 

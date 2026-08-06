@@ -77,11 +77,26 @@ export default function AdminPage() {
       setOrders(getOrders());
     };
     syncOrders();
+
+    // Initial fetch from server
     fetchOrdersServer().then((res) => {
       if (res && Array.isArray(res)) setOrders(res);
     });
+
+    // Auto-refresh every 20 seconds so the admin always sees fresh orders
+    // without needing to manually reload. This bridges the gap between tabs
+    // since the 90drip_orders_updated event only fires in the same tab.
+    const pollInterval = setInterval(() => {
+      fetchOrdersServer().then((res) => {
+        if (res && Array.isArray(res)) setOrders(res);
+      });
+    }, 20_000);
+
     window.addEventListener("90drip_orders_updated", syncOrders);
-    return () => window.removeEventListener("90drip_orders_updated", syncOrders);
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener("90drip_orders_updated", syncOrders);
+    };
   }, []);
 
   const handleAdminFormSubmit = (e) => {

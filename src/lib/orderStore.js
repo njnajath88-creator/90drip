@@ -41,9 +41,11 @@ export async function fetchOrdersServer(email) {
 }
 
 /**
- * Add a new placed order (saves to local & syncs to API)
+ * Add a new placed order (saves to local & syncs to API).
+ * Now async — awaits the server POST so the order is in MongoDB
+ * before this function returns, eliminating the admin delay race condition.
  */
-export function addOrder(orderData) {
+export async function addOrder(orderData) {
   if (typeof window === "undefined") return;
   try {
     const current = getOrders();
@@ -60,16 +62,23 @@ export function addOrder(orderData) {
         { title: "Out for Delivery", date: "Expected in 3 days", completed: false },
       ],
     };
+
+    // Immediately update localStorage so the user sees their order
     const updated = [newOrder, ...current.filter(o => o.id !== newOrder.id)];
     localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event("90drip_orders_updated"));
 
-    // POST to server API
-    fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newOrder),
-    }).catch((err) => console.error("Error syncing order to API:", err));
+    // Await the server POST — this ensures the order is persisted in MongoDB
+    // before we return, so the admin page will see it on its next poll.
+    try {
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      });
+    } catch (err) {
+      console.error("Error syncing order to API:", err);
+    }
 
     return newOrder;
   } catch (e) {
