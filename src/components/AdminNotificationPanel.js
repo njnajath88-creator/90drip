@@ -30,8 +30,52 @@ export default function AdminNotificationPanel({ isAdmin }) {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [permissionState, setPermissionState] = useState("default");
   const drawerRef = useRef(null);
   const pollRef = useRef(null);
+
+  // Read current permission state on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setPermissionState(Notification.permission);
+    }
+  }, []);
+
+  const showOrderNotification = (title, body) => {
+    if (typeof window !== "undefined") {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.showNotification(title, {
+            body: body,
+            icon: "/icon.png",
+            badge: "/icon.png",
+            tag: "new-order",
+            vibrate: [200, 100, 200]
+          });
+        }).catch(() => {
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification(title, { body, icon: "/icon.png" });
+          }
+        });
+      } else if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(title, { body, icon: "/icon.png" });
+      }
+    }
+  };
+
+  const enableNotifications = () => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      Notification.requestPermission().then((permission) => {
+        setPermissionState(permission);
+        if (permission === "granted") {
+          showOrderNotification(
+            "Notifications Enabled! 🔔",
+            "You will now receive real-time alerts for customer orders."
+          );
+        }
+      });
+    }
+  };
 
   const getSeenIds = () => {
     try {
@@ -61,7 +105,7 @@ export default function AdminNotificationPanel({ isAdmin }) {
           setUnreadCount(newUnseen.length);
 
           // Trigger native notification for new orders during background polling
-          if (silent && newUnseen.length > 0 && "Notification" in window && Notification.permission === "granted") {
+          if (silent && newUnseen.length > 0) {
             const freshOrders = newUnseen.filter(o => {
               if (typeof window !== "undefined") {
                 if (!window._notifiedOrderIds) window._notifiedOrderIds = [];
@@ -72,17 +116,12 @@ export default function AdminNotificationPanel({ isAdmin }) {
               return false;
             });
 
-            if (freshOrders.length > 0) {
+            if (freshOrders.length > 0 && permissionState === "granted") {
               const bodyText = freshOrders.length === 1 
                 ? `Order ID: ${freshOrders[0].id} placed by ${freshOrders[0].customer || "Guest"} for ₹${freshOrders[0].total}`
                 : `You have ${freshOrders.length} new customer orders.`;
               
-              new Notification("New Order Placed! 📦", {
-                body: bodyText,
-                icon: "/icon.png",
-                badge: "/icon.png",
-                tag: "new-order"
-              });
+              showOrderNotification("New Order Placed! 📦", bodyText);
             }
           }
         }
@@ -93,14 +132,6 @@ export default function AdminNotificationPanel({ isAdmin }) {
       if (!silent) setIsLoading(false);
     }
   };
-
-  // Request native notification permissions
-  useEffect(() => {
-    if (!isAdmin) return;
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, [isAdmin]);
 
   // Poll for new orders while admin is logged in
   useEffect(() => {
@@ -217,6 +248,43 @@ export default function AdminNotificationPanel({ isAdmin }) {
             </svg>
           </button>
         </div>
+
+        {/* Permission Request Alert */}
+        {permissionState !== "granted" && (
+          <div style={{
+            background: "#eff6ff",
+            border: "1.5px solid #bfdbfe",
+            padding: "12px 16px",
+            borderRadius: "14px",
+            margin: "0 16px 12px 16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px"
+          }}>
+            <div style={{ fontSize: "12px", fontWeight: "700", color: "#1e3a8a" }}>
+              Enable Order Alerts
+            </div>
+            <div style={{ fontSize: "11px", color: "#1e40af", lineHeight: "1.4" }}>
+              Get instant alerts on your phone's lock screen when a customer places an order.
+            </div>
+            <button
+              onClick={enableNotifications}
+              style={{
+                background: "#2563eb",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: "8px",
+                padding: "8px 12px",
+                fontSize: "11px",
+                fontWeight: "800",
+                cursor: "pointer",
+                textAlign: "center"
+              }}
+            >
+              Allow Notifications
+            </button>
+          </div>
+        )}
 
         {/* Stats Row */}
         <div className="admin-notif-stats-row">
