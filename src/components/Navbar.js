@@ -148,7 +148,7 @@ export default function Navbar({
               </div>
 
               {/* Mobile Profile Icon Button on Top-Left */}
-              <div className="nav-icon-mobile" style={{ position: "relative" }}>
+              <div className="nav-icon-mobile" style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
                 <button
                   className={`nav-glass-circle ${isProfileOpen ? "active" : ""}`}
                   aria-label="User Account"
@@ -163,6 +163,13 @@ export default function Navbar({
                     <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   )}
                 </button>
+
+                {/* Mobile Admin Notification Bell — only visible on mobile and for admins */}
+                {isAdmin && (
+                  <div className="mobile-only-bell">
+                    <AdminNotificationPanel isAdmin={isAdmin} />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -181,8 +188,12 @@ export default function Navbar({
 
             {/* Right Standalone Circle Buttons */}
             <div className="nav-actions" style={{ position: "relative", display: "flex", alignItems: "center", gap: "10px" }}>
-              {/* Admin Notification Bell — only visible to admin users */}
-              <AdminNotificationPanel isAdmin={isAdmin} />
+              {/* Admin Notification Bell — only visible to admin users on desktop */}
+              {isAdmin && (
+                <div className="desktop-only-bell">
+                  <AdminNotificationPanel isAdmin={isAdmin} />
+                </div>
+              )}
 
               {/* Search Button */}
               <button

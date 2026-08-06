@@ -3460,3 +3460,20 @@ button {
     width: 100vw;
   }
 }
+
+/* Responsive visibility for admin bell */
+.mobile-only-bell {
+  display: none;
+}
+.desktop-only-bell {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only-bell {
+    display: block !important;
+  }
+  .desktop-only-bell {
+    display: none !important;
+  }
+}
