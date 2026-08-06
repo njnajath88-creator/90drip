@@ -148,7 +148,7 @@ export default function Navbar({
               </div>
 
               {/* Mobile Profile Icon Button on Top-Left */}
-              <div className="nav-icon-mobile" style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
+              <div className="nav-icon-mobile" style={{ position: "relative", alignItems: "center", gap: "8px" }}>
                 <button
                   className={`nav-glass-circle ${isProfileOpen ? "active" : ""}`}
                   aria-label="User Account"
