@@ -12,11 +12,12 @@ export const metadata = {
   description: "90Drip — Premium sports jerseys from top clubs worldwide.",
   manifest: "/manifest.json",
   icons: {
-    icon: "/images/favicon.jpeg",
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
     // apple-touch-icon: used by iOS when adding to homescreen
     apple: [
-      { url: "/icon.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/images/favicon.png", sizes: "192x192", type: "image/png" },
+      { url: "/images/favicon.png", sizes: "512x512", type: "image/png" },
     ],
   },
   // iOS-specific PWA meta tags
