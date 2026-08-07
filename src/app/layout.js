@@ -14,8 +14,9 @@ export const metadata = {
   description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
   keywords: ["football jerseys", "sports jerseys", "retro jerseys", "90drip", "premium football kits", "india jersey store", "buy football jerseys online"],
   icons: {
-    icon: "/images/favicon.png",
-    shortcut: "/favicon.ico",
+    icon: "/images/90d-favicon.png",
+    shortcut: "/images/90d-favicon.png",
+    apple: "/images/90d-favicon.png",
   },
   openGraph: {
     title: "90Drip | Premium Sports Jerseys",
