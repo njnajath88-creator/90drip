@@ -1,4 +1,4 @@
-const CACHE_NAME = "90drip-admin-v4";
+const CACHE_NAME = "90drip-admin-v5";
 const ASSETS = ["/manifest.json", "/icon.png"];
 
 // ─── Install ──────────────────────────────────────────────────────────────────
@@ -42,18 +42,25 @@ self.addEventListener("push", (e) => {
     }
   } catch (_) {}
 
-  e.waitUntil(
-    self.registration.showNotification(data.title, {
+  const showPromise = self.registration
+    .showNotification(data.title, {
       body: data.body,
       icon: "/icon.png",
       badge: "/icon.png",
-      tag: "new-order",
+      tag: "new-order-" + Date.now(),
       renotify: true,
-      requireInteraction: false,
       data: { url: data.url },
-      // vibrate intentionally omitted — breaks iOS silent-mode notifications
     })
-  );
+    .catch((err) => {
+      console.error("Primary showNotification failed, trying minimal fallback:", err);
+      // Fallback for iOS Safari PWA if badge/renotify/tag fail
+      return self.registration.showNotification(data.title, {
+        body: data.body,
+        data: { url: data.url },
+      });
+    });
+
+  e.waitUntil(showPromise);
 });
 
 // ─── Notification Click ───────────────────────────────────────────────────────

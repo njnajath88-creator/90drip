@@ -61,11 +61,17 @@ export async function sendPushToAll(title, body, url = "/admin") {
           keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
         };
         try {
-          await webpush.sendNotification(pushSub, payload);
+          // Pass urgency: 'high' to force Apple APNs and Google FCM to wake up device screen/lockscreen immediately
+          await webpush.sendNotification(pushSub, payload, {
+            TTL: 86400,
+            urgency: "high",
+          });
         } catch (err) {
           // 404 or 410 = subscription expired/unsubscribed — clean it up
           if (err.statusCode === 404 || err.statusCode === 410) {
             await PushSubscription.deleteOne({ endpoint: sub.endpoint }).catch(() => {});
+          } else {
+            console.error(`Failed to send push notification to endpoint (${sub.endpoint}):`, err);
           }
         }
       })
