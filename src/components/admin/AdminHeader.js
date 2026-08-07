@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import AdminNotificationPanel from "@/components/AdminNotificationPanel";
 
 export default function AdminHeader() {
   return (
@@ -37,6 +38,9 @@ export default function AdminHeader() {
 
           {/* Right Action Buttons */}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* Notification Bell — always admin here */}
+            <AdminNotificationPanel isAdmin={true} />
+
             <Link
               href="/"
               style={{
