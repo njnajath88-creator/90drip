@@ -306,15 +306,22 @@ export default function AdminNotificationPanel({ isAdmin }) {
       const base64 = (vapidPublicKey + padding).replace(/-/g, "+").replace(/_/g, "/");
       const rawData = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
-      // Check for existing subscription first
-      let subscription = await reg.pushManager.getSubscription();
-
-      if (!subscription) {
-        subscription = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: rawData,
-        });
+      // Always unsubscribe any stale existing subscription first.
+      // If the VAPID keys changed (e.g. keys were just added to Vercel),
+      // the old subscription is invalid and will fail silently. Forcing a
+      // fresh subscription guarantees we use the current correct keys.
+      const existingSub = await reg.pushManager.getSubscription();
+      if (existingSub) {
+        console.log("Unsubscribing stale push subscription before re-subscribing...");
+        await existingSub.unsubscribe();
       }
+
+      const subscription = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: rawData,
+      });
+
+      console.log("New push subscription created:", subscription.endpoint);
 
       // Step 3: Save subscription to server (MongoDB)
       const res = await fetch("/api/push/subscribe", {
@@ -330,11 +337,12 @@ export default function AdminNotificationPanel({ isAdmin }) {
           null
         );
       } else {
-        throw new Error("Server failed to save subscription");
+        const errText = await res.text().catch(() => "unknown error");
+        throw new Error(`Server failed to save subscription: ${res.status} ${errText}`);
       }
     } catch (err) {
       console.error("Push subscription error:", err);
-      showInAppToast("Setup Failed", "Could not enable push. Try again or check browser support.", null);
+      showInAppToast("Setup Failed", `Could not enable push: ${err.message}`, null);
     }
   };
 
