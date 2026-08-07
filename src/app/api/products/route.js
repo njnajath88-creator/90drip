@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import { Product } from "@/lib/models/Product";
 import mongoose from "mongoose";
 import { getProductsServer } from "@/lib/getProducts";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 export const dynamic = "force-dynamic";
 // NOTE: revalidate = 0 removed — force-dynamic is sufficient to prevent caching
@@ -55,6 +56,19 @@ export async function POST(request) {
 
     const createPromise = (async () => {
       await connectDB();
+      // Upload base64 images to Cloudinary (if any)
+      const [imageUrl, backImageUrl, closeupImageUrl, fitImageUrl] = await Promise.all([
+        uploadToCloudinary(formattedPayload.image),
+        uploadToCloudinary(formattedPayload.backImage),
+        uploadToCloudinary(formattedPayload.closeupImage),
+        uploadToCloudinary(formattedPayload.fitImage),
+      ]);
+
+      formattedPayload.image = imageUrl;
+      formattedPayload.backImage = backImageUrl;
+      formattedPayload.closeupImage = closeupImageUrl;
+      formattedPayload.fitImage = fitImageUrl;
+
       const product = await Product.create(formattedPayload);
       return product.toJSON();
     })();
@@ -119,6 +133,19 @@ export async function PUT(request) {
 
     const updatePromise = (async () => {
       await connectDB();
+      // Upload base64 images to Cloudinary (if any)
+      const [imageUrl, backImageUrl, closeupImageUrl, fitImageUrl] = await Promise.all([
+        uploadToCloudinary(formattedFields.image),
+        uploadToCloudinary(formattedFields.backImage),
+        uploadToCloudinary(formattedFields.closeupImage),
+        uploadToCloudinary(formattedFields.fitImage),
+      ]);
+
+      if (imageUrl !== undefined) formattedFields.image = imageUrl;
+      if (backImageUrl !== undefined) formattedFields.backImage = backImageUrl;
+      if (closeupImageUrl !== undefined) formattedFields.closeupImage = closeupImageUrl;
+      if (fitImageUrl !== undefined) formattedFields.fitImage = fitImageUrl;
+
       let updated = null;
       if (mongoose.Types.ObjectId.isValid(productId)) {
         updated = await Product.findByIdAndUpdate(
