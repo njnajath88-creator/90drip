@@ -1,7 +1,8 @@
 import { getProductsServer } from "@/lib/getProducts";
 import CategoryPageClient from "@/components/CategoryPageClient";
 
-export const dynamic = "force-dynamic";
+// Use static rendering with Incremental Static Regeneration (ISR)
+export const revalidate = 300; // Revalidate every 5 minutes
 
 const getCategoryName = (slug) => {
   const mapping = {
