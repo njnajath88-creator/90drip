@@ -5,6 +5,8 @@ import Link from "next/link";
 import { clearCart } from "@/lib/cartStore";
 import { addOrder } from "@/lib/orderStore";
 
+const SAVED_ADDRESS_KEY = "90drip_saved_address";
+
 export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0, discount = 0, shipping = 0, finalTotal = 0 }) {
   const [step, setStep] = useState("form"); // "form" | "confirmed"
   const [formData, setFormData] = useState({
@@ -19,7 +21,11 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
   const [orderId, setOrderId] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Automatically fetch signed in user's email and name on open
+  // Saved address state
+  const [savedAddress, setSavedAddress] = useState(null); // { phone, address, city, pincode }
+  const [usingSavedAddress, setUsingSavedAddress] = useState(true);
+
+  // On open: load user info and saved address from localStorage
   useEffect(() => {
     if (isOpen) {
       try {
@@ -31,12 +37,57 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
             name: prev.name || user.name || "",
             email: prev.email || user.email || "",
           }));
+
+          // Load saved address for this user
+          const rawAddr = localStorage.getItem(`${SAVED_ADDRESS_KEY}_${user.email}`);
+          if (rawAddr) {
+            const addr = JSON.parse(rawAddr);
+            setSavedAddress(addr);
+            setUsingSavedAddress(true);
+            // Pre-fill form with saved values
+            setFormData((prev) => ({
+              ...prev,
+              phone: addr.phone || prev.phone,
+              address: addr.address || prev.address,
+              city: addr.city || prev.city,
+              pincode: addr.pincode || prev.pincode,
+            }));
+          } else {
+            setSavedAddress(null);
+            setUsingSavedAddress(false);
+          }
         }
       } catch (e) {
         console.error("Failed to load signed in user in checkout:", e);
       }
     }
   }, [isOpen]);
+
+  // When user switches to "use saved address", fill form fields from saved data
+  const handleUseSavedAddress = () => {
+    if (savedAddress) {
+      setFormData((prev) => ({
+        ...prev,
+        phone: savedAddress.phone || prev.phone,
+        address: savedAddress.address || prev.address,
+        city: savedAddress.city || prev.city,
+        pincode: savedAddress.pincode || prev.pincode,
+      }));
+    }
+    setUsingSavedAddress(true);
+  };
+
+  // When user switches to "enter new address", clear the address fields
+  const handleUseNewAddress = () => {
+    setFormData((prev) => ({
+      ...prev,
+      phone: "",
+      address: "",
+      city: "",
+      pincode: "",
+    }));
+    setUsingSavedAddress(false);
+  };
 
   if (!isOpen) return null;
 
@@ -60,12 +111,28 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
         paymentMethod: formData.paymentMethod,
       });
 
+      // Save / update address for next checkout
+      try {
+        if (formData.email) {
+          const addrToSave = {
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            pincode: formData.pincode,
+          };
+          localStorage.setItem(`${SAVED_ADDRESS_KEY}_${formData.email}`, JSON.stringify(addrToSave));
+        }
+      } catch (e) {
+        console.error("Failed to save address:", e);
+      }
+
       setOrderId(placed.id);
       setSubmitting(false);
       setStep("confirmed");
       clearCart();
     }, 1000);
   };
+
 
   return (
     <div
@@ -241,7 +308,92 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
                 </div>
               </div>
 
-              <div>
+              {/* ── Saved Address Card ─────────────────────────────────── */}
+              {savedAddress && (
+                <div>
+                  {/* Toggle Tabs */}
+                  <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                    <button
+                      type="button"
+                      onClick={handleUseSavedAddress}
+                      style={{
+                        flex: 1,
+                        padding: "9px 12px",
+                        borderRadius: "10px",
+                        border: usingSavedAddress ? "2px solid #16a34a" : "1.5px solid #e2e8f0",
+                        background: usingSavedAddress ? "#f0fdf4" : "#f8fafc",
+                        color: usingSavedAddress ? "#15803d" : "#64748b",
+                        fontSize: "12px",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <span>✓</span> Use Saved Address
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleUseNewAddress}
+                      style={{
+                        flex: 1,
+                        padding: "9px 12px",
+                        borderRadius: "10px",
+                        border: !usingSavedAddress ? "2px solid #2563eb" : "1.5px solid #e2e8f0",
+                        background: !usingSavedAddress ? "#eff6ff" : "#f8fafc",
+                        color: !usingSavedAddress ? "#1d4ed8" : "#64748b",
+                        fontSize: "12px",
+                        fontWeight: "800",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <span>+</span> New Address
+                    </button>
+                  </div>
+
+                  {/* Saved Address Preview */}
+                  {usingSavedAddress && (
+                    <div style={{
+                      background: "#f0fdf4",
+                      border: "1.5px solid #86efac",
+                      borderRadius: "12px",
+                      padding: "12px 14px",
+                      display: "flex",
+                      gap: "10px",
+                      alignItems: "flex-start",
+                    }}>
+                      <div style={{ marginTop: "2px", fontSize: "16px", flexShrink: 0 }}>📍</div>
+                      <div>
+                        <div style={{ fontSize: "11px", fontWeight: "800", color: "#15803d", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "3px" }}>
+                          Saved Address
+                        </div>
+                        <div style={{ fontSize: "13px", fontWeight: "700", color: "#0f172a", lineHeight: "1.5" }}>
+                          {savedAddress.address}
+                        </div>
+                        <div style={{ fontSize: "12px", color: "#334155", fontWeight: "600" }}>
+                          {savedAddress.city} – {savedAddress.pincode}
+                        </div>
+                        {savedAddress.phone && (
+                          <div style={{ fontSize: "12px", color: "#64748b", fontWeight: "600", marginTop: "2px" }}>
+                            📞 {savedAddress.phone}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Address fields — hidden when using saved address */}
+              {!usingSavedAddress && (
+                <>
+                <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "700", color: "#334155", marginBottom: "4px" }}>
                   Street Address & Flat / House No. *
                 </label>
@@ -307,6 +459,9 @@ export default function CheckoutModal({ isOpen, onClose, cart = [], subtotal = 0
                   />
                 </div>
               </div>
+              </>
+              )}
+
 
               <div>
                 <label style={{ display: "block", fontSize: "12px", fontWeight: "800", color: "#0f172a", marginBottom: "8px", textTransform: "uppercase" }}>
