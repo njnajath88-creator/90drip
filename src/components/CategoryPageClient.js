@@ -70,23 +70,28 @@ export default function CategoryPageClient({ slug = "", initialProducts = [] }) 
     return () => window.removeEventListener("90drip_cart_updated", syncCart);
   }, []);
 
-  // Background fallback if initialProducts was empty
+  // Sync fresh products from API on mount
   useEffect(() => {
-    if (products.length > 0) return;
+    let isMounted = true;
     async function loadProducts() {
       try {
-        setLoading(true);
+        if (products.length === 0) setLoading(true);
         const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
-        setProducts(data);
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+        }
       } catch (err) {
         console.error("Failed to load products for category:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
     loadProducts();
-  }, [products]);
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleAddToCart = (product, selectedSize = "M") => {
     addToCartStore(product, selectedSize);

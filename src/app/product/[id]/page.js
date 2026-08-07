@@ -1,8 +1,7 @@
 import { getProductsServer } from "@/lib/getProducts";
 import ProductDetailClient from "@/components/ProductDetailClient";
 
-// Use static rendering with Incremental Static Regeneration (ISR)
-export const revalidate = 300; // Revalidate every 5 minutes
+export const dynamic = "force-dynamic";
 
 // Helper to construct absolute image and page URLs for Google's crawlers
 const getAbsoluteUrl = (path, defaultPath = "/images/90driplogo.png") => {

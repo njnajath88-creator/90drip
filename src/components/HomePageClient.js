@@ -37,18 +37,26 @@ export default function HomePageClient({ initialProducts = [] }) {
   // Cache products in sessionStorage as soon as they arrive from the server.
   // The product detail page reads this first — making product navigation
   // instant (0 network calls), exactly like CleanCuts uses its static data.
+  // Sync fresh products from API on mount so newly added products appear immediately
   useEffect(() => {
-    if (initialProducts && initialProducts.length > 0) {
-      try {
-        sessionStorage.setItem("90drip_products_cache", JSON.stringify(initialProducts));
-        sessionStorage.setItem("90drip_products_cache_time", Date.now().toString());
-      } catch (e) {
-        // sessionStorage might be full — not a blocking issue
-      }
-    }
-  }, [initialProducts]);
+    let isMounted = true;
+    fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setProducts(data);
+          try {
+            sessionStorage.setItem("90drip_products_cache", JSON.stringify(data));
+            sessionStorage.setItem("90drip_products_cache_time", Date.now().toString());
+          } catch (_) {}
+        }
+      })
+      .catch(() => {});
 
-  // Products are pre-loaded from server (SSR), no need for a redundant client fetch
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleAddToCart = (product, selectedSize = "M") => {
     addToCartStore(product, selectedSize);
