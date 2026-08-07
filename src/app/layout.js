@@ -13,11 +13,10 @@ export const metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: "/images/favicon.png",
-    shortcut: "/images/favicon.png",
+    shortcut: "/favicon.ico",
     // apple-touch-icon: used by iOS when adding to homescreen
     apple: [
       { url: "/images/favicon.png", sizes: "192x192", type: "image/png" },
-      { url: "/images/favicon.png", sizes: "512x512", type: "image/png" },
     ],
   },
   // iOS-specific PWA meta tags
