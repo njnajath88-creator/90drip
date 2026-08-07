@@ -8,8 +8,10 @@ const inter = Inter({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://www.90drip.store"),
   title: "90Drip | Premium Sports Jerseys",
-  description: "90Drip — Premium sports jerseys from top clubs worldwide.",
+  description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
+  keywords: ["football jerseys", "sports jerseys", "retro jerseys", "90drip", "premium football kits", "india jersey store", "buy football jerseys online"],
   manifest: "/manifest.json",
   icons: {
     icon: "/images/favicon.png",
@@ -18,6 +20,28 @@ export const metadata = {
     apple: [
       { url: "/images/favicon.png", sizes: "192x192", type: "image/png" },
     ],
+  },
+  openGraph: {
+    title: "90Drip | Premium Sports Jerseys",
+    description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
+    url: "https://www.90drip.store",
+    siteName: "90Drip",
+    images: [
+      {
+        url: "/images/90driplogo.png",
+        width: 1200,
+        height: 630,
+        alt: "90Drip Premium Sports Jerseys",
+      },
+    ],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "90Drip | Premium Sports Jerseys",
+    description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
+    images: ["/images/90driplogo.png"],
   },
   // iOS-specific PWA meta tags
   // apple-mobile-web-app-capable: enables standalone mode on iPhone
