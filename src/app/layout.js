@@ -10,17 +10,33 @@ const inter = Inter({
 
 export const metadata = {
   metadataBase: new URL("https://www.90drip.store"),
-  title: "90Drip | Premium Sports Jerseys",
-  description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
-  keywords: ["football jerseys", "sports jerseys", "retro jerseys", "90drip", "premium football kits", "india jersey store", "buy football jerseys online"],
+  title: {
+    default: "90Drip | Premium Sports & Football Jerseys India",
+    template: "%s | 90Drip",
+  },
+  description: "90Drip is India's premier online store for authentic-grade sports jerseys, retro kits, and streetwear football apparel. Minimalist designs, maximum performance.",
+  keywords: [
+    "90drip",
+    "90 drip",
+    "90drip store",
+    "90drip.store",
+    "90drip jerseys",
+    "football jerseys",
+    "sports jerseys",
+    "retro jerseys",
+    "buy football kits india",
+  ],
+  alternates: {
+    canonical: "https://www.90drip.store",
+  },
   icons: {
     icon: "/images/90d-favicon.png",
     shortcut: "/images/90d-favicon.png",
     apple: "/images/90d-favicon.png",
   },
   openGraph: {
-    title: "90Drip | Premium Sports Jerseys",
-    description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
+    title: "90Drip | Premium Sports & Football Jerseys India",
+    description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance.",
     url: "https://www.90drip.store",
     siteName: "90Drip",
     images: [
@@ -36,12 +52,11 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "90Drip | Premium Sports Jerseys",
-    description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide. Minimalist designs, maximum performance. Buy premium football kits online.",
+    title: "90Drip | Premium Sports & Football Jerseys",
+    description: "Explore premium, authentic-grade sports jerseys from top clubs worldwide.",
     images: ["/images/90driplogo.png"],
   },
   other: {
-    // Prevent iOS from auto-detecting phone numbers as links
     "format-detection": "telephone=no",
   },
 };
@@ -54,8 +69,38 @@ export const viewport = {
 };
 
 export default function RootLayout({ children }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://www.90drip.store/#website",
+        "url": "https://www.90drip.store",
+        "name": "90Drip",
+        "alternateName": ["90 Drip", "90Drip Store"],
+        "description": "Premium Sports & Football Jerseys Store India",
+        "publisher": {
+          "@id": "https://www.90drip.store/#organization",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.90drip.store/#organization",
+        "name": "90Drip",
+        "url": "https://www.90drip.store",
+        "logo": "https://www.90drip.store/images/90driplogo.png",
+      },
+    ],
+  };
+
   return (
     <html lang="en" className={inter.className}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         {children}
         <SpeedInsights />
