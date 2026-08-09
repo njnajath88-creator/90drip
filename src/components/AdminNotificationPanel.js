@@ -284,13 +284,26 @@ export default function AdminNotificationPanel({ isAdmin }) {
       return;
     }
 
-    // Step 2: Subscribe via Service Worker pushManager with VAPID public key
     try {
+      // Step 2: Obtain FCM Registration Token if configured
+      try {
+        const fcmToken = await getFcmToken();
+        if (fcmToken) {
+          console.log("FCM registration token obtained:", fcmToken);
+          await fetch("/api/push/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fcmToken, type: "fcm" }),
+          });
+        }
+      } catch (fcmErr) {
+        console.warn("FCM token retrieval notice:", fcmErr);
+      }
+
+      // Step 3: Subscribe via Service Worker pushManager with VAPID public key
       const reg = await navigator.serviceWorker.ready;
 
       // Fetch VAPID public key dynamically from the server at runtime.
-      // This guarantees the key is loaded correctly even if Vercel did not
-      // inject the env var at compilation/build time.
       const keyRes = await fetch("/api/push/key");
       if (!keyRes.ok) {
         throw new Error("Failed to load VAPID public key from server");
@@ -300,17 +313,10 @@ export default function AdminNotificationPanel({ isAdmin }) {
         throw new Error("VAPID public key is empty");
       }
 
-      // Convert VAPID public key from base64 to Uint8Array.
-      // We must add '=' padding characters; otherwise, iOS Safari throws a
-      // DOMException in atob(), causing the subscription to fail silently.
       const padding = "=".repeat((4 - (vapidPublicKey.length % 4)) % 4);
       const base64 = (vapidPublicKey + padding).replace(/-/g, "+").replace(/_/g, "/");
       const rawData = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
-      // Always unsubscribe any stale existing subscription first.
-      // If the VAPID keys changed (e.g. keys were just added to Vercel),
-      // the old subscription is invalid and will fail silently. Forcing a
-      // fresh subscription guarantees we use the current correct keys.
       const existingSub = await reg.pushManager.getSubscription();
       if (existingSub) {
         console.log("Unsubscribing stale push subscription before re-subscribing...");
@@ -324,7 +330,6 @@ export default function AdminNotificationPanel({ isAdmin }) {
 
       console.log("New push subscription created:", subscription.endpoint);
 
-      // Step 3: Save subscription to server (MongoDB)
       const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
