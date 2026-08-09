@@ -354,18 +354,18 @@ export default function AdminNotificationPanel({ isAdmin }) {
 
   // Test notification — sends via server so it tests the full VAPID pipeline
   const sendTestNotification = async () => {
-    showInAppToast("Test Alert ✓", "In-app notifications are working!", null);
-    // Test native notification via SW
+    showInAppToast("Sending Test Push...", "Triggering server push pipeline...", null);
     try {
-      const reg = await navigator.serviceWorker.ready;
-      reg.showNotification("Test Push ✓", {
-        body: "VAPID push pipeline is working! You\'ll get this on your lock screen.",
-        icon: "/icon.png",
-        badge: "/icon.png",
-        tag: "test-push",
-        renotify: true,
-      });
-    } catch {}
+      const res = await fetch("/api/push/test", { method: "POST" });
+      if (res.ok) {
+        showInAppToast("Test Push Sent! 🔔", "Server push message dispatched successfully.", null);
+      } else {
+        const err = await res.json().catch(() => ({ error: "Server error" }));
+        showInAppToast("Test Failed ⚠️", err.error || "Could not send push", null);
+      }
+    } catch (err) {
+      showInAppToast("Test Failed ⚠️", err.message, null);
+    }
   };
 
   const getSeenIds = () => {
