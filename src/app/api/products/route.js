@@ -54,6 +54,17 @@ export async function POST(request) {
         : ["S", "M", "L", "XL"],
     };
 
+    const parsedSizes = formattedPayload.sizes;
+    const defaultSizesStock = parsedSizes.reduce((acc, s) => ({ ...acc, [s]: 15 }), {});
+    formattedPayload.sizesStock = body.sizesStock && typeof body.sizesStock === "object"
+      ? body.sizesStock
+      : defaultSizesStock;
+
+    formattedPayload.totalStock = Object.values(formattedPayload.sizesStock).reduce(
+      (sum, val) => sum + (parseInt(val) || 0),
+      0
+    );
+
     const createPromise = (async () => {
       await connectDB();
       // Upload base64 images to Cloudinary (if any)
@@ -130,6 +141,14 @@ export async function PUT(request) {
         ? updateFields.sizes.split(",").map((s) => s.trim()).filter(Boolean)
         : ["S", "M", "L", "XL"],
     };
+
+    if (updateFields.sizesStock && typeof updateFields.sizesStock === "object") {
+      formattedFields.sizesStock = updateFields.sizesStock;
+      formattedFields.totalStock = Object.values(updateFields.sizesStock).reduce(
+        (sum, val) => sum + (parseInt(val) || 0),
+        0
+      );
+    }
 
     const updatePromise = (async () => {
       await connectDB();

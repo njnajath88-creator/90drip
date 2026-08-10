@@ -21,6 +21,11 @@ const ProductSchema = new mongoose.Schema(
     fitImage: { type: String, default: null },
     badges: { type: [String], default: [] },
     sizes: { type: [String], default: ["S", "M", "L", "XL"] },
+    sizesStock: {
+      type: Object,
+      default: { S: 15, M: 15, L: 15, XL: 15 },
+    },
+    totalStock: { type: Number, default: 60 },
   },
   {
     timestamps: true,

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import { Order } from "@/lib/models/Order";
+import { Product } from "@/lib/models/Product";
+import mongoose from "mongoose";
 import { sendPushToAll } from "@/lib/sendPushNotification";
 
 export const dynamic = "force-dynamic";
@@ -93,6 +95,31 @@ export async function POST(request) {
     try {
       await connectDB();
       await Order.create(newOrder);
+
+      // Auto-deduct stock for each ordered item
+      if (Array.isArray(newOrder.cartItems) && newOrder.cartItems.length > 0) {
+        for (const item of newOrder.cartItems) {
+          const prodId = item.id;
+          const size = item.size || "M";
+          const qty = parseInt(item.quantity) || 1;
+          if (prodId && mongoose.Types.ObjectId.isValid(prodId)) {
+            const product = await Product.findById(prodId);
+            if (product) {
+              const currentStock = product.sizesStock ? { ...product.sizesStock } : { S: 15, M: 15, L: 15, XL: 15 };
+              const oldStock = parseInt(currentStock[size]) ?? 15;
+              currentStock[size] = Math.max(0, oldStock - qty);
+              const newTotal = Object.values(currentStock).reduce((a, b) => a + (parseInt(b) || 0), 0);
+              
+              await Product.findByIdAndUpdate(prodId, {
+                sizesStock: currentStock,
+                totalStock: newTotal
+              });
+            }
+          }
+        }
+        global.productsCache = null; // Flush product memory cache
+        global.productsCacheTime = 0;
+      }
     } catch (dbErr) {
       console.error("MongoDB Order creation error:", dbErr);
     }

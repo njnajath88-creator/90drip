@@ -212,39 +212,53 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
                 <div style={{ padding: "4px 8px 6px", fontSize: "10px", fontWeight: "900", color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", borderBottom: "1px solid #f1f5f9" }}>
                   Select Size:
                 </div>
-                {availableSizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={(e) => handleSelectSize(e, size)}
-                    style={{
-                      width: "100%",
-                      padding: "8px 10px",
-                      borderRadius: "8px",
-                      border: "none",
-                      background: "transparent",
-                      color: "#0f172a",
-                      fontSize: "13px",
-                      fontWeight: "700",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      cursor: "pointer",
-                      transition: "all 0.15s ease",
-                      textAlign: "left",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "#eff6ff";
-                      e.currentTarget.style.color = "#2563eb";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "#0f172a";
-                    }}
-                  >
-                    <span>Size {size}</span>
-                    <span style={{ fontSize: "11px", fontWeight: "800", color: "#2563eb" }}>+ Add</span>
-                  </button>
-                ))}
+                {availableSizes.map((size) => {
+                  const sizeQty = product.sizesStock ? (product.sizesStock[size] ?? 15) : 15;
+                  const isSoldOut = sizeQty <= 0;
+
+                  return (
+                    <button
+                      key={size}
+                      disabled={isSoldOut}
+                      onClick={(e) => !isSoldOut && handleSelectSize(e, size)}
+                      style={{
+                        width: "100%",
+                        padding: "8px 10px",
+                        borderRadius: "8px",
+                        border: "none",
+                        background: "transparent",
+                        color: isSoldOut ? "#cbd5e1" : "#0f172a",
+                        fontSize: "13px",
+                        fontWeight: "700",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        cursor: isSoldOut ? "not-allowed" : "pointer",
+                        transition: "all 0.15s ease",
+                        textAlign: "left",
+                        opacity: isSoldOut ? 0.6 : 1,
+                        textDecoration: isSoldOut ? "line-through" : "none"
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isSoldOut) {
+                          e.currentTarget.style.background = "#eff6ff";
+                          e.currentTarget.style.color = "#2563eb";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isSoldOut) {
+                          e.currentTarget.style.background = "transparent";
+                          e.currentTarget.style.color = "#0f172a";
+                        }
+                      }}
+                    >
+                      <span>Size {size}</span>
+                      <span style={{ fontSize: "11px", fontWeight: "800", color: isSoldOut ? "#ef4444" : "#2563eb" }}>
+                        {isSoldOut ? "Sold Out" : sizeQty <= 3 ? `Only ${sizeQty}` : "+ Add"}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -259,6 +273,27 @@ export default function ProductCard({ product, index = 0, addToCart: addToCartPr
               position: "relative",
             }}
           >
+            {(product.totalStock === 0 || (product.sizesStock && Object.values(product.sizesStock).reduce((a, b) => a + (parseInt(b) || 0), 0) === 0)) && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 12,
+                  left: 12,
+                  background: "#0f172a",
+                  color: "#ffffff",
+                  fontSize: "10px",
+                  fontWeight: "900",
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  zIndex: 5,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
+                }}
+              >
+                Sold Out
+              </div>
+            )}
             <Image
               src={displaySrc}
               alt={product.name}

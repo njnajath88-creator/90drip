@@ -231,11 +231,15 @@ export default function AdminPage() {
   // Modal handlers
   const handleOpenAddModal = () => {
     setEditingProduct(null);
-    setFormData({ ...DEFAULT_FORM, sizes: "S, M, L, XL" });
+    setFormData({ ...DEFAULT_FORM, sizes: "S, M, L, XL", sizesStock: { S: 15, M: 15, L: 15, XL: 15 } });
     setIsModalOpen(true);
   };
 
   const handleOpenEditModal = (product) => {
+    const defaultSizesStock = Array.isArray(product.sizes)
+      ? product.sizes.reduce((acc, s) => ({ ...acc, [s]: 15 }), {})
+      : { S: 15, M: 15, L: 15, XL: 15 };
+
     setEditingProduct(product);
     setFormData({
       name: product.name,
@@ -249,6 +253,7 @@ export default function AdminPage() {
       sizes: Array.isArray(product.sizes)
         ? product.sizes.join(", ")
         : product.sizes || "",
+      sizesStock: product.sizesStock || defaultSizesStock,
       image: product.image || "",
       backImage: product.backImage || "",
       closeupImage: product.closeupImage || "",
@@ -273,6 +278,7 @@ export default function AdminPage() {
         sizes: formData.sizes
           ? formData.sizes.split(",").map((s) => s.trim()).filter(Boolean)
           : ["S", "M", "L"],
+        sizesStock: formData.sizesStock || {},
       };
 
       let res;

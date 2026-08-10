@@ -101,16 +101,39 @@ export default function ProductsTab({
                   <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Jersey Name</th>
                   <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Category</th>
                   <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Price</th>
+                  <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Stock Status</th>
                   <th style={{ padding: "12px 16px", fontSize: "11px", fontWeight: "800", color: "#64748b", textTransform: "uppercase" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: "30px", textAlign: "center", color: "#94a3b8" }}>No products found.</td>
+                    <td colSpan="6" style={{ padding: "30px", textAlign: "center", color: "#94a3b8" }}>No products found.</td>
                   </tr>
                 ) : (
-                  filteredProducts.map((product) => (
+                  filteredProducts.map((product) => {
+                    const sizesStock = product.sizesStock || {};
+                    const totalStk = product.totalStock ?? (
+                      Object.keys(sizesStock).length > 0
+                        ? Object.values(sizesStock).reduce((a, b) => a + (parseInt(b) || 0), 0)
+                        : 60
+                    );
+
+                    let stockBadgeBg = "#dcfce7";
+                    let stockBadgeText = "#166534";
+                    let stockLabel = `In Stock (${totalStk})`;
+
+                    if (totalStk === 0) {
+                      stockBadgeBg = "#fee2e2";
+                      stockBadgeText = "#991b1b";
+                      stockLabel = "Out of Stock";
+                    } else if (totalStk <= 5) {
+                      stockBadgeBg = "#fef3c7";
+                      stockBadgeText = "#92400e";
+                      stockLabel = `Low Stock (${totalStk})`;
+                    }
+
+                    return (
                     <tr key={product.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "10px 16px" }}>
                         <Image
@@ -132,6 +155,24 @@ export default function ProductsTab({
                       </td>
                       <td style={{ padding: "10px 16px", fontSize: "13px", fontWeight: "800", color: "#0f172a" }}>
                         ₹{product.price?.toLocaleString()}
+                      </td>
+                      <td style={{ padding: "10px 16px" }}>
+                        <span
+                          style={{
+                            background: stockBadgeBg,
+                            color: stockBadgeText,
+                            fontSize: "11px",
+                            fontWeight: "800",
+                            padding: "4px 9px",
+                            borderRadius: "20px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "5px"
+                          }}
+                        >
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: stockBadgeText }} />
+                          {stockLabel}
+                        </span>
                       </td>
                       <td style={{ padding: "10px 16px" }}>
                         <div style={{ display: "flex", gap: "8px" }}>
@@ -190,7 +231,8 @@ export default function ProductsTab({
                         </div>
                       </td>
                     </tr>
-                  ))
+                    );
+                  })
                 )}
               </tbody>
             </table>

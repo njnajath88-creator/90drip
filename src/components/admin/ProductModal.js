@@ -183,11 +183,64 @@ export default function ProductModal({
               type="text"
               placeholder="XS, S, M, L, XL, XXL"
               value={formData.sizes}
-              onChange={(e) =>
-                setFormData({ ...formData, sizes: e.target.value })
-              }
+              onChange={(e) => {
+                const newSizesStr = e.target.value;
+                const sizeList = newSizesStr.split(",").map(s => s.trim()).filter(Boolean);
+                const updatedStock = { ...(formData.sizesStock || {}) };
+                sizeList.forEach(s => {
+                  if (updatedStock[s] === undefined) updatedStock[s] = 15;
+                });
+                setFormData({ ...formData, sizes: newSizesStr, sizesStock: updatedStock });
+              }}
               className="admin-input"
             />
+          </div>
+
+          {/* Size-wise Inventory Stock Section */}
+          <div style={{ marginTop: "14px", padding: "14px", background: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+              <label style={{ fontSize: "12px", fontWeight: "800", color: "#0f172a", textTransform: "uppercase", letterSpacing: "0.03em" }}>
+                📦 Size Inventory Stock Levels
+              </label>
+              <span style={{ fontSize: "11px", fontWeight: "700", color: "#64748b" }}>
+                Total Stock: {Object.values(formData.sizesStock || {}).reduce((acc, v) => acc + (parseInt(v) || 0), 0)} items
+              </span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "10px" }}>
+              {(formData.sizes ? formData.sizes.split(",").map(s => s.trim()).filter(Boolean) : ["S", "M", "L", "XL"]).map((sz) => (
+                <div key={sz} style={{ background: "#ffffff", padding: "8px 10px", borderRadius: "8px", border: "1px solid #cbd5e1" }}>
+                  <div style={{ fontSize: "11px", fontWeight: "900", color: "#2563eb", marginBottom: "4px", textAlign: "center" }}>
+                    Size {sz}
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.sizesStock?.[sz] ?? 15}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 0;
+                      setFormData({
+                        ...formData,
+                        sizesStock: {
+                          ...(formData.sizesStock || {}),
+                          [sz]: val,
+                        },
+                      });
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "6px",
+                      borderRadius: "6px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "13px",
+                      fontWeight: "700",
+                      textAlign: "center",
+                      color: "#0f172a",
+                      outline: "none"
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Professional Image Upload & Angle Gallery Section */}

@@ -403,27 +403,76 @@ export default function ProductDetailClient({ productId, initialProduct = null }
 
               {/* Size Selector */}
               <div style={{ marginBottom: 24 }}>
-                <label style={{ fontSize: 11, fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", display: "block", marginBottom: 10 }}>Size</label>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {(product.sizes || ["S", "M", "L", "XL"]).map((sz) => (
-                    <button
-                      key={sz}
-                      onClick={() => setSelectedSize(sz)}
-                      style={{
-                        padding: "9px 18px",
-                        borderRadius: 8,
-                        border: selectedSize === sz ? "2px solid #0f172a" : "1.5px solid #e2e8f0",
-                        background: selectedSize === sz ? "#0f172a" : "#ffffff",
-                        color: selectedSize === sz ? "#ffffff" : "#475569",
-                        fontWeight: 800,
-                        fontSize: 13,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {sz}
-                    </button>
-                  ))}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <label style={{ fontSize: 11, fontWeight: 900, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", display: "block" }}>Select Size</label>
+                  {product.sizesStock && (
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b" }}>
+                      {product.sizesStock[selectedSize] <= 0
+                        ? "Out of stock"
+                        : product.sizesStock[selectedSize] <= 5
+                        ? `Low stock (${product.sizesStock[selectedSize]} left)`
+                        : `In stock (${product.sizesStock[selectedSize]})`}
+                    </span>
+                  )}
                 </div>
+
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {(product.sizes || ["S", "M", "L", "XL"]).map((sz) => {
+                    const szStock = product.sizesStock ? (product.sizesStock[sz] ?? 15) : 15;
+                    const isSoldOut = szStock <= 0;
+                    const isSelected = selectedSize === sz;
+
+                    return (
+                      <button
+                        key={sz}
+                        disabled={isSoldOut}
+                        onClick={() => !isSoldOut && setSelectedSize(sz)}
+                        style={{
+                          padding: "9px 18px",
+                          borderRadius: 8,
+                          border: isSelected ? "2px solid #0f172a" : "1.5px solid #e2e8f0",
+                          background: isSelected ? "#0f172a" : isSoldOut ? "#f8fafc" : "#ffffff",
+                          color: isSelected ? "#ffffff" : isSoldOut ? "#cbd5e1" : "#475569",
+                          fontWeight: 800,
+                          fontSize: 13,
+                          cursor: isSoldOut ? "not-allowed" : "pointer",
+                          opacity: isSoldOut ? 0.6 : 1,
+                          textDecoration: isSoldOut ? "line-through" : "none",
+                          position: "relative"
+                        }}
+                      >
+                        {sz}
+                        {isSoldOut && (
+                          <span style={{ fontSize: 9, display: "block", color: "#ef4444", fontWeight: 900, textTransform: "uppercase" }}>Sold Out</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Stock Level Alert Bar */}
+                {(() => {
+                  const currentStock = product.sizesStock ? (product.sizesStock[selectedSize] ?? 15) : 15;
+                  if (currentStock <= 0) {
+                    return (
+                      <div style={{ marginTop: 12, padding: "8px 12px", background: "#fef2f2", color: "#ef4444", border: "1px solid #fee2e2", borderRadius: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                        <span>⚠️ Size {selectedSize} is currently sold out. Please select another size.</span>
+                      </div>
+                    );
+                  }
+                  if (currentStock <= 5) {
+                    return (
+                      <div style={{ marginTop: 12, padding: "8px 12px", background: "#fffbeb", color: "#b45309", border: "1px solid #fef3c7", borderRadius: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                        <span>🔥 Hurry! Only {currentStock} left in stock for size {selectedSize}!</span>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div style={{ marginTop: 12, padding: "8px 12px", background: "#f0fdf4", color: "#15803d", border: "1px solid #bbf7d0", borderRadius: 8, fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>✓ In stock ({currentStock} available in size {selectedSize})</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Quantity & Add to Cart */}
@@ -433,25 +482,34 @@ export default function ProductDetailClient({ productId, initialProduct = null }
                   <span style={{ padding: "0 14px", fontWeight: 900, fontSize: 14, color: "#0f172a" }}>{qty}</span>
                   <button onClick={() => setQty((q) => q + 1)} style={{ width: 38, height: 46, border: "none", background: "transparent", fontWeight: 900, fontSize: 18, cursor: "pointer", color: "#0f172a" }}>+</button>
                 </div>
-                <button
-                  onClick={handleAddToCart}
-                  style={{
-                    flex: 1,
-                    minWidth: 160,
-                    padding: "14px 20px",
-                    borderRadius: 10,
-                    border: "none",
-                    background: "#0f172a",
-                    color: "#ffffff",
-                    fontWeight: 900,
-                    fontSize: 14,
-                    cursor: "pointer",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  Add to Cart · ₹{(product.price * qty).toLocaleString()}
-                </button>
+                {(() => {
+                  const currentStock = product.sizesStock ? (product.sizesStock[selectedSize] ?? 15) : 15;
+                  const isSoldOut = currentStock <= 0;
+
+                  return (
+                    <button
+                      disabled={isSoldOut}
+                      onClick={handleAddToCart}
+                      style={{
+                        flex: 1,
+                        minWidth: 160,
+                        padding: "14px 20px",
+                        borderRadius: 10,
+                        border: "none",
+                        background: isSoldOut ? "#cbd5e1" : "#0f172a",
+                        color: "#ffffff",
+                        fontWeight: 900,
+                        fontSize: 14,
+                        cursor: isSoldOut ? "not-allowed" : "pointer",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
+                        opacity: isSoldOut ? 0.7 : 1
+                      }}
+                    >
+                      {isSoldOut ? `Sold Out in Size ${selectedSize}` : `Add to Cart · ₹${(product.price * qty).toLocaleString()}`}
+                    </button>
+                  );
+                })()}
               </div>
 
               {addedToast && (

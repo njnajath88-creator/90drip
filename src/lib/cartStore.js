@@ -34,6 +34,9 @@ export function saveCart(cart) {
  */
 export function addToCart(product, selectedSize = "M", customName = "", customNumber = "") {
   const currentCart = getCart();
+  const maxStock = product.sizesStock ? (product.sizesStock[selectedSize] ?? 15) : 15;
+  if (maxStock <= 0) return currentCart;
+
   const existingIndex = currentCart.findIndex(
     (item) =>
       item.id === product.id &&
@@ -44,6 +47,9 @@ export function addToCart(product, selectedSize = "M", customName = "", customNu
 
   let newCart;
   if (existingIndex > -1) {
+    if (currentCart[existingIndex].quantity >= maxStock) {
+      return currentCart; // Don't exceed available stock
+    }
     newCart = [...currentCart];
     newCart[existingIndex].quantity += 1;
   } else {
