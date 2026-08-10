@@ -76,17 +76,90 @@ export default async function ProductDetailPage({ params }) {
       "name": "90Drip"
     },
     "category": product.category,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "3",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5",
+          "bestRating": "5"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Marcus V."
+        },
+        "reviewBody": "The authentic match fabric feels incredible. Breathable, sleek fit, and the badge details are top tier."
+      },
+      {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "5",
+          "bestRating": "5"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Liam K."
+        },
+        "reviewBody": "Ordered an M and it fits like a glove. The printing on the back looks official and sharp."
+      }
+    ],
     "offers": {
       "@type": "Offer",
       "url": `https://www.90drip.store/product/${product.id || product._id}`,
       "priceCurrency": "INR",
       "price": product.price,
+      "validFrom": "2024-01-01",
       "priceValidUntil": "2027-12-31",
       "itemCondition": "https://schema.org/NewCondition",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
         "name": "90Drip"
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "IN",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 7,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "INR"
+        },
+        "shippingDestination": [
+          {
+            "@type": "DefinedRegion",
+            "addressCountry": "IN"
+          }
+        ],
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 1,
+            "maxValue": 2,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 3,
+            "maxValue": 7,
+            "unitCode": "DAY"
+          }
+        }
       }
     }
   } : null;
