@@ -4,6 +4,8 @@ import { Order } from "@/lib/models/Order";
 import { Product } from "@/lib/models/Product";
 import mongoose from "mongoose";
 import { sendPushToAll } from "@/lib/sendPushNotification";
+import { sendEmail } from "@/lib/sendEmail";
+import { getOrderConfirmationHtml, getShippingStatusHtml } from "@/lib/emailTemplates";
 
 export const dynamic = "force-dynamic";
 // NOTE: revalidate = 0 intentionally removed — combined with force-dynamic it
@@ -124,6 +126,15 @@ export async function POST(request) {
       console.error("MongoDB Order creation error:", dbErr);
     }
 
+    // Send Order Confirmation Email asynchronously
+    if (newOrder.email) {
+      sendEmail({
+        to: newOrder.email,
+        subject: `Order Confirmed - #${newOrder.id} [90DRIP]`,
+        html: getOrderConfirmationHtml(newOrder),
+      }).catch((emailErr) => console.error("Order confirmation email failed:", emailErr));
+    }
+
     // Send VAPID push to all subscribed admin devices.
     // Runs in background — does not delay the response to the customer.
     // This is what wakes up the iPhone even when the screen is off.
@@ -142,20 +153,32 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const body = await request.json();
-    const { id, status } = body;
+    const { id, status, trackingDetails } = body;
 
     if (!id || !status) {
       return Response.json({ error: "Order id and status required" }, { status: 400 });
     }
 
+    // Find order to get recipient email
+    const cachedOrder = (global.ordersCache || []).find((o) => o.id === id);
+
     // Update in-memory cache
     global.ordersCache = global.ordersCache.map(o => o.id === id ? { ...o, status } : o);
 
-    // Update MongoDB
+    // Update MongoDB & dispatch shipping email if status changed to Shipped
     (async () => {
       try {
         await connectDB();
-        await Order.findOneAndUpdate({ id }, { status });
+        const updatedOrder = await Order.findOneAndUpdate({ id }, { status }, { new: true });
+        const targetOrder = updatedOrder?.toJSON() || cachedOrder;
+
+        if (status === "Shipped" && targetOrder?.email) {
+          await sendEmail({
+            to: targetOrder.email,
+            subject: `Your 90DRIP Order #${targetOrder.id} Has Shipped! 🚚`,
+            html: getShippingStatusHtml(targetOrder, trackingDetails || {}),
+          });
+        }
       } catch (e) {
         console.error("MongoDB order status update error:", e);
       }

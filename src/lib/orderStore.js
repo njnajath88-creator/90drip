@@ -89,7 +89,7 @@ export async function addOrder(orderData) {
 /**
  * Update an order's fulfillment status
  */
-export function updateOrderStatus(orderId, newStatus) {
+export function updateOrderStatus(orderId, newStatus, trackingDetails = {}) {
   if (typeof window === "undefined") return [];
   try {
     const current = getOrders();
@@ -97,11 +97,11 @@ export function updateOrderStatus(orderId, newStatus) {
     localStorage.setItem(ORDERS_KEY, JSON.stringify(updated));
     window.dispatchEvent(new Event("90drip_orders_updated"));
 
-    // PUT to server API
+    // PUT to server API with optional tracking details
     fetch("/api/orders", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: orderId, status: newStatus }),
+      body: JSON.stringify({ id: orderId, status: newStatus, trackingDetails }),
     }).catch((err) => console.error("Error updating order status on API:", err));
 
     return updated;
