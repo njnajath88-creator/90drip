@@ -201,7 +201,7 @@ export default function FanGallerySection({ addToCart }) {
 
         {/* Follow Us Button */}
         <a
-          href="https://www.instagram.com/90drip.in?igsh=MWU0cDd1NTBtNHduaw=="
+          href="https://www.instagram.com/90drip.store?igsh=MWY2b3NwNXhieGFxYQ%3D%3D&utm_source=qr"
           target="_blank"
           rel="noopener noreferrer"
           className="follow-insta-btn"
@@ -211,7 +211,7 @@ export default function FanGallerySection({ addToCart }) {
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
           </svg>
-          <span>FOLLOW US @90DRIP.IN</span>
+          <span>FOLLOW US @90DRIP.STORE</span>
         </a>
 
       </div>
